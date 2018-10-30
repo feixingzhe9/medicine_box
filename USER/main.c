@@ -3,8 +3,9 @@
 #include "sys.h"
 #include "usart.h"	
 #include "includes.h"
-#include "LCD.h"
+#include "lcd.h"
 #include "math.h"
+#include "show_ch.h"
 
 /////////////////////////UCOSII»ŒŒÒ∂—’ª…Ë÷√///////////////////////////////////
 //START »ŒŒÒ
@@ -108,33 +109,45 @@ void dis_test_task(void *pdata)
             lcd_color_box(0, 0, 320, 480, (0x00f1 << 5) + (0x00f2 << 10) + i);
             //delay_ms(10);
         }
-        lcd_color_box(0,0,320,480,Red);delay_ms(1000);
-        lcd_color_box(0,0,320,480,Blue);delay_ms(1000);
+
+//        lcd_color_box(0,0,320,480,Red);delay_ms(1000);
+//        lcd_color_box(0,0,320,480,Blue);delay_ms(1000);
         lcd_color_box(0,0,320,480,White);delay_ms(1000);
-        lcd_color_box(0,0,20,80,Green);delay_ms(1000);
-        lcd_color_box(100,100,20,80,Green);delay_ms(1000);
-        lcd_color_box(200,200,20,80,Green);delay_ms(1000);
-        for(i = 0; i < 320; i++)
-        {
-            lcd_draw_pixel(i, i, Red);
-        }
+//        lcd_color_box(0,0,20,80,Green);delay_ms(1000);
+//        lcd_color_box(100,100,20,80,Green);delay_ms(1000);
+//        lcd_color_box(200,200,20,80,Green);delay_ms(1000);
+//
+//        for(i = 0; i < 320; i++)
+//        {
+//            lcd_draw_pixel(i, i, Red);
+//        }
+//        delay_ms(1000);
+//        for(i = 0; i < 320; i++)
+//        {
+//            lcd_draw_pixel(320 - i, i, Red);
+//        }
+//        delay_ms(1000);
+//        for(i = 0; i < 320; i++)
+//        {
+//            lcd_draw_pixel(180, i, Red);
+//        }
+//        delay_ms(1000);
+//        for(i = 0; i < 320; i++)
+//        {
+//            lcd_draw_pixel(i, 180, Red);
+//        }
+
+
+        show_ch(100, 100, "◊÷", 1, Red);
         delay_ms(1000);
-        for(i = 0; i < 320; i++)
-        {
-            lcd_draw_pixel(320 - i, i, Red);
-        }
+        show_ch(120, 120, "ø‚", 1, Red);
         delay_ms(1000);
-        for(i = 0; i < 320; i++)
-        {
-            lcd_draw_pixel(180, i, Red);
-        }
+        show_ch(140, 140, "≤‚", 1, Red);
         delay_ms(1000);
-        for(i = 0; i < 320; i++)
-        {
-            lcd_draw_pixel(i, 180, Red);
-        }
+        show_ch(160, 160, " ‘", 1, Red);
         delay_ms(1000);
-        
-}
+        show_ch(100, 200, "◊÷ø‚≤‚ ‘", 4, Red);
+        delay_ms(1000);
+    }
 
 }

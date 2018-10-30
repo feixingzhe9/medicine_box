@@ -21,6 +21,9 @@
 #define Lcd_Light_OFF  GPIOA->BRR  = GPIO_Pin_1;
 
 
+#define LCD_WIDTH       320
+#define LCD_LENGTH      480
+
 
 //Lcd初始化及其低级控制函数
 void Lcd_Configuration(void);
