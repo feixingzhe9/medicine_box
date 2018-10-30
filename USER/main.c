@@ -4,6 +4,7 @@
 #include "usart.h"	
 #include "includes.h"
 #include "LCD.h"
+#include "math.h"
 
 /////////////////////////UCOSII任务堆栈设置///////////////////////////////////
 //START 任务
@@ -46,21 +47,12 @@ void dis_test_task(void *pdata);
 
  int main(void)
  {
-     int i = 0;
+
 	delay_init();	     //延时初始化	  
 	NVIC_Configuration(); 	 //设置NVIC中断分组2:2位抢占优先级，2位响应优先级
 	LED_Init();		  	 //初始化与LED连接的硬件接口
-    Lcd_Initialize();
-    Lcd_ColorBox(0,0,320,480,Red);
-//    for(i = 0; i < 100000000; i++)
-//    {
-//        __asm("nop")
-//    }
-//	Lcd_ColorBox(0,0,320,480,White);//Delay(5000000);
-//    for(i = 0; i < 100000000; i++)
-//    {
-//        __asm("nop")
-//    }
+    lcd_init();
+    lcd_color_box(0,0,320,480,Red);
 	OSInit();   
  	OSTaskCreate(start_task,(void *)0,(OS_STK *)&START_TASK_STK[START_STK_SIZE-1],START_TASK_PRIO );//创建起始任务
 	OSStart();
@@ -111,30 +103,35 @@ void dis_test_task(void *pdata)
     int i = 0;
     while(1)
     {
-        Lcd_ColorBox(0,0,320,480,Red);delay_ms(1000);
-        Lcd_ColorBox(0,0,320,480,Blue);delay_ms(1000);
-        Lcd_ColorBox(0,0,320,480,White);delay_ms(1000);
-        Lcd_ColorBox(0,0,20,80,Green);delay_ms(1000);
-        Lcd_ColorBox(100,100,20,80,Green);delay_ms(1000);
-        Lcd_ColorBox(200,200,20,80,Green);delay_ms(1000);
+        for(i = 0; i < 100; i++)
+        {
+            lcd_color_box(0, 0, 320, 480, (0x00f1 << 5) + (0x00f2 << 10) + i);
+            //delay_ms(10);
+        }
+        lcd_color_box(0,0,320,480,Red);delay_ms(1000);
+        lcd_color_box(0,0,320,480,Blue);delay_ms(1000);
+        lcd_color_box(0,0,320,480,White);delay_ms(1000);
+        lcd_color_box(0,0,20,80,Green);delay_ms(1000);
+        lcd_color_box(100,100,20,80,Green);delay_ms(1000);
+        lcd_color_box(200,200,20,80,Green);delay_ms(1000);
         for(i = 0; i < 320; i++)
         {
-            DrawPixel(i, i, Red);
+            lcd_draw_pixel(i, i, Red);
         }
         delay_ms(1000);
         for(i = 0; i < 320; i++)
         {
-            DrawPixel(320 - i, i, Red);
+            lcd_draw_pixel(320 - i, i, Red);
         }
         delay_ms(1000);
         for(i = 0; i < 320; i++)
         {
-            DrawPixel(180, i, Red);
+            lcd_draw_pixel(180, i, Red);
         }
         delay_ms(1000);
         for(i = 0; i < 320; i++)
         {
-            DrawPixel(i, 180, Red);
+            lcd_draw_pixel(i, 180, Red);
         }
         delay_ms(1000);
         

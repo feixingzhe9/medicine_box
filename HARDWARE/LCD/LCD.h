@@ -1,7 +1,7 @@
 #include "stm32f10x.h"
 
 //屏幕开始时显示方式，注意：当IDelay时显示第一幅画面是逐像素刷新的
-//此时必须手动在刷新结束后加上  LCD_WR_REG(0x0007,0x0173);才能显示
+//此时必须手动在刷新结束后加上  lcd_wr_reg(0x0007,0x0173);才能显示
 //当Immediately时没有被注释掉是不需要此过程
 
 /* 选择BANK1-BORSRAM1 连接 TFT，地址范围为0X60000000~0X63FFFFFF
@@ -25,15 +25,15 @@
 //Lcd初始化及其低级控制函数
 void Lcd_Configuration(void);
 void DataToWrite(u16 data);
-void Lcd_Initialize(void);
-void LCD_WR_REG(u16 Index,u16 CongfigTemp);
+void lcd_init(void);
+void lcd_wr_reg(u16 Index,u16 CongfigTemp);
 void Lcd_WR_Start(void);
 //Lcd高级控制函数
-void Lcd_ColorBox(u16 x,u16 y,u16 xLong,u16 yLong,u16 Color);
-void DrawPixel(u16 x, u16 y, u16 Color);
-u16 ReadPixel(u16 x,u8 y);
-void LCD_Fill_Pic(u16 x, u16 y,u16 pic_H, u16 pic_V, const unsigned char* pic);
-void BlockWrite(unsigned int Xstart,unsigned int Xend,unsigned int Ystart,unsigned int Yend);
+void lcd_color_box(u16 x,u16 y,u16 xLong,u16 yLong,u16 Color);
+void lcd_draw_pixel(u16 x, u16 y, u16 Color);
+u16 lcd_read_pixel(u16 x,u8 y);
+void lcd_fill_pic(u16 x, u16 y,u16 pic_H, u16 pic_V, const unsigned char* pic);
+void lcd_block_write(unsigned int Xstart,unsigned int Xend,unsigned int Ystart,unsigned int Yend);
 char Tiky_Button(char *filename,u16 x,u16 y);
 
 /*定义常见颜色*/
