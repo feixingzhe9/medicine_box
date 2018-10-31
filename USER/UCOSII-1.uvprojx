@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\HARDWARE\LED;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\STM32F10x_FWLib\inc;..\CORE;..\UCOSII\CONFIG;..\UCOSII\CORE;..\UCOSII\PORT;..\HARDWARE\LCD</IncludePath>
+              <IncludePath>..\HARDWARE\LED;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\STM32F10x_FWLib\inc;..\CORE;..\UCOSII\CONFIG;..\UCOSII\CORE;..\UCOSII\PORT;..\HARDWARE\LCD;..\Modules</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -405,9 +405,9 @@
               <FilePath>..\HARDWARE\LED\led.c</FilePath>
             </File>
             <File>
-              <FileName>LCD.c</FileName>
+              <FileName>lcd.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\HARDWARE\LCD\LCD.c</FilePath>
+              <FilePath>..\HARDWARE\LCD\lcd.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -568,6 +568,21 @@
               <FileName>os_cfg.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\UCOSII\CONFIG\os_cfg.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>Modules</GroupName>
+          <Files>
+            <File>
+              <FileName>show_ch.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Modules\show_ch.c</FilePath>
+            </File>
+            <File>
+              <FileName>show_pic.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Modules\show_pic.c</FilePath>
             </File>
           </Files>
         </Group>
