@@ -46,21 +46,19 @@ void led2_task(void *pdata);
 
 void dis_test_task(void *pdata);
 
- int main(void)
- {
-
-	delay_init();	     //延时初始化	  
-	NVIC_Configuration(); 	 //设置NVIC中断分组2:2位抢占优先级，2位响应优先级
-	LED_Init();		  	 //初始化与LED连接的硬件接口
+int main(void)
+{
+    delay_init();	     //延时初始化	  
+    NVIC_Configuration(); 	 //设置NVIC中断分组2:2位抢占优先级，2位响应优先级
+    LED_Init();		  	 //初始化与LED连接的硬件接口
     lcd_init();
     lcd_color_box(0,0,320,480,Red);
-	OSInit();   
- 	OSTaskCreate(start_task,(void *)0,(OS_STK *)&START_TASK_STK[START_STK_SIZE-1],START_TASK_PRIO );//创建起始任务
-	OSStart();
- }
+    OSInit();
+    OSTaskCreate(start_task,(void *)0,(OS_STK *)&START_TASK_STK[START_STK_SIZE-1],START_TASK_PRIO );//创建起始任务
+    OSStart();
+}
 
- 
-	  
+
 //开始任务
 void start_task(void *pdata)
 {
@@ -115,7 +113,7 @@ void dis_test_task(void *pdata)
         lcd_color_box(0,0,320,480,White);delay_ms(1000);
 //        lcd_color_box(0,0,20,80,Green);delay_ms(1000);
 //        lcd_color_box(100,100,20,80,Green);delay_ms(1000);
-        lcd_color_box(200,260,20,80,Green);delay_ms(1000);
+//        lcd_color_box(200,260,20,80,Green);delay_ms(1000);
 //
 //        for(i = 0; i < 320; i++)
 //        {
@@ -150,7 +148,8 @@ void dis_test_task(void *pdata)
         {
             //show_16x16_ch(0, i, "字库测试字库测试字库测试字库测试字库测试字库测试字库测字库测试字库测试字库测试字库测试", 20, Red);
             //show_ch(0, 320, "字库测试字库测试字库测试字库测试字库测试字库测试字库测字库测试字库测试字库测试字库测试", 20, Red);
-            show_32x32_ch(0, i, "字库测试字库测试字库测试字库测试字库测试字库测试字库测字库测试字库测试字库测试字库测试", 10, Red);
+            //show_32x32_ch(0, i, "字库测试手术室字库测试手术室字库测试字库测试字库测试字库测试字库测字库测试字库测试字库测试字库测试", 10, Red);
+            show_32x32_ch_vertical(0, i, "竖排诺亚", 4, Red);
         }
         delay_ms(1000);
 //        for(i = 0; i < 480; i++)
