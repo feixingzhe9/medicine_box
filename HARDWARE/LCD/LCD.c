@@ -150,7 +150,7 @@ static void lcd_write_cmd(u16 CMD)
     *(__IO u16 *) (Bank1_LCD_C) = CMD;
 }
 
-static void WriteData(u16 tem_data)
+static void lcd_write_data(u16 tem_data)
 {
     *(__IO u16 *) (Bank1_LCD_D) = tem_data;
 }
@@ -575,7 +575,7 @@ void lcd_fill_pic(u16 x, u16 y, u16 pic_H, u16 pic_V, const unsigned char* pic)
     unsigned int j;
 
 //     	lcd_write_cmd(0x16); //Set_address_mode
-//     	WriteData(0x20); //横屏，从左下角开始，从左到右，从下到上
+//     	lcd_write_data(0x20); //横屏，从左下角开始，从左到右，从下到上
 //     	lcd_block_write(x,x+pic_H-1,y,y+pic_V-1);
     for (i = 0; i < pic_H * pic_V * 2; i += 2)
     {
@@ -585,7 +585,7 @@ void lcd_fill_pic(u16 x, u16 y, u16 pic_H, u16 pic_V, const unsigned char* pic)
         *(__IO u16 *) (Bank1_LCD_D) = j;
     }
 //     	lcd_write_cmd(0x36); //Set_address_mode
-//     	WriteData(0xaa);
+//     	lcd_write_data(0xaa);
 }
 
 void lcd_draw_pixel(u16 x, u16 y, u16 Color)

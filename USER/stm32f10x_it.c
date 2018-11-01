@@ -23,7 +23,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f10x_it.h" 
-
+#include "includes.h"
+#include "usart.h"
 
  
 void NMI_Handler(void)
@@ -78,6 +79,58 @@ void DebugMon_Handler(void)
  //void SysTick_Handler(void)
 //{
 //}
+
+
+void DMA1_Channel7_IRQHandler(void)					//USART2-TX
+{
+    OSIntEnter();
+    if (DMA_GetITStatus(DMA1_IT_TC7) != RESET)
+    {
+        DMA_Cmd(DMA1_Channel7, DISABLE);
+        DMA_ClearFlag(DMA1_FLAG_TC7);
+        DMA_ClearITPendingBit(DMA1_IT_TC7);  // 清除中断标志位
+        while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET); //等待一包数据发送完成
+    }
+    OSIntExit();
+}
+
+void DMA1_Channel6_IRQHandler(void)					//USART2-TX
+{
+    OSIntEnter();
+    if (DMA_GetITStatus(DMA1_IT_TC6) != RESET)
+    {
+        DMA_Cmd(DMA1_Channel7, DISABLE);
+        DMA_ClearFlag(DMA1_FLAG_TC6);
+        DMA_ClearITPendingBit(DMA1_IT_TC6);  // 清除中断标志位
+        while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET); //等待一包数据发送完成
+    }
+    OSIntExit();
+}
+
+uint32_t rcv_dma_test_cnt = 0;
+void USART2_IRQHandler(void)
+{
+	volatile unsigned char temper=0;
+    uint16_t rcv_len = 0;
+    OSIntEnter();
+    if (USART_GetITStatus(USART2, USART_IT_IDLE) != RESET)
+    {
+        rcv_dma_test_cnt++;
+        temper = USART2->SR;
+        temper = USART2->DR;	//清USART_IT_IDLE
+
+        DMA_Cmd(DMA1_Channel6, DISABLE);
+        rcv_len = RCV_SIZE - DMA_GetCurrDataCounter(DMA1_Channel6);
+        //发送命令处理信号量
+//        OSSemPost(Usart2CMDSem);
+//        DMA1_Channel6->CMAR = (uint32_t)&Usart2RevBuffer[0];
+        DMA_SetCurrDataCounter(DMA1_Channel6, RCV_SIZE);
+
+        DMA_Cmd(DMA1_Channel6,ENABLE);
+    }
+    OSIntExit();
+}
+
 
 /******************************************************************************/
 /*                 STM32F10x Peripherals Interrupt Handlers                   */

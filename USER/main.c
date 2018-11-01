@@ -11,9 +11,9 @@
 /////////////////////////UCOSII任务堆栈设置///////////////////////////////////
 //START 任务
 //设置任务优先级
-#define START_TASK_PRIO      			10 //开始任务的优先级设置为最低
+#define START_TASK_PRIO                 10 //开始任务的优先级设置为最低
 //设置任务堆栈大小
-#define START_STK_SIZE  				64
+#define START_STK_SIZE                  64
 //创建任务堆栈空间	
 OS_STK START_TASK_STK[START_STK_SIZE];
 //任务函数接口
@@ -21,9 +21,9 @@ void start_task(void *pdata);
  			   
 //LED1任务
 //设置任务优先级
-#define LED1_TASK_PRIO       			7 
+#define LED1_TASK_PRIO                  7 
 //设置任务堆栈大小
-#define LED1_STK_SIZE  		    		64
+#define LED1_STK_SIZE                   64
 //创建任务堆栈空间	
 OS_STK LED1_TASK_STK[LED1_STK_SIZE];
 //任务函数接口
@@ -32,29 +32,36 @@ void led1_task(void *pdata);
 
 //LED2任务
 //设置任务优先级
-#define LED2_TASK_PRIO       			6 
+#define LED2_TASK_PRIO                  6 
 //设置任务堆栈大小
-#define LED2_STK_SIZE  					64
+#define LED2_STK_SIZE                   64
 //创建任务堆栈空间	
 OS_STK LED2_TASK_STK[LED2_STK_SIZE];
 
-#define DIS_TEST_TASK_PRIO       			8
-#define DIS_TEST_STK_SIZE  					1024
+#define DIS_TEST_TASK_PRIO                      8
+#define DIS_TEST_STK_SIZE                       1024
 OS_STK DIS_TEST_TASK_STK[DIS_TEST_STK_SIZE];
+
+
+#define FINGERPRINT_TEST_TASK_PRIO              9
+#define FINGERPRINT_TEST_STK_SIZE               1024
+OS_STK FINGERPRINT_TEST_TASK_STK[FINGERPRINT_TEST_STK_SIZE];
 
 //任务函数接口
 void led2_task(void *pdata);
 
 void dis_test_task(void *pdata);
+void fingerprint_test_task(void *pdata);
 
 int main(void)
 {
+    OSInit();
     delay_init();	     //延时初始化	  
     NVIC_Configuration(); 	 //设置NVIC中断分组2:2位抢占优先级，2位响应优先级
     LED_Init();		  	 //初始化与LED连接的硬件接口
     lcd_init();
     lcd_color_box(0,0,320,480,Red);
-    OSInit();
+    uart_init(19200);
     OSTaskCreate(start_task,(void *)0,(OS_STK *)&START_TASK_STK[START_STK_SIZE-1],START_TASK_PRIO );//创建起始任务
     OSStart();
 }
@@ -69,19 +76,56 @@ void start_task(void *pdata)
  	OS_ENTER_CRITICAL();			//进入临界区(无法被中断打断)    
  	OSTaskCreate(led1_task,(void *)0,(OS_STK*)&LED1_TASK_STK[LED1_STK_SIZE-1],LED1_TASK_PRIO);						   
  	OSTaskCreate(led2_task,(void *)0,(OS_STK*)&LED2_TASK_STK[LED2_STK_SIZE-1],LED2_TASK_PRIO);	 
-    OSTaskCreate(dis_test_task,(void *)0,(OS_STK*)&DIS_TEST_TASK_STK[DIS_TEST_STK_SIZE - 1],DIS_TEST_TASK_PRIO);	     
+    OSTaskCreate(dis_test_task,(void *)0,(OS_STK*)&DIS_TEST_TASK_STK[DIS_TEST_STK_SIZE - 1],DIS_TEST_TASK_PRIO);
+    OSTaskCreate(fingerprint_test_task,(void *)0,(OS_STK*)&FINGERPRINT_TEST_TASK_STK[FINGERPRINT_TEST_STK_SIZE - 1],FINGERPRINT_TEST_TASK_PRIO);
 	OSTaskSuspend(START_TASK_PRIO);	//挂起起始任务.
 	OS_EXIT_CRITICAL();				//退出临界区(可以被中断打断)
 }
 
+
+
+
+extern int uart_send(uint8_t *data, uint16_t len);
+void fingerprint_test_task(void *pdata)
+{
+    uint8_t send_buf[8] = {0xf5, 0x09, 0x00, 0x00, 0x00, 0x00, };
+    uint8_t head = 0xf5;
+    uint8_t cmd = 0x09;
+    uint8_t p1, p2, p3;
+    uint8_t res = 0;
+    uint8_t check = 0;
+    uint8_t tail = 0xf5;
+    p1 = 0;
+    p2 = 0;
+    p3 = 0;
+    check = cmd ^ p1 ^ p2 ^ p3 ^ res;
+
+    send_buf[0] = head;
+    send_buf[1] = cmd;
+    send_buf[2] = p1;
+    send_buf[3] = p2;
+    send_buf[4] = p3;
+    send_buf[5] = res;
+    send_buf[6] = check;
+    send_buf[7] = tail;
+
+    while(1)
+    {
+        LED0=0;
+        uart_send(send_buf, 8);
+        delay_ms(500);
+        LED0=1;
+        delay_ms(500);
+    }
+}
 //LED1任务
 void led1_task(void *pdata)
 {	 	
 	while(1)
 	{
-		//LED0=1;
+		LED1=1;
 		delay_ms(80);
-		LED0=0;
+		LED1=0;
 		delay_ms(920);
 	};
 }
@@ -91,9 +135,9 @@ void led2_task(void *pdata)
 {	  
 	while(1)
 	{
-		LED1=0;
+		//LED1=0;
 		delay_ms(300);
-		LED1=1;
+		//LED1=1;
 		delay_ms(300);
 	};
 }
@@ -169,11 +213,11 @@ void dis_test_task(void *pdata)
         //lcd_color_box(300,200,20,80,Green);delay_ms(1000);
         //lcd_color_box(300,400,20,80,Green);delay_ms(1000);
         //lcd_fill_pic(0, 0, 320, 480, gImage_MM_T035);delay_ms(1000);
-        for(i = 0; i < 480; i += 10)
-        {
-            lcd_color_box_ex(0, i, 320, 480 - i, gImage_MM_T035);
-        }
-        delay_ms(5000);
+//        for(i = 0; i < 480; i += 10)
+//        {
+//            lcd_color_box_ex(0, i, 320, 480 - i, gImage_MM_T035);
+//        }
+        //delay_ms(500);
     }
     
 
