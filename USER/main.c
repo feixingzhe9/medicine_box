@@ -6,6 +6,7 @@
 #include "lcd.h"
 #include "math.h"
 #include "show_ch.h"
+#include "show_pic.h"
 
 /////////////////////////UCOSII任务堆栈设置///////////////////////////////////
 //START 任务
@@ -38,7 +39,7 @@ void led1_task(void *pdata);
 OS_STK LED2_TASK_STK[LED2_STK_SIZE];
 
 #define DIS_TEST_TASK_PRIO       			8
-#define DIS_TEST_STK_SIZE  					512
+#define DIS_TEST_STK_SIZE  					1024
 OS_STK DIS_TEST_TASK_STK[DIS_TEST_STK_SIZE];
 
 //任务函数接口
@@ -97,6 +98,9 @@ void led2_task(void *pdata)
 	};
 }
 
+extern int show_pic(u16 x, u16 y, u16 pic_H, u16 pic_V, const unsigned char* pic);
+extern void lcd_color_box_ex(u16 xStart, u16 yStart, u16 xLong, u16 yLong, const unsigned char* pic);
+extern void LCD_Fill_Pic(u16 x, u16 y,u16 pic_H, u16 pic_V, const unsigned char* pic);
 void dis_test_task(void *pdata)
 {
     int i = 0;
@@ -163,7 +167,14 @@ void dis_test_task(void *pdata)
 //        }
 //        delay_ms(1000);
         //lcd_color_box(300,200,20,80,Green);delay_ms(1000);
-        lcd_color_box(300,400,20,80,Green);delay_ms(1000);
+        //lcd_color_box(300,400,20,80,Green);delay_ms(1000);
+        //lcd_fill_pic(0, 0, 320, 480, gImage_MM_T035);delay_ms(1000);
+        for(i = 0; i < 480; i += 10)
+        {
+            lcd_color_box_ex(0, i, 320, 480 - i, gImage_MM_T035);
+        }
+        delay_ms(5000);
     }
+    
 
 }

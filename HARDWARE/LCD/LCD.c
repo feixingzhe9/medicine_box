@@ -523,10 +523,10 @@ void lcd_block_write(unsigned int Xstart,unsigned int Xend,unsigned int Ystart,u
 {
     //HX8357-A
 
-    lcd_wr_reg(0x80, Ystart >> 8); // Set CAC=0x0000
-    lcd_wr_reg(0x81, Ystart & 0xff);
-    lcd_wr_reg(0x82, Xstart >> 8); // Set RAC=0x0000
-    lcd_wr_reg(0x83, Xstart & 0xff);
+    lcd_wr_reg(0x80, Xstart >> 8); // Set CAC=0x0000
+    lcd_wr_reg(0x81, Xstart & 0xff);
+    lcd_wr_reg(0x82, Ystart >> 8); // Set RAC=0x0000
+    lcd_wr_reg(0x83, Ystart & 0xff);
 
     lcd_wr_reg(0x02, Xstart >> 8);
     lcd_wr_reg(0x03, Xstart & 0xff);     //Column Start
@@ -574,9 +574,9 @@ void lcd_fill_pic(u16 x, u16 y, u16 pic_H, u16 pic_V, const unsigned char* pic)
     unsigned long i;
     unsigned int j;
 
-    // 	lcd_write_cmd(0x16); //Set_address_mode
-    // 	WriteData(0x20); //横屏，从左下角开始，从左到右，从下到上
-    // 	lcd_block_write(x,x+pic_H-1,y,y+pic_V-1);
+//     	lcd_write_cmd(0x16); //Set_address_mode
+//     	WriteData(0x20); //横屏，从左下角开始，从左到右，从下到上
+//     	lcd_block_write(x,x+pic_H-1,y,y+pic_V-1);
     for (i = 0; i < pic_H * pic_V * 2; i += 2)
     {
         j = pic[i];
@@ -584,8 +584,8 @@ void lcd_fill_pic(u16 x, u16 y, u16 pic_H, u16 pic_V, const unsigned char* pic)
         j = j + pic[i + 1];
         *(__IO u16 *) (Bank1_LCD_D) = j;
     }
-    // 	lcd_write_cmd(0x36); //Set_address_mode
-    // 	WriteData(0xaa);
+//     	lcd_write_cmd(0x36); //Set_address_mode
+//     	WriteData(0xaa);
 }
 
 void lcd_draw_pixel(u16 x, u16 y, u16 Color)
