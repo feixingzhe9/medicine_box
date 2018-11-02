@@ -32,7 +32,7 @@ int fputc(int ch, FILE *f)
 
 
 uint8_t uart_send_buf[SEND_SIZE];
-uint8_t uart_rcv_buf[RCV_SIZE];
+uint8_t fp_uart_rcv_buf[RCV_SIZE];
 void uart_init(u32 bound)
 {
     USART_InitTypeDef USART_InitStructure;
@@ -103,7 +103,7 @@ void uart_init(u32 bound)
 
 	//COM1-RX
 	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&USART2->DR);    // 外设地址
-    DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&uart_rcv_buf[0];    // 内存地址
+    DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&fp_uart_rcv_buf[0];    // 内存地址
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;                  // 内存-->外设
     DMA_InitStructure.DMA_BufferSize = RCV_SIZE;             // 缓存大小
     DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;    // 外设地址不增加

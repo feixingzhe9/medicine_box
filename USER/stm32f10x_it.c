@@ -25,7 +25,7 @@
 #include "stm32f10x_it.h" 
 #include "includes.h"
 #include "usart.h"
-
+#include "fingerprint_task.h"
  
 void NMI_Handler(void)
 {
@@ -108,6 +108,8 @@ void DMA1_Channel6_IRQHandler(void)					//USART2-TX
 }
 
 uint32_t rcv_dma_test_cnt = 0;
+
+/*    USART2 IDLE interrupt    */
 void USART2_IRQHandler(void)
 {
 	volatile unsigned char temper=0;
@@ -121,11 +123,9 @@ void USART2_IRQHandler(void)
 
         DMA_Cmd(DMA1_Channel6, DISABLE);
         rcv_len = RCV_SIZE - DMA_GetCurrDataCounter(DMA1_Channel6);
-        //发送命令处理信号量
-//        OSSemPost(Usart2CMDSem);
-//        DMA1_Channel6->CMAR = (uint32_t)&Usart2RevBuffer[0];
         DMA_SetCurrDataCounter(DMA1_Channel6, RCV_SIZE);
-
+        put_fp_rcv_buf(fp_uart_rcv_buf, rcv_len);
+        OSSemPost(fp_uart_data_come_sem);
         DMA_Cmd(DMA1_Channel6,ENABLE);
     }
     OSIntExit();
