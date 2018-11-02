@@ -11,7 +11,8 @@
 #include "led.h"
 #
 
-OS_STK FINGERPRINT_TEST_TASK_STK[FINGERPRINT_TEST_STK_SIZE];
+OS_STK FP_UART_COM_SEND_TASK_STK[FP_UART_COM_SEND_TASK_STK_SIZE];
+OS_STK FP_UART_COM_RCV_TASK_STK[FP_UART_COM_RCV_TASK_STK_SIZE];
 OS_MEM	*fp_rcv_mem_handle;
 
 fp_rcv_buf_t fp_rcv_mem[FP_RCV_BUF_NUM][1];
@@ -148,17 +149,63 @@ fp_rcv_buf_t *get_latest_fp_buf(void)
     return node;
 }
 
-void fingerprint_test_task(void *pdata)
+
+static int is_frame_valid(uint8_t *buf, uint16_t len)
 {
-    uint8_t err = 0;
-    fp_rcv_buf_t *fp_rcv_node;
+    int i = 0;
+    uint8_t check = 0;
+    if(len < 8)
+    {
+        return -1;
+    }
+    if(len == 8)
+    {
+        if((buf[0] == FINGERPRINT_UART_FRAME_HEADER) && (buf[7] == FINGERPRINT_UART_FRAME_TAIL))
+        {
+            for(i = 1; i < 6; i++)
+            {
+                check ^= buf[i];
+            }
+            if(check == buf[6])
+            {
+                return 0;
+            }
+        }
+    }
+    if(len > 8)
+    {
+
+    }
+
+    return -1;
+}
+
+
+int fp_uart_frame_proc(fp_rcv_buf_t *node)
+{
+    uint8_t cmd = 0;
+    if(node)
+    {
+        if(is_frame_valid(node->rcv_buf, node->rcv_len) >= 0)
+        {
+            if(node->rcv_len == 8)
+            {
+                cmd = node->rcv_buf[1];
+            }
+        }
+    }
+    return -1;
+}
+
+void fp_uart_com_send_task(void *pdata)
+{
     uint8_t send_buf[8] = {0xf5, 0x09, 0x00, 0x00, 0x00, 0x00, };
-    uint8_t head = 0xf5;
+    uint8_t head = FINGERPRINT_UART_FRAME_HEADER;
     uint8_t cmd = 0x09;
     uint8_t p1, p2, p3;
     uint8_t res = 0;
     uint8_t check = 0;
-    uint8_t tail = 0xf5;
+    uint8_t tail = FINGERPRINT_UART_FRAME_TAIL;
     p1 = 0;
     p2 = 0;
     p3 = 0;
@@ -172,17 +219,38 @@ void fingerprint_test_task(void *pdata)
     send_buf[5] = res;
     send_buf[6] = check;
     send_buf[7] = tail;
+
+
     fp_rcv_buf_head_init();
+
     while(1)
     {
         LED0=0;
         uart_send(send_buf, 8);
-        OSSemPend(fp_uart_data_come_sem, 0, &err);
-        fp_rcv_node = get_latest_fp_buf();
-        free_one_fp_rcv_buf(fp_rcv_node);
         delay_ms(500);
         LED0=1;
         delay_ms(500);
+    }
+}
+
+
+void fp_uart_com_rcv_task(void *pdata)
+{
+    uint8_t err = 0;
+    fp_rcv_buf_t *fp_rcv_node;
+    fp_rcv_buf_t node;
+    while(1)
+    {
+        LED1 = 1;
+        OSSemPend(fp_uart_data_come_sem, 0, &err);
+        LED1 = 0;
+        delay_ms(50);
+        OS_ENTER_CRITICAL();
+        fp_rcv_node = get_latest_fp_buf();
+        memcpy(&node, fp_rcv_node, sizeof(fp_rcv_buf_t));
+        free_one_fp_rcv_buf(fp_rcv_node);
+        OS_EXIT_CRITICAL();
+        fp_uart_frame_proc(&node);
     }
 }
 
