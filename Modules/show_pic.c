@@ -1,3 +1,8 @@
+/*
+ *  Author: Kaka Xie
+ *  brief: show picture
+ */
+
 //#include "show_pic.h"
 #include "lcd.h"
 

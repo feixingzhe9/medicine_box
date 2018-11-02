@@ -1,7 +1,6 @@
 #include "sys.h"
-#include "usart.h"	  
-////////////////////////////////////////////////////////////////////////////////// 	 
-//如果使用ucos,则包括下面的头文件即可.
+#include "usart.h"
+
 #if SYSTEM_SUPPORT_UCOS
 #include "includes.h"					//ucos 使用	  
 #endif
@@ -52,19 +51,19 @@ void uart_init(u32 bound)
     }
 
     NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
-    //IO configuration
+
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    //USART2-TX-PA2
+
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
-    //USART2-RX-PA3
+
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
 
-	//USART2
+
     USART_InitStructure.USART_BaudRate = bound;
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;
     USART_InitStructure.USART_StopBits = USART_StopBits_1;

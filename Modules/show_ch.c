@@ -5,7 +5,7 @@
 
 #include "show_ch.h"
 #include "ch_lib.h"
-#include "lcd.h"
+
 
 /*显示汉字字符是高频操作，为了提高效率，将16X16 32X32 以及横排 竖排的分开操作，牺牲空间换时间*/
 
