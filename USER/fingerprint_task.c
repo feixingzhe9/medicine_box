@@ -13,12 +13,27 @@
 
 OS_STK FP_UART_COM_SEND_TASK_STK[FP_UART_COM_SEND_TASK_STK_SIZE];
 OS_STK FP_UART_COM_RCV_TASK_STK[FP_UART_COM_RCV_TASK_STK_SIZE];
-OS_MEM	*fp_rcv_mem_handle;
+
+
+
+OS_EVENT *fp_uart_data_come_sem;
+OS_EVENT *fp_com_get_feature_sem;
+OS_EVENT *fp_com_read_feature_sem;
+OS_EVENT *fp_com_set_feature_sem;
+
 
 fp_rcv_buf_t fp_rcv_mem[FP_RCV_BUF_NUM][1];
-OS_MEM  *fp_rcv_buf_list;
 fp_rcv_buf_t *fp_rcv_buf_head = NULL;
-OS_EVENT *fp_uart_data_come_sem;
+OS_MEM	*fp_rcv_mem_handle;
+
+//OSQCreate
+OS_EVENT	*fp_short_ack_queue_handle;
+void* fp_short_ack_queue_p[FP_SHORT_ACK_QUEUE_NUM];
+
+
+fp_short_ack_t fp_short_ack_mem[FP_SHORT_ACK_MUN][1];
+OS_MEM	*fp_short_ack_mem_handle;
+
 extern int uart_send(uint8_t *data, uint16_t len);
 
 //OSMemPut
@@ -181,9 +196,35 @@ static int is_frame_valid(uint8_t *buf, uint16_t len)
 }
 
 
+int fp_capture_feature(uint16_t id, fp_permission_e permission, uint8_t cnt)
+{
+    uint8_t send_buf[8] = {0};
+    uint8_t i = 0;
+    if((id > 0x0fff) || (id == 0))
+    {
+        return -1;
+    }
+    send_buf[0] = FINGERPRINT_UART_FRAME_HEADER;
+    send_buf[1] = cnt;
+    send_buf[2] = id >> 8;
+    send_buf[3] = id & 0xff;
+    send_buf[4] = permission;
+    send_buf[5] = 0;
+    for(i = 1; i < 6; i++)
+    {
+        send_buf[6] ^= send_buf[i];
+    }
+    send_buf[7] = FINGERPRINT_UART_FRAME_TAIL;
+    uart_send(send_buf, 8);
+    return 0;
+}
+
 int fp_uart_frame_proc(fp_rcv_buf_t *node)
 {
+    uint8_t err = 0;
     uint8_t cmd = 0;
+    uint8_t test_buf[5] = {0};
+    fp_short_ack_t *fp_short_ack = NULL;
     if(node)
     {
         if(is_frame_valid(node->rcv_buf, node->rcv_len) >= 0)
@@ -191,24 +232,54 @@ int fp_uart_frame_proc(fp_rcv_buf_t *node)
             if(node->rcv_len == 8)
             {
                 cmd = node->rcv_buf[1];
+                switch(cmd)
+                {
+                    case FINGERPRINT_UART_PROTOCOL_CMD_CAPTURE_1:
+                    case FINGERPRINT_UART_PROTOCOL_CMD_CAPTURE_2:
+                    case FINGERPRINT_UART_PROTOCOL_CMD_CAPTURE_3:
+                    case FINGERPRINT_UART_PROTOCOL_CMD_CAPTURE_4:
+                    case FINGERPRINT_UART_PROTOCOL_CMD_CAPTURE_5:
+                    case FINGERPRINT_UART_PROTOCOL_CMD_CAPTURE_6:
+                        fp_short_ack = (fp_short_ack_t *)OSMemGet(fp_short_ack_mem_handle, &err);
+                        fp_short_ack->cmd = cmd;
+                        fp_short_ack->result = node->rcv_buf[4];
+                        OSQPost(fp_short_ack_queue_handle, (void *)fp_short_ack);
+                        break;
+
+                    case 0x09:
+                        break;
+                    case 0x2a:
+                        test_buf[0] = node->rcv_buf[2];
+                        test_buf[1] = node->rcv_buf[3];
+                        test_buf[2] = node->rcv_buf[4];
+                        break;
+                    case 0x2d:
+                        break;
+                }
             }
         }
     }
     return -1;
 }
 
+
+
+
 void fp_uart_com_send_task(void *pdata)
 {
+    uint8_t err = 0;
+    int i = 0;
+    fp_short_ack_t *fp_short_ack = NULL;
     uint8_t send_buf[8] = {0xf5, 0x09, 0x00, 0x00, 0x00, 0x00, };
     uint8_t head = FINGERPRINT_UART_FRAME_HEADER;
-    uint8_t cmd = 0x09;
+    uint8_t cmd = 0x2d;
     uint8_t p1, p2, p3;
     uint8_t res = 0;
     uint8_t check = 0;
     uint8_t tail = FINGERPRINT_UART_FRAME_TAIL;
     p1 = 0;
     p2 = 0;
-    p3 = 0;
+    p3 = 1;
     check = cmd ^ p1 ^ p2 ^ p3 ^ res;
 
     send_buf[0] = head;
@@ -226,7 +297,19 @@ void fp_uart_com_send_task(void *pdata)
     while(1)
     {
         LED0=0;
-        uart_send(send_buf, 8);
+        OSSemSet(fp_uart_data_come_sem, 0, &err);
+        //uart_send(send_buf, 8);
+        for(i = 1; i < 7; i++)
+        {
+            fp_capture_feature(0x0123, FP_PERMISSION_1, i);
+            fp_short_ack = (fp_short_ack_t *)OSQPend(fp_short_ack_queue_handle, 0, &err);
+            if(fp_short_ack->result == FINGERPRINT_ACK_SUCCESS)
+            {
+                delay_ms(100);  //test code
+            }
+            OSMemPut(fp_short_ack_mem_handle, fp_short_ack);
+        }
+
         delay_ms(500);
         LED0=1;
         delay_ms(500);
@@ -237,7 +320,7 @@ void fp_uart_com_send_task(void *pdata)
 void fp_uart_com_rcv_task(void *pdata)
 {
     uint8_t err = 0;
-    fp_rcv_buf_t *fp_rcv_node;
+    fp_rcv_buf_t *fp_rcv_node = NULL;
     fp_rcv_buf_t node;
     while(1)
     {
