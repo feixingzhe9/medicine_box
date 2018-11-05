@@ -394,6 +394,26 @@
               <FileType>1</FileType>
               <FilePath>..\USER\system_stm32f10x.c</FilePath>
             </File>
+            <File>
+              <FileName>os_common.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\os_common.c</FilePath>
+            </File>
+            <File>
+              <FileName>fingerprint_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\fingerprint_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>led_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\led_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>display_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\display_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
