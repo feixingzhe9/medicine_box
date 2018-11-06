@@ -30,9 +30,14 @@ OS_MEM	*fp_rcv_mem_handle;
 OS_EVENT	*fp_short_ack_queue_handle;
 void* fp_short_ack_queue_p[FP_SHORT_ACK_QUEUE_NUM];
 
+OS_EVENT	*fp_long_ack_queue_handle;
+void* fp_long_ack_queue_p[FP_SHORT_ACK_QUEUE_NUM];
 
-fp_short_ack_t fp_short_ack_mem[FP_SHORT_ACK_MUN][1];
+
+fp_short_ack_t fp_short_ack_mem[FP_SHORT_ACK_NUM][1];
+fp_long_ack_t fp_long_ack_mem[FP_LONG_ACK_NUM][1];
 OS_MEM	*fp_short_ack_mem_handle;
+OS_MEM	*fp_long_ack_mem_handle;
 
 extern int uart_send(uint8_t *data, uint16_t len);
 
@@ -173,23 +178,20 @@ static int is_frame_valid(uint8_t *buf, uint16_t len)
     {
         return -1;
     }
-    if(len == 8)
+
+    if(len >= 8)
     {
-        if((buf[0] == FINGERPRINT_UART_FRAME_HEADER) && (buf[7] == FINGERPRINT_UART_FRAME_TAIL))
+        if((buf[0] == FINGERPRINT_UART_FRAME_HEADER) && (buf[len - 1] == FINGERPRINT_UART_FRAME_TAIL))
         {
-            for(i = 1; i < 6; i++)
+            for(i = 1; i < len - 2; i++)
             {
                 check ^= buf[i];
             }
-            if(check == buf[6])
+            if(check == buf[len - 2])
             {
                 return 0;
             }
         }
-    }
-    if(len > 8)
-    {
-
     }
 
     return -1;
@@ -280,12 +282,32 @@ int fp_del_all_user(void)
     return 0;
 }
 
+int cap_img_and_get_feature(void)
+{
+        uint8_t send_buf[8] = {0};
+    uint8_t i = 0;
+
+    send_buf[0] = FINGERPRINT_UART_FRAME_HEADER;
+    send_buf[1] = FINGERPRINT_UART_PROTOCOL_CMD_CAP_IMG_GET_FEATURE;
+    send_buf[2] = 0;
+    send_buf[3] = 0;
+    send_buf[4] = 0;
+    send_buf[5] = 0;
+    for(i = 1; i < 6; i++)
+    {
+        send_buf[6] ^= send_buf[i];
+    }
+    send_buf[7] = FINGERPRINT_UART_FRAME_TAIL;
+    uart_send(send_buf, 8);
+    return 0;
+}
 
 int fp_uart_frame_proc(fp_rcv_buf_t *node)
 {
     uint8_t err = 0;
     uint8_t cmd = 0;
     fp_short_ack_t *fp_short_ack = NULL;
+    fp_long_ack_t *fp_long_ack = NULL;
     if(node)
     {
         if(is_frame_valid(node->rcv_buf, node->rcv_len) >= 0)
@@ -295,6 +317,15 @@ int fp_uart_frame_proc(fp_rcv_buf_t *node)
                 cmd = node->rcv_buf[1];
                 switch(cmd)
                 {
+                    case FINGERPRINT_UART_PROTOCOL_CMD_CAP_IMG_GET_FEATURE:
+                        fp_short_ack = (fp_short_ack_t *)OSMemGet(fp_short_ack_mem_handle, &err);
+                        fp_short_ack->cmd = cmd;
+                        fp_short_ack->q1 = node->rcv_buf[2];
+                        fp_short_ack->q2 = node->rcv_buf[3];
+                        fp_short_ack->result = node->rcv_buf[4];
+                        OSQPost(fp_short_ack_queue_handle, (void *)fp_short_ack);
+                        return 0;
+
                     case FINGERPRINT_UART_PROTOCOL_CMD_CAPTURE_1:
                     case FINGERPRINT_UART_PROTOCOL_CMD_CAPTURE_2:
 //                    case FINGERPRINT_UART_PROTOCOL_CMD_CAPTURE_3:
@@ -340,6 +371,35 @@ int fp_uart_frame_proc(fp_rcv_buf_t *node)
                         return -2;
                 }
             }
+            else if(node->rcv_len > 8)
+            {
+                if(is_frame_valid(node->rcv_buf, 8) >= 0)
+                {
+                    cmd = node->rcv_buf[1];
+                    fp_short_ack = (fp_short_ack_t *)OSMemGet(fp_short_ack_mem_handle, &err);
+                    fp_short_ack->cmd = cmd;
+                    fp_short_ack->q1 = node->rcv_buf[2];
+                    fp_short_ack->q2 = node->rcv_buf[3];
+                    fp_short_ack->result = node->rcv_buf[4];
+                    OSQPost(fp_short_ack_queue_handle, (void *)fp_short_ack);
+                    if(is_frame_valid(&node->rcv_buf[8], node->rcv_len - 8) >= 0)
+                    {
+                        fp_long_ack = (fp_long_ack_t *)OSMemGet(fp_long_ack_mem_handle, &err);
+                        if(fp_long_ack)
+                        {
+                            memcpy(fp_long_ack->data, &node->rcv_buf[9], node->rcv_len - 11);
+                            fp_long_ack->len = node->rcv_len - 11;
+                            OSQPost(fp_long_ack_queue_handle, (void *)fp_long_ack);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                /*
+                todo: frame length error ! !
+                */
+            }
         }
     }
     return -1;
@@ -353,13 +413,15 @@ void fp_uart_com_send_task(void *pdata)
     uint8_t test_cmd = 0;
     uint8_t test_cap_cnt[6] = {1,2,2,2,2,3};
     fp_short_ack_t *fp_short_ack = NULL;
+    fp_long_ack_t *fp_long_ack = NULL;
+    fp_feature_t fp_feature;
 
     fp_rcv_buf_head_init();
 
-    test_cmd = 3;
+    test_cmd = 5;
     while(1)
     {
-        LED0=0;
+        //LED0=0;
         OSSemSet(fp_uart_data_come_sem, 0, &err);
         //uart_send(send_buf, 8);
         switch(test_cmd)
@@ -367,7 +429,7 @@ void fp_uart_com_send_task(void *pdata)
             case 1:     // capture feature
                 for(i = 0; i < 6; i++)
                 {
-                    fp_capture_feature(0x025, FP_PERMISSION_1, test_cap_cnt[i]);
+                    fp_capture_feature(0x026, FP_PERMISSION_1, test_cap_cnt[i]);
                     fp_short_ack = (fp_short_ack_t *)OSQPend(fp_short_ack_queue_handle, 0, &err);
                     if((fp_short_ack->result == FINGERPRINT_ACK_SUCCESS) && (fp_short_ack->cmd == i))
                     {
@@ -409,15 +471,31 @@ void fp_uart_com_send_task(void *pdata)
                 OSMemPut(fp_short_ack_mem_handle, fp_short_ack);
                 test_cmd = 3;
                 break;
+
+            case 5:     //capture fingerprint image and get feature
+                cap_img_and_get_feature();
+                fp_short_ack = (fp_short_ack_t *)OSQPend(fp_short_ack_queue_handle, 0, &err);
+                if((fp_short_ack->result == FINGERPRINT_ACK_SUCCESS) && (fp_short_ack->cmd == FINGERPRINT_UART_PROTOCOL_CMD_CAP_IMG_GET_FEATURE))
+                {
+                    fp_long_ack = (fp_long_ack_t *)OSQPend(fp_long_ack_queue_handle, 0, &err);
+                    if(fp_long_ack->len > 100)
+                    {
+                        memcpy(fp_feature.feature, &fp_long_ack->data[3], 193);
+                        delay_ms(50);
+                    }
+                    delay_ms(100);  //test code: get right ack
+                }
+                OSMemPut(fp_long_ack_mem_handle, fp_long_ack);
+                break;
             default:
                 break;
 
         }
 
 
-        delay_ms(500);
-        LED0=1;
-        delay_ms(500);
+        delay_ms(100);
+        //LED0=1;
+        delay_ms(100);
     }
 }
 

@@ -40,8 +40,20 @@ static int mem_create(void)
         return -1;
     }
 
+
     fp_short_ack_mem_handle = OSMemCreate((void *)&fp_short_ack_mem[0][0], sizeof(fp_short_ack_mem) / sizeof(fp_short_ack_mem[0]), sizeof(fp_short_ack_t), &err);
     if(fp_short_ack_mem_handle == NULL)
+    {
+        /*
+        todo: err process
+        */
+        return -1;
+    }
+
+
+
+    fp_long_ack_mem_handle = OSMemCreate((void *)&fp_long_ack_mem[0][0], sizeof(fp_long_ack_mem) / sizeof(fp_long_ack_mem[0]), sizeof(fp_long_ack_t), &err);
+    if(fp_long_ack_mem_handle == NULL)
     {
         /*
         todo: err process
@@ -64,6 +76,15 @@ static int queue_create(void)
         return -1;
     }
 
+
+    fp_long_ack_queue_handle = OSQCreate(&fp_long_ack_queue_p[0], FP_LONG_ACK_QUEUE_NUM);
+    if(fp_long_ack_queue_handle == NULL)
+    {
+        /*
+        todo: err process
+        */
+        return -1;
+    }
     return 0;
 }
 
