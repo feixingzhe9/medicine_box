@@ -282,6 +282,26 @@ int fp_del_all_user(void)
     return 0;
 }
 
+int fp_del_user(uint16_t id)
+{
+    uint8_t send_buf[8] = {0};
+    uint8_t i = 0;
+
+    send_buf[0] = FINGERPRINT_UART_FRAME_HEADER;
+    send_buf[1] = FINGERPRINT_UART_PROTOCOL_CMD_DEL_THE_USER;
+    send_buf[2] = id >> 8;
+    send_buf[3] = (uint8_t)(id & 0xff);
+    send_buf[4] = 0;
+    send_buf[5] = 0;
+    for(i = 1; i < 6; i++)
+    {
+        send_buf[6] ^= send_buf[i];
+    }
+    send_buf[7] = FINGERPRINT_UART_FRAME_TAIL;
+    uart_send(send_buf, 8);
+    return 0;
+}
+
 int cap_img_and_get_feature(void)
 {
         uint8_t send_buf[8] = {0};
@@ -367,6 +387,15 @@ int fp_uart_frame_proc(fp_rcv_buf_t *node)
                         OSQPost(fp_short_ack_queue_handle, (void *)fp_short_ack);
                         return 0;
 
+                    case FINGERPRINT_UART_PROTOCOL_CMD_DEL_THE_USER:
+                        fp_short_ack = (fp_short_ack_t *)OSMemGet(fp_short_ack_mem_handle, &err);
+                        fp_short_ack->cmd = cmd;
+                        fp_short_ack->q1 = node->rcv_buf[2];
+                        fp_short_ack->q2 = node->rcv_buf[3];
+                        fp_short_ack->result = node->rcv_buf[4];
+                        OSQPost(fp_short_ack_queue_handle, (void *)fp_short_ack);
+                        return 0;
+
                     default :
                         return -2;
                 }
@@ -418,7 +447,7 @@ void fp_uart_com_send_task(void *pdata)
 
     fp_rcv_buf_head_init();
 
-    test_cmd = 5;
+    test_cmd = 6;
     while(1)
     {
         //LED0=0;
@@ -429,7 +458,7 @@ void fp_uart_com_send_task(void *pdata)
             case 1:     // capture feature
                 for(i = 0; i < 6; i++)
                 {
-                    fp_capture_feature(0x026, FP_PERMISSION_1, test_cap_cnt[i]);
+                    fp_capture_feature(0x025, FP_PERMISSION_2, test_cap_cnt[i]);
                     fp_short_ack = (fp_short_ack_t *)OSQPend(fp_short_ack_queue_handle, 0, &err);
                     if((fp_short_ack->result == FINGERPRINT_ACK_SUCCESS) && (fp_short_ack->cmd == i))
                     {
@@ -443,9 +472,21 @@ void fp_uart_com_send_task(void *pdata)
             case 2:     //compare test: 1 to N
                 fp_compare_feature();
                 fp_short_ack = (fp_short_ack_t *)OSQPend(fp_short_ack_queue_handle, 0, &err);
-                if((fp_short_ack->result == FINGERPRINT_ACK_SUCCESS) && (fp_short_ack->cmd == FINGERPRINT_UART_PROTOCOL_CMD_COPARE_1_TO_N))
+                if((fp_short_ack->result >= FP_PERMISSION_1) && (fp_short_ack->result <= FP_PERMISSION_3) && (fp_short_ack->cmd == FINGERPRINT_UART_PROTOCOL_CMD_COPARE_1_TO_N))
                 {
                     delay_ms(100);  //test code: get right ack
+                }
+                else if(fp_short_ack->result == FINGERPRINT_ACK_NO_USER)
+                {
+                    /*
+                    todo: no such user
+                    */
+                }
+                else if(fp_short_ack->result == FINGERPRINT_ACK_TIMEOUT)
+                {
+                    /*
+                    todo: timeout
+                    */
                 }
                 OSMemPut(fp_short_ack_mem_handle, fp_short_ack);
                 break;
@@ -482,11 +523,25 @@ void fp_uart_com_send_task(void *pdata)
                     {
                         memcpy(fp_feature.feature, &fp_long_ack->data[3], 193);
                         delay_ms(50);
+                        test_cmd = 3;
                     }
+                    OSMemPut(fp_long_ack_mem_handle, fp_long_ack);
                     delay_ms(100);  //test code: get right ack
                 }
-                OSMemPut(fp_long_ack_mem_handle, fp_long_ack);
+                OSMemPut(fp_short_ack_mem_handle, fp_short_ack);
                 break;
+
+            case 6:     //delete specified user
+                fp_del_user(0x0025);
+                fp_short_ack = (fp_short_ack_t *)OSQPend(fp_short_ack_queue_handle, 0, &err);
+                if((fp_short_ack->result == FINGERPRINT_ACK_SUCCESS) && (fp_short_ack->cmd == FINGERPRINT_UART_PROTOCOL_CMD_DEL_THE_USER))
+                {
+                    delay_ms(100);  //test code: ack OK
+                }
+                OSMemPut(fp_short_ack_mem_handle, fp_short_ack);
+                test_cmd = 3;
+                break;
+
             default:
                 break;
 

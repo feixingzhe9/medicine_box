@@ -41,7 +41,6 @@ void uart_init(u32 bound)
     NVIC_InitTypeDef NVIC_InitStructure;
 
    {
-        RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC3, ENABLE);
         RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
         RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);
         RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
@@ -138,6 +137,6 @@ int uart_send(uint8_t *data, uint16_t len)
     DMA1_Channel7->CNDTR = len;
     DMA_Cmd(DMA1_Channel7, ENABLE);
 
-    return -1;
+    return 0;
 }
 
