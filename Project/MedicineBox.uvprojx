@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\HARDWARE\LED;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\STM32F10x_FWLib\inc;..\CORE;..\UCOSII\CONFIG;..\UCOSII\CORE;..\UCOSII\PORT;..\HARDWARE\LCD;..\Modules</IncludePath>
+              <IncludePath>..\HARDWARE\LED;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\STM32F10x_FWLib\inc;..\CORE;..\UCOSII\CONFIG;..\UCOSII\CORE;..\UCOSII\PORT;..\HARDWARE\LCD;..\Modules;..\HARDWARE</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -443,6 +443,16 @@
               <FileName>lcd.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\LCD\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>fingerprint.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\fingerprint.c</FilePath>
+            </File>
+            <File>
+              <FileName>lc12s_wireless.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\lc12s_wireless.c</FilePath>
             </File>
           </Files>
         </Group>
