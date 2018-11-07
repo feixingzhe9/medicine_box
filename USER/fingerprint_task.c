@@ -1,6 +1,6 @@
 /*
  *  Author: Kaka Xie
- *  brief: fingerprint protocol process
+ *  brief: fingerprint process
  */
  
 
@@ -551,6 +551,8 @@ int fp_uart_frame_proc(fp_rcv_buf_t *node)
 }
 
 
+
+//------ test code for fingerprint uart protocol ------//
 void fp_uart_com_send_task(void *pdata)
 {
     uint8_t err = 0;
@@ -659,7 +661,7 @@ void fp_uart_com_send_task(void *pdata)
                 break;
 
             case 7:     //save feature
-                fp_save_feature(fp_feature.feature, FINGERPRINT_FEATURE_DATA_LEN, 0x0166, FP_PERMISSION_3);
+                fp_save_feature(fp_feature.feature, FINGERPRINT_FEATURE_DATA_LEN, 0x0167, FP_PERMISSION_3);
                 fp_short_ack = (fp_short_ack_t *)OSQPend(fp_short_ack_queue_handle, 0, &err);
                 if((fp_short_ack->result == FINGERPRINT_ACK_SUCCESS) && (fp_short_ack->cmd == FINGERPRINT_UART_PROTOCOL_CMD_SAVE_FEATURE))
                 {

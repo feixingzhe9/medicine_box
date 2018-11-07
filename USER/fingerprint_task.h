@@ -4,6 +4,7 @@
 #include "ucos_ii.h"
 #include "usart.h"
 #include "sys.h"
+#include <string.h>
 
 #define FP_UART_COM_SEND_TASK_PRIO                      9
 #define FP_UART_COM_SEND_TASK_STK_SIZE                  1024
