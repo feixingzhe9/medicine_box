@@ -113,5 +113,6 @@ void fp_uart_com_rcv_task(void *pdata);
 
 int put_fp_rcv_buf(uint8_t *buf, uint16_t len);
 int free_one_fp_rcv_buf(fp_rcv_buf_t *buf);
+int fp_rcv_buf_head_init(void);
 
 #endif

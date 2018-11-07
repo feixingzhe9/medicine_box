@@ -563,7 +563,6 @@ void fp_uart_com_send_task(void *pdata)
     fp_long_ack_t *fp_long_ack = NULL;
     fp_feature_t fp_feature;
 
-    fp_rcv_buf_head_init();
 
     test_cmd = 5;
     while(1)
@@ -661,7 +660,7 @@ void fp_uart_com_send_task(void *pdata)
                 break;
 
             case 7:     //save feature
-                fp_save_feature(fp_feature.feature, FINGERPRINT_FEATURE_DATA_LEN, 0x0167, FP_PERMISSION_3);
+                fp_save_feature(fp_feature.feature, FINGERPRINT_FEATURE_DATA_LEN, 0x0168, FP_PERMISSION_3);
                 fp_short_ack = (fp_short_ack_t *)OSQPend(fp_short_ack_queue_handle, 0, &err);
                 if((fp_short_ack->result == FINGERPRINT_ACK_SUCCESS) && (fp_short_ack->cmd == FINGERPRINT_UART_PROTOCOL_CMD_SAVE_FEATURE))
                 {
@@ -698,6 +697,7 @@ void fp_uart_com_rcv_task(void *pdata)
     uint8_t err = 0;
     fp_rcv_buf_t *fp_rcv_node = NULL;
     fp_rcv_buf_t node;
+
     while(1)
     {
         LED1 = 1;

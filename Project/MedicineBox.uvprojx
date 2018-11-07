@@ -395,11 +395,6 @@
               <FilePath>..\USER\system_stm32f10x.c</FilePath>
             </File>
             <File>
-              <FileName>os_common.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\USER\os_common.c</FilePath>
-            </File>
-            <File>
               <FileName>fingerprint_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\fingerprint_task.c</FilePath>
@@ -413,6 +408,11 @@
               <FileName>display_task.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\USER\display_task.c</FilePath>
+            </File>
+            <File>
+              <FileName>common.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\common.c</FilePath>
             </File>
           </Files>
         </Group>

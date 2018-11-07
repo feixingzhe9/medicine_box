@@ -1,14 +1,10 @@
 /*
  *  Author: Kaka Xie
- *  brief: os user configuration
+ *  brief: user configuration
  */
 
-#include "os_common.h"
-#include "fingerprint_task.h"
+#include "common.h"
 
-#include "fingerprint_task.h"
-#include "led_task.h"
-#include "display_task.h"
 
 static void task_create(void)
 {
@@ -96,4 +92,7 @@ void os_user_config(void)
     task_create();
 }
 
-
+void user_init_depend_on_os_config(void)
+{
+    fp_rcv_buf_head_init();
+}
