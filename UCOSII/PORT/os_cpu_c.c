@@ -23,8 +23,8 @@
 */
 
 #define  OS_CPU_GLOBALS
+#include <ucos_ii.h>
 
-#include "includes.h"
 /*
 *********************************************************************************************************
 *                                          LOCAL VARIABLES
@@ -35,6 +35,21 @@
 static  INT16U  OSTmrCtr;
 #endif
 
+/*
+*********************************************************************************************************
+*                                          SYS TICK DEFINES
+*********************************************************************************************************
+*/
+
+//#define  OS_CPU_CM3_NVIC_ST_CTRL    (*((volatile INT32U *)0xE000E010))   /* SysTick Ctrl & Status Reg. */
+//#define  OS_CPU_CM3_NVIC_ST_RELOAD  (*((volatile INT32U *)0xE000E014))   /* SysTick Reload  Value Reg. */
+//#define  OS_CPU_CM3_NVIC_ST_CURRENT (*((volatile INT32U *)0xE000E018))   /* SysTick Current Value Reg. */
+//#define  OS_CPU_CM3_NVIC_ST_CAL     (*((volatile INT32U *)0xE000E01C))   /* SysTick Cal     Value Reg. */
+
+//#define  OS_CPU_CM3_NVIC_ST_CTRL_COUNT                    0x00010000     /* Count flag.                */
+//#define  OS_CPU_CM3_NVIC_ST_CTRL_CLK_SRC                  0x00000004     /* Clock Source.              */
+//#define  OS_CPU_CM3_NVIC_ST_CTRL_INTEN                    0x00000002     /* Interrupt enable.          */
+//#define  OS_CPU_CM3_NVIC_ST_CTRL_ENABLE                   0x00000001     /* Counter mode.              */
 
 /*
 *********************************************************************************************************
@@ -296,18 +311,58 @@ void  OSTimeTickHook (void)
 }
 #endif
 
-#if OS_CPU_HOOKS_EN > 0u && OS_VERSION > 290u 
-
-void OSTaskReturnHook(OS_TCB *ptcb)
-{ 
-	(void)ptcb; 
-} 
-
-#endif
 
 
+/*
+*********************************************************************************************************
+*                                         OS_CPU_SysTickHandler()
+*
+* Description: Handle the system tick (SysTick) interrupt, which is used to generate the uC/OS-II tick
+*              interrupt.
+*
+* Arguments  : none.
+*
+* Note(s)    : 1) This function MUST be placed on entry 15 of the Cortex-M3 vector table.
+*********************************************************************************************************
+*/
+
+//void  OS_CPU_SysTickHandler (void)
+//{
+//    OS_CPU_SR  cpu_sr;
 
 
+//    OS_ENTER_CRITICAL();                         /* Tell uC/OS-II that we are starting an ISR          */
+ //   OSIntNesting++;
+ //   OS_EXIT_CRITICAL();
+
+//    OSTimeTick();                                /* Call uC/OS-II's OSTimeTick()                       */
+
+ //   OSIntExit();                                 /* Tell uC/OS-II that we are leaving the ISR          */
+//}
 
 
-/*----------------------- (C) COPYRIGHT @ 2012 liycobl -----------------  end of file -----------------*/
+/*
+*********************************************************************************************************
+*                                          OS_CPU_SysTickInit()
+*
+* Description: Initialize the SysTick.
+*
+* Arguments  : none.
+*
+* Note(s)    : 1) This function MUST be called after OSStart() & after processor initialization.
+*********************************************************************************************************
+*/
+
+//void  OS_CPU_SysTickInit (void)
+//{
+//    INT32U  cnts;
+
+
+  //  cnts = OS_CPU_SysTickClkFreq() / OS_TICKS_PER_SEC;
+
+//    OS_CPU_CM3_NVIC_ST_RELOAD = (cnts - 1);
+                                                 /* Enable timer.                                      */
+ //   OS_CPU_CM3_NVIC_ST_CTRL  |= OS_CPU_CM3_NVIC_ST_CTRL_CLK_SRC | OS_CPU_CM3_NVIC_ST_CTRL_ENABLE;
+                                                 /* Enable timer interrupt.                            */
+ //   OS_CPU_CM3_NVIC_ST_CTRL  |= OS_CPU_CM3_NVIC_ST_CTRL_INTEN;
+//}

@@ -4,29 +4,29 @@
 *                                          The Real-Time Kernel
 *                                  MUTUAL EXCLUSION SEMAPHORE MANAGEMENT
 *
-*                              (c) Copyright 1992-2009, Micrium, Weston, FL
+*                              (c) Copyright 1992-2007, Micrium, Weston, FL
 *                                           All Rights Reserved
 *
 * File    : OS_MUTEX.C
 * By      : Jean J. Labrosse
-* Version : V2.91
+* Version : V2.86
 *
 * LICENSING TERMS:
 * ---------------
-*   uC/OS-II is provided in source form for FREE evaluation, for educational use or for peaceful research.
-* If you plan on using  uC/OS-II  in a commercial product you need to contact Micriµm to properly license
-* its use in your product. We provide ALL the source code for your convenience and to help you experience
-* uC/OS-II.   The fact that the  source is provided does  NOT  mean that you can use it without  paying a
+*   uC/OS-II is provided in source form for FREE evaluation, for educational use or for peaceful research.  
+* If you plan on using  uC/OS-II  in a commercial product you need to contact Micriµm to properly license 
+* its use in your product. We provide ALL the source code for your convenience and to help you experience 
+* uC/OS-II.   The fact that the  source is provided does  NOT  mean that you can use it without  paying a 
 * licensing fee.
 *********************************************************************************************************
 */
 
 #ifndef  OS_MASTER_FILE
-#include "ucos_ii.h"
+#include <ucos_ii.h>
 #endif
 
 
-#if OS_MUTEX_EN > 0u
+#if OS_MUTEX_EN > 0
 /*
 *********************************************************************************************************
 *                                            LOCAL CONSTANTS
@@ -80,24 +80,20 @@ static  void  OSMutex_RdyAtPrio(OS_TCB *ptcb, INT8U prio);
 *********************************************************************************************************
 */
 
-#if OS_MUTEX_ACCEPT_EN > 0u
-BOOLEAN  OSMutexAccept (OS_EVENT  *pevent,
-                        INT8U     *perr)
+#if OS_MUTEX_ACCEPT_EN > 0
+BOOLEAN  OSMutexAccept (OS_EVENT *pevent, INT8U *perr)
 {
     INT8U      pip;                                    /* Priority Inheritance Priority (PIP)          */
-#if OS_CRITICAL_METHOD == 3u                           /* Allocate storage for CPU status register     */
-    OS_CPU_SR  cpu_sr = 0u;
+#if OS_CRITICAL_METHOD == 3                            /* Allocate storage for CPU status register     */
+    OS_CPU_SR  cpu_sr = 0;
 #endif
 
 
 
-#ifdef OS_SAFETY_CRITICAL
-    if (perr == (INT8U *)0) {
-        OS_SAFETY_CRITICAL_EXCEPTION();
+#if OS_ARG_CHK_EN > 0
+    if (perr == (INT8U *)0) {                          /* Validate 'perr'                              */
+        return (OS_FALSE);
     }
-#endif
-
-#if OS_ARG_CHK_EN > 0u
     if (pevent == (OS_EVENT *)0) {                     /* Validate 'pevent'                            */
         *perr = OS_ERR_PEVENT_NULL;
         return (OS_FALSE);
@@ -107,12 +103,12 @@ BOOLEAN  OSMutexAccept (OS_EVENT  *pevent,
         *perr = OS_ERR_EVENT_TYPE;
         return (OS_FALSE);
     }
-    if (OSIntNesting > 0u) {                           /* Make sure it's not called from an ISR        */
+    if (OSIntNesting > 0) {                            /* Make sure it's not called from an ISR        */
         *perr = OS_ERR_PEND_ISR;
         return (OS_FALSE);
     }
     OS_ENTER_CRITICAL();                               /* Get value (0 or 1) of Mutex                  */
-    pip = (INT8U)(pevent->OSEventCnt >> 8u);           /* Get PIP from mutex                           */
+    pip = (INT8U)(pevent->OSEventCnt >> 8);            /* Get PIP from mutex                           */
     if ((pevent->OSEventCnt & OS_MUTEX_KEEP_LOWER_8) == OS_MUTEX_AVAILABLE) {
         pevent->OSEventCnt &= OS_MUTEX_KEEP_UPPER_8;   /*      Mask off LSByte (Acquire Mutex)         */
         pevent->OSEventCnt |= OSTCBCur->OSTCBPrio;     /*      Save current task priority in LSByte    */
@@ -167,35 +163,25 @@ BOOLEAN  OSMutexAccept (OS_EVENT  *pevent,
 *********************************************************************************************************
 */
 
-OS_EVENT  *OSMutexCreate (INT8U   prio,
-                          INT8U  *perr)
+OS_EVENT  *OSMutexCreate (INT8U prio, INT8U *perr)
 {
     OS_EVENT  *pevent;
-#if OS_CRITICAL_METHOD == 3u                               /* Allocate storage for CPU status register */
-    OS_CPU_SR  cpu_sr = 0u;
+#if OS_CRITICAL_METHOD == 3                                /* Allocate storage for CPU status register */
+    OS_CPU_SR  cpu_sr = 0;
 #endif
 
 
 
-#ifdef OS_SAFETY_CRITICAL
-    if (perr == (INT8U *)0) {
-        OS_SAFETY_CRITICAL_EXCEPTION();
+#if OS_ARG_CHK_EN > 0
+    if (perr == (INT8U *)0) {                              /* Validate 'perr'                          */
+        return ((OS_EVENT *)0);
     }
-#endif
-
-#ifdef OS_SAFETY_CRITICAL_IEC61508
-    if (OSSafetyCriticalStartFlag == OS_TRUE) {
-        OS_SAFETY_CRITICAL_EXCEPTION();
-    }
-#endif
-
-#if OS_ARG_CHK_EN > 0u
     if (prio >= OS_LOWEST_PRIO) {                          /* Validate PIP                             */
         *perr = OS_ERR_PRIO_INVALID;
         return ((OS_EVENT *)0);
     }
 #endif
-    if (OSIntNesting > 0u) {                               /* See if called from ISR ...               */
+    if (OSIntNesting > 0) {                                /* See if called from ISR ...               */
         *perr = OS_ERR_CREATE_ISR;                         /* ... can't CREATE mutex from an ISR       */
         return ((OS_EVENT *)0);
     }
@@ -216,10 +202,11 @@ OS_EVENT  *OSMutexCreate (INT8U   prio,
     OSEventFreeList        = (OS_EVENT *)OSEventFreeList->OSEventPtr;   /* Adjust the free list        */
     OS_EXIT_CRITICAL();
     pevent->OSEventType    = OS_EVENT_TYPE_MUTEX;
-    pevent->OSEventCnt     = (INT16U)((INT16U)prio << 8u) | OS_MUTEX_AVAILABLE; /* Resource is avail.  */
+    pevent->OSEventCnt     = (INT16U)((INT16U)prio << 8) | OS_MUTEX_AVAILABLE; /* Resource is avail.   */
     pevent->OSEventPtr     = (void *)0;                                 /* No task owning the mutex    */
-#if OS_EVENT_NAME_EN > 0u
-    pevent->OSEventName    = (INT8U *)(void *)"?";
+#if OS_EVENT_NAME_SIZE > 1
+    pevent->OSEventName[0] = '?';
+    pevent->OSEventName[1] = OS_ASCII_NUL;
 #endif
     OS_EventWaitListInit(pevent);
     *perr                  = OS_ERR_NONE;
@@ -267,29 +254,24 @@ OS_EVENT  *OSMutexCreate (INT8U   prio,
 *********************************************************************************************************
 */
 
-#if OS_MUTEX_DEL_EN > 0u
-OS_EVENT  *OSMutexDel (OS_EVENT  *pevent,
-                       INT8U      opt,
-                       INT8U     *perr)
+#if OS_MUTEX_DEL_EN
+OS_EVENT  *OSMutexDel (OS_EVENT *pevent, INT8U opt, INT8U *perr)
 {
     BOOLEAN    tasks_waiting;
     OS_EVENT  *pevent_return;
     INT8U      pip;                                        /* Priority inheritance priority            */
     INT8U      prio;
     OS_TCB    *ptcb;
-#if OS_CRITICAL_METHOD == 3u                               /* Allocate storage for CPU status register */
-    OS_CPU_SR  cpu_sr = 0u;
+#if OS_CRITICAL_METHOD == 3                                /* Allocate storage for CPU status register */
+    OS_CPU_SR  cpu_sr = 0;
 #endif
 
 
 
-#ifdef OS_SAFETY_CRITICAL
-    if (perr == (INT8U *)0) {
-        OS_SAFETY_CRITICAL_EXCEPTION();
+#if OS_ARG_CHK_EN > 0
+    if (perr == (INT8U *)0) {                              /* Validate 'perr'                          */
+        return (pevent);
     }
-#endif
-
-#if OS_ARG_CHK_EN > 0u
     if (pevent == (OS_EVENT *)0) {                         /* Validate 'pevent'                        */
         *perr = OS_ERR_PEVENT_NULL;
         return (pevent);
@@ -299,12 +281,12 @@ OS_EVENT  *OSMutexDel (OS_EVENT  *pevent,
         *perr = OS_ERR_EVENT_TYPE;
         return (pevent);
     }
-    if (OSIntNesting > 0u) {                               /* See if called from ISR ...               */
+    if (OSIntNesting > 0) {                                /* See if called from ISR ...               */
         *perr = OS_ERR_DEL_ISR;                             /* ... can't DELETE from an ISR             */
         return (pevent);
     }
     OS_ENTER_CRITICAL();
-    if (pevent->OSEventGrp != 0u) {                        /* See if any tasks waiting on mutex        */
+    if (pevent->OSEventGrp != 0) {                         /* See if any tasks waiting on mutex        */
         tasks_waiting = OS_TRUE;                           /* Yes                                      */
     } else {
         tasks_waiting = OS_FALSE;                          /* No                                       */
@@ -312,14 +294,15 @@ OS_EVENT  *OSMutexDel (OS_EVENT  *pevent,
     switch (opt) {
         case OS_DEL_NO_PEND:                               /* DELETE MUTEX ONLY IF NO TASK WAITING --- */
              if (tasks_waiting == OS_FALSE) {
-#if OS_EVENT_NAME_EN > 0u
-                 pevent->OSEventName = (INT8U *)(void *)"?";
+#if OS_EVENT_NAME_SIZE > 1
+                 pevent->OSEventName[0] = '?';             /* Unknown name                             */
+                 pevent->OSEventName[1] = OS_ASCII_NUL;
 #endif
-                 pip                 = (INT8U)(pevent->OSEventCnt >> 8u);
+                 pip                 = (INT8U)(pevent->OSEventCnt >> 8);
                  OSTCBPrioTbl[pip]   = (OS_TCB *)0;        /* Free up the PIP                          */
                  pevent->OSEventType = OS_EVENT_TYPE_UNUSED;
                  pevent->OSEventPtr  = OSEventFreeList;    /* Return Event Control Block to free list  */
-                 pevent->OSEventCnt  = 0u;
+                 pevent->OSEventCnt  = 0;
                  OSEventFreeList     = pevent;
                  OS_EXIT_CRITICAL();
                  *perr               = OS_ERR_NONE;
@@ -332,7 +315,7 @@ OS_EVENT  *OSMutexDel (OS_EVENT  *pevent,
              break;
 
         case OS_DEL_ALWAYS:                                /* ALWAYS DELETE THE MUTEX ---------------- */
-             pip  = (INT8U)(pevent->OSEventCnt >> 8u);                    /* Get PIP of mutex          */
+             pip  = (INT8U)(pevent->OSEventCnt >> 8);                     /* Get PIP of mutex          */
              prio = (INT8U)(pevent->OSEventCnt & OS_MUTEX_KEEP_LOWER_8);  /* Get owner's original prio */
              ptcb = (OS_TCB *)pevent->OSEventPtr;
              if (ptcb != (OS_TCB *)0) {                    /* See if any task owns the mutex           */
@@ -340,17 +323,18 @@ OS_EVENT  *OSMutexDel (OS_EVENT  *pevent,
                      OSMutex_RdyAtPrio(ptcb, prio);        /* Yes, Restore the task's original prio    */
                  }
              }
-             while (pevent->OSEventGrp != 0u) {            /* Ready ALL tasks waiting for mutex        */
+             while (pevent->OSEventGrp != 0) {             /* Ready ALL tasks waiting for mutex        */
                  (void)OS_EventTaskRdy(pevent, (void *)0, OS_STAT_MUTEX, OS_STAT_PEND_OK);
              }
-#if OS_EVENT_NAME_EN > 0u
-             pevent->OSEventName = (INT8U *)(void *)"?";
+#if OS_EVENT_NAME_SIZE > 1
+             pevent->OSEventName[0] = '?';                 /* Unknown name                             */
+             pevent->OSEventName[1] = OS_ASCII_NUL;
 #endif
-             pip                 = (INT8U)(pevent->OSEventCnt >> 8u);
+             pip                 = (INT8U)(pevent->OSEventCnt >> 8);
              OSTCBPrioTbl[pip]   = (OS_TCB *)0;            /* Free up the PIP                          */
              pevent->OSEventType = OS_EVENT_TYPE_UNUSED;
              pevent->OSEventPtr  = OSEventFreeList;        /* Return Event Control Block to free list  */
-             pevent->OSEventCnt  = 0u;
+             pevent->OSEventCnt  = 0;
              OSEventFreeList     = pevent;                 /* Get next free event control block        */
              OS_EXIT_CRITICAL();
              if (tasks_waiting == OS_TRUE) {               /* Reschedule only if task(s) were waiting  */
@@ -411,9 +395,7 @@ OS_EVENT  *OSMutexDel (OS_EVENT  *pevent,
 *********************************************************************************************************
 */
 
-void  OSMutexPend (OS_EVENT  *pevent,
-                   INT32U     timeout,
-                   INT8U     *perr)
+void  OSMutexPend (OS_EVENT *pevent, INT16U timeout, INT8U *perr)
 {
     INT8U      pip;                                        /* Priority Inheritance Priority (PIP)      */
     INT8U      mprio;                                      /* Mutex owner priority                     */
@@ -421,19 +403,16 @@ void  OSMutexPend (OS_EVENT  *pevent,
     OS_TCB    *ptcb;
     OS_EVENT  *pevent2;
     INT8U      y;
-#if OS_CRITICAL_METHOD == 3u                               /* Allocate storage for CPU status register */
-    OS_CPU_SR  cpu_sr = 0u;
+#if OS_CRITICAL_METHOD == 3                                /* Allocate storage for CPU status register */
+    OS_CPU_SR  cpu_sr = 0;
 #endif
 
 
 
-#ifdef OS_SAFETY_CRITICAL
-    if (perr == (INT8U *)0) {
-        OS_SAFETY_CRITICAL_EXCEPTION();
+#if OS_ARG_CHK_EN > 0
+    if (perr == (INT8U *)0) {                              /* Validate 'perr'                          */
+        return;
     }
-#endif
-
-#if OS_ARG_CHK_EN > 0u
     if (pevent == (OS_EVENT *)0) {                         /* Validate 'pevent'                        */
         *perr = OS_ERR_PEVENT_NULL;
         return;
@@ -443,17 +422,17 @@ void  OSMutexPend (OS_EVENT  *pevent,
         *perr = OS_ERR_EVENT_TYPE;
         return;
     }
-    if (OSIntNesting > 0u) {                               /* See if called from ISR ...               */
+    if (OSIntNesting > 0) {                                /* See if called from ISR ...               */
         *perr = OS_ERR_PEND_ISR;                           /* ... can't PEND from an ISR               */
         return;
     }
-    if (OSLockNesting > 0u) {                              /* See if called with scheduler locked ...  */
+    if (OSLockNesting > 0) {                               /* See if called with scheduler locked ...  */
         *perr = OS_ERR_PEND_LOCKED;                        /* ... can't PEND when locked               */
         return;
     }
 /*$PAGE*/
     OS_ENTER_CRITICAL();
-    pip = (INT8U)(pevent->OSEventCnt >> 8u);               /* Get PIP from mutex                       */
+    pip = (INT8U)(pevent->OSEventCnt >> 8);                /* Get PIP from mutex                       */
                                                            /* Is Mutex available?                      */
     if ((INT8U)(pevent->OSEventCnt & OS_MUTEX_KEEP_LOWER_8) == OS_MUTEX_AVAILABLE) {
         pevent->OSEventCnt &= OS_MUTEX_KEEP_UPPER_8;       /* Yes, Acquire the resource                */
@@ -473,34 +452,33 @@ void  OSMutexPend (OS_EVENT  *pevent,
     if (ptcb->OSTCBPrio > pip) {                                  /*     Need to promote prio of owner?*/
         if (mprio > OSTCBCur->OSTCBPrio) {
             y = ptcb->OSTCBY;
-            if ((OSRdyTbl[y] & ptcb->OSTCBBitX) != 0u) {          /*     See if mutex owner is ready   */
-                OSRdyTbl[y] &= (OS_PRIO)~ptcb->OSTCBBitX;         /*     Yes, Remove owner from Rdy ...*/
-                if (OSRdyTbl[y] == 0u) {                          /*          ... list at current prio */
-                    OSRdyGrp &= (OS_PRIO)~ptcb->OSTCBBitY;
+            if ((OSRdyTbl[y] & ptcb->OSTCBBitX) != 0) {           /*     See if mutex owner is ready   */
+                OSRdyTbl[y] &= ~ptcb->OSTCBBitX;                  /*     Yes, Remove owner from Rdy ...*/
+                if (OSRdyTbl[y] == 0) {                           /*          ... list at current prio */
+                    OSRdyGrp &= ~ptcb->OSTCBBitY;
                 }
                 rdy = OS_TRUE;
             } else {
                 pevent2 = ptcb->OSTCBEventPtr;
                 if (pevent2 != (OS_EVENT *)0) {                   /* Remove from event wait list       */
-                    y = ptcb->OSTCBY;
-                    pevent2->OSEventTbl[y] &= (OS_PRIO)~ptcb->OSTCBBitX;
-                    if (pevent2->OSEventTbl[y] == 0u) {
-                        pevent2->OSEventGrp &= (OS_PRIO)~ptcb->OSTCBBitY;
+                    if ((pevent2->OSEventTbl[ptcb->OSTCBY] &= ~ptcb->OSTCBBitX) == 0) {
+                        pevent2->OSEventGrp &= ~ptcb->OSTCBBitY;
                     }
                 }
                 rdy = OS_FALSE;                            /* No                                       */
             }
             ptcb->OSTCBPrio = pip;                         /* Change owner task prio to PIP            */
-#if OS_LOWEST_PRIO <= 63u
-            ptcb->OSTCBY    = (INT8U)( ptcb->OSTCBPrio >> 3u);
-            ptcb->OSTCBX    = (INT8U)( ptcb->OSTCBPrio & 0x07u);
+#if OS_LOWEST_PRIO <= 63
+            ptcb->OSTCBY    = (INT8U)( ptcb->OSTCBPrio >> 3);
+            ptcb->OSTCBX    = (INT8U)( ptcb->OSTCBPrio & 0x07);
+            ptcb->OSTCBBitY = (INT8U)(1 << ptcb->OSTCBY);
+            ptcb->OSTCBBitX = (INT8U)(1 << ptcb->OSTCBX);
 #else
-            ptcb->OSTCBY    = (INT8U)((INT8U)(ptcb->OSTCBPrio >> 4u) & 0xFFu);
-            ptcb->OSTCBX    = (INT8U)( ptcb->OSTCBPrio & 0x0Fu);
+            ptcb->OSTCBY    = (INT8U)((ptcb->OSTCBPrio >> 4) & 0xFF);
+            ptcb->OSTCBX    = (INT8U)( ptcb->OSTCBPrio & 0x0F);
+            ptcb->OSTCBBitY = (INT16U)(1 << ptcb->OSTCBY);
+            ptcb->OSTCBBitX = (INT16U)(1 << ptcb->OSTCBX);
 #endif
-            ptcb->OSTCBBitY = (OS_PRIO)(1uL << ptcb->OSTCBY);
-            ptcb->OSTCBBitX = (OS_PRIO)(1uL << ptcb->OSTCBX);
-
             if (rdy == OS_TRUE) {                          /* If task was ready at owner's priority ...*/
                 OSRdyGrp               |= ptcb->OSTCBBitY; /* ... make it ready at new priority.       */
                 OSRdyTbl[ptcb->OSTCBY] |= ptcb->OSTCBBitX;
@@ -529,7 +507,7 @@ void  OSMutexPend (OS_EVENT  *pevent,
         case OS_STAT_PEND_ABORT:
              *perr = OS_ERR_PEND_ABORT;               /* Indicate that we aborted getting mutex        */
              break;
-
+             
         case OS_STAT_PEND_TO:
         default:
              OS_EventTaskRemove(OSTCBCur, pevent);
@@ -539,7 +517,7 @@ void  OSMutexPend (OS_EVENT  *pevent,
     OSTCBCur->OSTCBStat          =  OS_STAT_RDY;      /* Set   task  status to ready                   */
     OSTCBCur->OSTCBStatPend      =  OS_STAT_PEND_OK;  /* Clear pend  status                            */
     OSTCBCur->OSTCBEventPtr      = (OS_EVENT  *)0;    /* Clear event pointers                          */
-#if (OS_EVENT_MULTI_EN > 0u)
+#if (OS_EVENT_MULTI_EN > 0)
     OSTCBCur->OSTCBEventMultiPtr = (OS_EVENT **)0;
 #endif
     OS_EXIT_CRITICAL();
@@ -573,16 +551,16 @@ INT8U  OSMutexPost (OS_EVENT *pevent)
 {
     INT8U      pip;                                   /* Priority inheritance priority                 */
     INT8U      prio;
-#if OS_CRITICAL_METHOD == 3u                          /* Allocate storage for CPU status register      */
-    OS_CPU_SR  cpu_sr = 0u;
+#if OS_CRITICAL_METHOD == 3                           /* Allocate storage for CPU status register      */
+    OS_CPU_SR  cpu_sr = 0;
 #endif
 
 
 
-    if (OSIntNesting > 0u) {                          /* See if called from ISR ...                    */
+    if (OSIntNesting > 0) {                           /* See if called from ISR ...                    */
         return (OS_ERR_POST_ISR);                     /* ... can't POST mutex from an ISR              */
     }
-#if OS_ARG_CHK_EN > 0u
+#if OS_ARG_CHK_EN > 0
     if (pevent == (OS_EVENT *)0) {                    /* Validate 'pevent'                             */
         return (OS_ERR_PEVENT_NULL);
     }
@@ -591,7 +569,7 @@ INT8U  OSMutexPost (OS_EVENT *pevent)
         return (OS_ERR_EVENT_TYPE);
     }
     OS_ENTER_CRITICAL();
-    pip  = (INT8U)(pevent->OSEventCnt >> 8u);         /* Get priority inheritance priority of mutex    */
+    pip  = (INT8U)(pevent->OSEventCnt >> 8);          /* Get priority inheritance priority of mutex    */
     prio = (INT8U)(pevent->OSEventCnt & OS_MUTEX_KEEP_LOWER_8);  /* Get owner's original priority      */
     if (OSTCBCur != (OS_TCB *)pevent->OSEventPtr) {   /* See if posting task owns the MUTEX            */
         OS_EXIT_CRITICAL();
@@ -601,7 +579,7 @@ INT8U  OSMutexPost (OS_EVENT *pevent)
         OSMutex_RdyAtPrio(OSTCBCur, prio);            /* Restore the task's original priority          */
     }
     OSTCBPrioTbl[pip] = OS_TCB_RESERVED;              /* Reserve table entry                           */
-    if (pevent->OSEventGrp != 0u) {                   /* Any task waiting for the mutex?               */
+    if (pevent->OSEventGrp != 0) {                    /* Any task waiting for the mutex?               */
                                                       /* Yes, Make HPT waiting for mutex ready         */
         prio                = OS_EventTaskRdy(pevent, (void *)0, OS_STAT_MUTEX, OS_STAT_PEND_OK);
         pevent->OSEventCnt &= OS_MUTEX_KEEP_UPPER_8;  /*      Save priority of mutex's new owner       */
@@ -641,23 +619,27 @@ INT8U  OSMutexPost (OS_EVENT *pevent)
 *********************************************************************************************************
 */
 
-#if OS_MUTEX_QUERY_EN > 0u
-INT8U  OSMutexQuery (OS_EVENT       *pevent,
-                     OS_MUTEX_DATA  *p_mutex_data)
+#if OS_MUTEX_QUERY_EN > 0
+INT8U  OSMutexQuery (OS_EVENT *pevent, OS_MUTEX_DATA *p_mutex_data)
 {
-    INT8U       i;
-    OS_PRIO    *psrc;
-    OS_PRIO    *pdest;
-#if OS_CRITICAL_METHOD == 3u                     /* Allocate storage for CPU status register           */
-    OS_CPU_SR   cpu_sr = 0u;
+    INT8U      i;
+#if OS_LOWEST_PRIO <= 63
+    INT8U     *psrc;
+    INT8U     *pdest;
+#else
+    INT16U    *psrc;
+    INT16U    *pdest;
+#endif
+#if OS_CRITICAL_METHOD == 3                      /* Allocate storage for CPU status register           */
+    OS_CPU_SR  cpu_sr = 0;
 #endif
 
 
 
-    if (OSIntNesting > 0u) {                               /* See if called from ISR ...               */
+    if (OSIntNesting > 0) {                                /* See if called from ISR ...               */
         return (OS_ERR_QUERY_ISR);                         /* ... can't QUERY mutex from an ISR        */
     }
-#if OS_ARG_CHK_EN > 0u
+#if OS_ARG_CHK_EN > 0
     if (pevent == (OS_EVENT *)0) {                         /* Validate 'pevent'                        */
         return (OS_ERR_PEVENT_NULL);
     }
@@ -669,9 +651,9 @@ INT8U  OSMutexQuery (OS_EVENT       *pevent,
         return (OS_ERR_EVENT_TYPE);
     }
     OS_ENTER_CRITICAL();
-    p_mutex_data->OSMutexPIP  = (INT8U)(pevent->OSEventCnt >> 8u);
+    p_mutex_data->OSMutexPIP  = (INT8U)(pevent->OSEventCnt >> 8);
     p_mutex_data->OSOwnerPrio = (INT8U)(pevent->OSEventCnt & OS_MUTEX_KEEP_LOWER_8);
-    if (p_mutex_data->OSOwnerPrio == 0xFFu) {
+    if (p_mutex_data->OSOwnerPrio == 0xFF) {
         p_mutex_data->OSValue = OS_TRUE;
     } else {
         p_mutex_data->OSValue = OS_FALSE;
@@ -679,7 +661,7 @@ INT8U  OSMutexQuery (OS_EVENT       *pevent,
     p_mutex_data->OSEventGrp  = pevent->OSEventGrp;        /* Copy wait list                           */
     psrc                      = &pevent->OSEventTbl[0];
     pdest                     = &p_mutex_data->OSEventTbl[0];
-    for (i = 0u; i < OS_EVENT_TBL_SIZE; i++) {
+    for (i = 0; i < OS_EVENT_TBL_SIZE; i++) {
         *pdest++ = *psrc++;
     }
     OS_EXIT_CRITICAL();
@@ -702,34 +684,32 @@ INT8U  OSMutexQuery (OS_EVENT       *pevent,
 *********************************************************************************************************
 */
 
-static  void  OSMutex_RdyAtPrio (OS_TCB  *ptcb,
-                                 INT8U    prio)
+static  void  OSMutex_RdyAtPrio (OS_TCB *ptcb, INT8U prio)
 {
-    INT8U  y;
+    INT8U   y;
 
 
     y            =  ptcb->OSTCBY;                          /* Remove owner from ready list at 'pip'    */
-    OSRdyTbl[y] &= (OS_PRIO)~ptcb->OSTCBBitX;
-    if (OSRdyTbl[y] == 0u) {
-        OSRdyGrp &= (OS_PRIO)~ptcb->OSTCBBitY;
+    OSRdyTbl[y] &= ~ptcb->OSTCBBitX;
+    if (OSRdyTbl[y] == 0) {
+        OSRdyGrp &= ~ptcb->OSTCBBitY;
     }
     ptcb->OSTCBPrio         = prio;
-    OSPrioCur               = prio;                        /* The current task is now at this priority */
-#if OS_LOWEST_PRIO <= 63u
-    ptcb->OSTCBY            = (INT8U)((INT8U)(prio >> 3u) & 0x07u);
-    ptcb->OSTCBX            = (INT8U)(prio & 0x07u);
+#if OS_LOWEST_PRIO <= 63
+    ptcb->OSTCBY            = (INT8U)((prio >> (INT8U)3) & (INT8U)0x07);
+    ptcb->OSTCBX            = (INT8U) (prio & (INT8U)0x07);
+    ptcb->OSTCBBitY         = (INT8U)(1 << ptcb->OSTCBY);
+    ptcb->OSTCBBitX         = (INT8U)(1 << ptcb->OSTCBX);
 #else
-    ptcb->OSTCBY            = (INT8U)((INT8U)(prio >> 4u) & 0x0Fu);
-    ptcb->OSTCBX            = (INT8U) (prio & 0x0Fu);
+    ptcb->OSTCBY            = (INT8U)((prio >> (INT8U)4) & (INT8U)0x0F);
+    ptcb->OSTCBX            = (INT8U) (prio & (INT8U)0x0F);
+    ptcb->OSTCBBitY         = (INT16U)(1 << ptcb->OSTCBY);
+    ptcb->OSTCBBitX         = (INT16U)(1 << ptcb->OSTCBX);
 #endif
-    ptcb->OSTCBBitY         = (OS_PRIO)(1uL << ptcb->OSTCBY);
-    ptcb->OSTCBBitX         = (OS_PRIO)(1uL << ptcb->OSTCBX);
     OSRdyGrp               |= ptcb->OSTCBBitY;             /* Make task ready at original priority     */
     OSRdyTbl[ptcb->OSTCBY] |= ptcb->OSTCBBitX;
     OSTCBPrioTbl[prio]      = ptcb;
-
 }
 
 
 #endif                                                     /* OS_MUTEX_EN                              */
-	 	   	  		 			 	    		   		 		 	 	 			 	    		   	 			 	  	 		 				 		  			 		 					 	  	  		      		  	   		      		  	 		 	      		   		 		  	 		 	      		  		  		  
