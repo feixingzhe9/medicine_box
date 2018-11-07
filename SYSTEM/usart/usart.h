@@ -9,6 +9,7 @@
 extern uint8_t uart_send_buf[SEND_SIZE];
 extern uint8_t fp_uart_rcv_buf[RCV_SIZE];
 
-void uart_init(u32 bound);
+void uart2_dma_init(u32 bound);
+int uart_send(uint8_t *data, uint16_t len);
 #endif
 

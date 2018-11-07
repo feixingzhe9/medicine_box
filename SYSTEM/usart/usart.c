@@ -33,7 +33,7 @@ int fputc(int ch, FILE *f)
 
 uint8_t uart_send_buf[SEND_SIZE];
 uint8_t fp_uart_rcv_buf[RCV_SIZE];
-void uart_init(u32 bound)
+void uart2_dma_init(u32 bound)
 {
     USART_InitTypeDef USART_InitStructure;
     DMA_InitTypeDef DMA_InitStructure;
