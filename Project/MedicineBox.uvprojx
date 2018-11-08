@@ -414,6 +414,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\common.c</FilePath>
             </File>
+            <File>
+              <FileName>lc12s_wireless_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\lc12s_wireless_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

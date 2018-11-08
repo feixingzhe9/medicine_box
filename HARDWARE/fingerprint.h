@@ -30,10 +30,10 @@
 #define FINGERPRINT_ACK_SUCCESS         0x00	//successful
 #define FINGERPRINT_ACK_FAIL            0x01	//failure
 #define FINGERPRINT_ACK_FULL            0x04	//fingerprint lib is full !
-#define FINGERPRINT_ACK_NO_USER         0x05	//
-#define FINGERPRINT_ACK_USER_OCCUPIED   0x06  //
+#define FINGERPRINT_ACK_NO_USER         0x05	//no such user
+#define FINGERPRINT_ACK_USER_OCCUPIED   0x06    //
 #define FINGERPRINT_ACK_USER_EXIST      0x07 	//
-#define FINGERPRINT_ACK_TIMEOUT         0x08	//
+#define FINGERPRINT_ACK_TIMEOUT         0x08	//operation timeout
 
 typedef enum
 {
@@ -46,7 +46,7 @@ typedef enum
 #define FP_RCV_BUF_NUM  10
 typedef struct fp_rcv_buf_t
 {
-    uint8_t rcv_buf[RCV_SIZE];
+    uint8_t rcv_buf[FP_RCV_SIZE];
     uint16_t rcv_len;
     struct fp_rcv_buf_t *next;
 }fp_rcv_buf_t;

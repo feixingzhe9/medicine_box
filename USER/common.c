@@ -8,11 +8,13 @@
 
 static void task_create(void)
 {
-    OSTaskCreate(fp_uart_com_send_task,     (void *)0,  (OS_STK*)&FP_UART_COM_SEND_TASK_STK[FP_UART_COM_SEND_TASK_STK_SIZE - 1],    FP_UART_COM_SEND_TASK_PRIO);
-    OSTaskCreate(fp_uart_com_rcv_task,      (void *)0,  (OS_STK*)&FP_UART_COM_RCV_TASK_STK[FP_UART_COM_RCV_TASK_STK_SIZE - 1],      FP_UART_COM_RCV_TASK_PRIO);
-    OSTaskCreate(led1_task,                 (void *)0,  (OS_STK*)&LED1_TASK_STK[LED1_STK_SIZE-1],                                   LED1_TASK_PRIO);
-    OSTaskCreate(led2_task,                 (void *)0,  (OS_STK*)&LED2_TASK_STK[LED2_STK_SIZE-1],                                   LED2_TASK_PRIO);
-    OSTaskCreate(dis_test_task,             (void *)0,  (OS_STK*)&DIS_TEST_TASK_STK[DIS_TEST_STK_SIZE - 1],                         DIS_TEST_TASK_PRIO);
+    OSTaskCreate(fp_uart_com_send_task,     (void *)0,  (OS_STK*)&FP_UART_COM_SEND_TASK_STK[FP_UART_COM_SEND_TASK_STK_SIZE - 1],            FP_UART_COM_SEND_TASK_PRIO);
+    OSTaskCreate(fp_uart_com_rcv_task,      (void *)0,  (OS_STK*)&FP_UART_COM_RCV_TASK_STK[FP_UART_COM_RCV_TASK_STK_SIZE - 1],              FP_UART_COM_RCV_TASK_PRIO);
+    OSTaskCreate(led1_task,                 (void *)0,  (OS_STK*)&LED1_TASK_STK[LED1_STK_SIZE-1],                                           LED1_TASK_PRIO);
+    OSTaskCreate(led2_task,                 (void *)0,  (OS_STK*)&LED2_TASK_STK[LED2_STK_SIZE-1],                                           LED2_TASK_PRIO);
+    OSTaskCreate(dis_test_task,             (void *)0,  (OS_STK*)&DIS_TEST_TASK_STK[DIS_TEST_STK_SIZE - 1],                                 DIS_TEST_TASK_PRIO);
+    OSTaskCreate(lc12s_send_task,           (void *)0,  (OS_STK*)&LC12S_UART_COM_SEND_TASK_STK[LC12S_UART_COM_SEND_TASK_STK_SIZE - 1],      LC12S_UART_COM_SEND_TASK_PRIO);
+    OSTaskCreate(lc12s_rcv_task,            (void *)0,  (OS_STK*)&LC12S_UART_COM_RCV_TASK_STK[LC12S_UART_COM_RCV_TASK_STK_SIZE - 1],        LC12S_UART_COM_RCV_TASK_PRIO);
 }
 
 static void sem_create(void)

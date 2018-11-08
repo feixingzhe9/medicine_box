@@ -52,7 +52,7 @@ int fp_rcv_buf_head_init(void)
     {
         fp_rcv_buf_head->next = NULL;
         fp_rcv_buf_head->rcv_len = 0;
-        memset(fp_rcv_buf_head->rcv_buf, 0, RCV_SIZE);
+        memset(fp_rcv_buf_head->rcv_buf, 0, FP_RCV_SIZE);
     }
     else
     {
@@ -106,7 +106,7 @@ int put_fp_rcv_buf(uint8_t *buf, uint16_t len)
         return -1;
     }
     p = fp_rcv_buf_head;
-    while(p->next != NULL)  //链表头不存储数据
+    while(p->next != NULL)  //链表头不保存储数据
     {
         p = p->next;
     }

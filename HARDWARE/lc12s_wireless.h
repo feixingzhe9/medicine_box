@@ -3,4 +3,6 @@
 #include "stm32f10x.h"
 #include "usart.h"
 
+void lc12s_com_init(void);
+
 #endif

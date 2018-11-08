@@ -10,6 +10,11 @@ void fp_com_init(void)
     uart2_dma_init(19200);
 }
 
+int fp_com_send(uint8_t *data, uint16_t len)
+{
+    return uart2_send(data, len);
+}
+
 
 int fp_capture_feature(uint16_t id, fp_permission_e permission, uint8_t cnt)
 {
@@ -30,7 +35,7 @@ int fp_capture_feature(uint16_t id, fp_permission_e permission, uint8_t cnt)
         send_buf[6] ^= send_buf[i];
     }
     send_buf[7] = FINGERPRINT_UART_FRAME_TAIL;
-    uart_send(send_buf, 8);
+    fp_com_send(send_buf, 8);
     return 0;
 }
 
@@ -50,7 +55,7 @@ int fp_compare_feature(void)
         send_buf[6] ^= send_buf[i];
     }
     send_buf[7] = FINGERPRINT_UART_FRAME_TAIL;
-    uart_send(send_buf, 8);
+    fp_com_send(send_buf, 8);
 
     return 0;
 }
@@ -71,7 +76,7 @@ int fp_get_user_num(void)
         send_buf[6] ^= send_buf[i];
     }
     send_buf[7] = FINGERPRINT_UART_FRAME_TAIL;
-    uart_send(send_buf, 8);
+    fp_com_send(send_buf, 8);
     return 0;
 }
 
@@ -91,7 +96,7 @@ int fp_del_all_user(void)
         send_buf[6] ^= send_buf[i];
     }
     send_buf[7] = FINGERPRINT_UART_FRAME_TAIL;
-    uart_send(send_buf, 8);
+    fp_com_send(send_buf, 8);
     return 0;
 }
 
@@ -111,7 +116,7 @@ int fp_del_user(uint16_t id)
         send_buf[6] ^= send_buf[i];
     }
     send_buf[7] = FINGERPRINT_UART_FRAME_TAIL;
-    uart_send(send_buf, 8);
+    fp_com_send(send_buf, 8);
     return 0;
 }
 
@@ -131,7 +136,7 @@ int fp_cap_img_and_get_feature(void)
         send_buf[6] ^= send_buf[i];
     }
     send_buf[7] = FINGERPRINT_UART_FRAME_TAIL;
-    uart_send(send_buf, 8);
+    fp_com_send(send_buf, 8);
     return 0;
 }
 
@@ -155,7 +160,7 @@ int fp_compare_the_feature_with_cap_feature(uint8_t *feature, uint16_t len)
         send_buf[6] ^= send_buf[i];
     }
     send_buf[7] = FINGERPRINT_UART_FRAME_TAIL;
-    //uart_send(send_buf, 8);
+    //fp_com_send(send_buf, 8);
 
 #if 0
     send_buf[0 + 8] = FINGERPRINT_UART_FRAME_HEADER;
@@ -171,7 +176,7 @@ int fp_compare_the_feature_with_cap_feature(uint8_t *feature, uint16_t len)
         send_buf[len + 1 + 8] ^= send_buf[i + 8];
     }
     send_buf[len + 2 + 8] = FINGERPRINT_UART_FRAME_TAIL;
-    uart_send(send_buf, len + 6 + 8);
+    fp_com_send(send_buf, len + 6 + 8);
 #else
     //delay_ms(10);
     send_buf[0 + 8] = FINGERPRINT_UART_FRAME_HEADER;
@@ -187,7 +192,7 @@ int fp_compare_the_feature_with_cap_feature(uint8_t *feature, uint16_t len)
         send_buf[len + 1 + 3 + 8] ^= send_buf[i + 8];
     }
     send_buf[len + 2 + 3 + 8] = FINGERPRINT_UART_FRAME_TAIL;
-    uart_send(send_buf, len + 6 + 8);
+    fp_com_send(send_buf, len + 6 + 8);
 #endif
     return 0;
 }
@@ -213,7 +218,7 @@ int fp_save_feature(uint8_t *feature, uint16_t len, uint16_t id, fp_permission_e
         send_buf[6] ^= send_buf[i];
     }
     send_buf[7] = FINGERPRINT_UART_FRAME_TAIL;
-    //uart_send(send_buf, 8);
+    //fp_com_send(send_buf, 8);
 
     send_buf[0 + 8] = FINGERPRINT_UART_FRAME_HEADER;
     send_buf[1 + 8] = (uint8_t)(id >> 8);
@@ -228,7 +233,7 @@ int fp_save_feature(uint8_t *feature, uint16_t len, uint16_t id, fp_permission_e
         send_buf[len + 1 + 3 + 8] ^= send_buf[i + 8];
     }
     send_buf[len + 2 + 3 + 8] = FINGERPRINT_UART_FRAME_TAIL;
-    uart_send(send_buf, len + 6 + 8);
+    fp_com_send(send_buf, len + 6 + 8);
 
     return 0;
 }
