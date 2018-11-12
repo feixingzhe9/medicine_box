@@ -196,7 +196,16 @@ void lcd_init(void)
     lcd_wr_reg(0x08,0x01);
     lcd_wr_reg(0x09,0xDF);
 
-    lcd_wr_reg(0x16,0x88);//set my mx mv bgr...
+#if (DIS_DIRECTION == DIRECTION_VERTICAL)
+
+    lcd_wr_reg(0x016,0x58);//set my mx mv bgr...
+
+#else
+
+    lcd_wr_reg(0x16,0xe8);//set my mx mv bgr...
+
+#endif
+
     lcd_wr_reg(0x17,0x55);//262-bit/pixel 0X60 ;262-bit/pixel 0X50
     lcd_wr_reg(0x18,0x21);	//Fosc=130%*5.2MHZ   21
     lcd_wr_reg(0x1D,0x00); // FS0[1:0]=01, Set the operating frequency of the step-up circuit 1
@@ -522,7 +531,6 @@ void Lcd_WR_Start(void)
 void lcd_block_write(unsigned int Xstart,unsigned int Xend,unsigned int Ystart,unsigned int Yend)
 {
     //HX8357-A
-
     lcd_wr_reg(0x80, Xstart >> 8); // Set CAC=0x0000
     lcd_wr_reg(0x81, Xstart & 0xff);
     lcd_wr_reg(0x82, Ystart >> 8); // Set RAC=0x0000
@@ -537,6 +545,7 @@ void lcd_block_write(unsigned int Xstart,unsigned int Xend,unsigned int Ystart,u
     lcd_wr_reg(0x07, Ystart & 0xff);     //Row Start
     lcd_wr_reg(0x08, Yend >> 8);
     lcd_wr_reg(0x09, Yend & 0xff);     //Row End
+
 
     lcd_write_cmd(0x22);
 }
@@ -590,21 +599,39 @@ void lcd_fill_pic(u16 x, u16 y, u16 pic_H, u16 pic_V, const unsigned char* pic)
 
 void lcd_draw_pixel(u16 x, u16 y, u16 Color)
 {
+#if DIS_DIRECTION == DIRECTION_HORIZONTAL
     lcd_wr_reg(0x02, 0);
     lcd_wr_reg(0x03, 0);     //Column Start
-    lcd_wr_reg(0x04, 319 >> 8);
-    lcd_wr_reg(0x05, 319 & 0xff);     //Column End
+    lcd_wr_reg(0x04, (LCD_X_MAX - 1) >> 8);
+    lcd_wr_reg(0x05, (LCD_X_MAX - 1) & 0xff);     //Column End
 
     lcd_wr_reg(0x06, 0);
     lcd_wr_reg(0x07, 0);     //Row Start
-    lcd_wr_reg(0x08, 479 >> 8);
-    lcd_wr_reg(0x09, 479 & 0xff);     //Row End
+    lcd_wr_reg(0x08, (LCD_Y_MAX - 1) >> 8);
+    lcd_wr_reg(0x09, (LCD_Y_MAX - 1) & 0xff);     //Row End
+
+    //这里故意交换X,Y以实现横屏，也可以写两个这样的函数，一个竖的，一个横的
+    lcd_wr_reg(0x80, y >> 8); // Set CAC=0x0000
+    lcd_wr_reg(0x81, y & 0xff);
+    lcd_wr_reg(0x82, x >> 8); // Set RAC=0x0000
+    lcd_wr_reg(0x83, x & 0xff);
+#else
+    lcd_wr_reg(0x02, 0);
+    lcd_wr_reg(0x03, 0);     //Column Start
+    lcd_wr_reg(0x04, (LCD_X_MAX - 1) >> 8);
+    lcd_wr_reg(0x05, (LCD_X_MAX - 1) & 0xff);     //Column End
+
+    lcd_wr_reg(0x06, 0);
+    lcd_wr_reg(0x07, 0);     //Row Start
+    lcd_wr_reg(0x08, (LCD_Y_MAX - 1) >> 8);
+    lcd_wr_reg(0x09, (LCD_Y_MAX - 1) & 0xff);     //Row End
 
     //这里故意交换X,Y以实现横屏，也可以写两个这样的函数，一个竖的，一个横的
     lcd_wr_reg(0x80, x >> 8); // Set CAC=0x0000
     lcd_wr_reg(0x81, x & 0xff);
     lcd_wr_reg(0x82, y >> 8); // Set RAC=0x0000
     lcd_wr_reg(0x83, y & 0xff);
+#endif
     lcd_write_cmd(0x22);
     *(__IO u16 *) (Bank1_LCD_D) = Color;
 }

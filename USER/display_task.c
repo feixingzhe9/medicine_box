@@ -24,7 +24,7 @@ void dis_test_task(void *pdata)
 
 //        lcd_color_box(0,0,320,480,Red);delay_ms(1000);
 //        lcd_color_box(0,0,320,480,Blue);delay_ms(1000);
-        lcd_color_box(0,0,320,480,White);delay_ms(1000);
+        lcd_color_box(0, 0, LCD_X_MAX, LCD_Y_MAX, White);delay_ms(1000);
 //        lcd_color_box(0,0,20,80,Green);delay_ms(1000);
 //        lcd_color_box(100,100,20,80,Green);delay_ms(1000);
 //        lcd_color_box(200,260,20,80,Green);delay_ms(1000);
@@ -62,8 +62,9 @@ void dis_test_task(void *pdata)
         {
             //show_16x16_ch(0, i, "вж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйт", 20, Red);
             //show_ch(0, 320, "вж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйт", 20, Red);
-            //show_32x32_ch(0, i, "вж©Б╡БйтйжйУйрвж©Б╡БйтйжйУйрвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйт", 10, Red);
-            show_32x32_ch_vertical(0, i, "йЗеее╣яг", 4, Red);
+            show_32x32_ch(0, i, "вж©Б╡БйтйжйУйрвж©Б╡БйтйжйУйрвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйтвж©Б╡Бйт", 15, Blue);
+//            show_32x32_ch_vertical(0, i, "йЗеее╣яг", 4, Red);
+//            show_32x32_ch(0, i, "йЗеее╣яг", 4, Red);
         }
         delay_ms(1000);
 //        for(i = 0; i < 480; i++)
@@ -87,8 +88,9 @@ void dis_test_task(void *pdata)
 //            lcd_color_box_ex(0, i, 320, 480 - i, gImage_MM_T035);
 //        }
 
-
-        //delay_ms(500);
+//        lcd_color_box_ex(0, 0, 320, 480, gImage_MM_T035);
+        lcd_color_box_ex(0, 0, LCD_X_MAX, LCD_Y_MAX, gImage_MM_T035);
+        delay_ms(1000);
     }
 
 }

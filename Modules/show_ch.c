@@ -21,7 +21,7 @@ int show_16x16_ch(uint16_t x, uint16_t y, const char * ch, uint16_t ch_len, uint
 
     for(ch_cnt = 0; ch_cnt < ch_len; ch_cnt++)
     {
-        if((x < LCD_WIDTH - 16 + 1) && (y < LCD_LENGTH - 16 + 1))
+        if((x < LCD_X_MAX - 16 + 1) && (y < LCD_Y_MAX - 16 + 1))
         {
             for(i = 0; i < ch_lib_len; i++)
             {
@@ -57,7 +57,7 @@ int show_32x32_ch(uint16_t x, uint16_t y, const char * ch, uint16_t ch_len, uint
 
     for(ch_cnt = 0; ch_cnt < ch_len; ch_cnt++)
     {
-        if((x < LCD_WIDTH - 32 + 1) && (y < LCD_LENGTH - 32 + 1))
+        if((x < LCD_X_MAX - 32 + 1) && (y < LCD_Y_MAX - 32 + 1))
         {
             for(i = 0; i < ch_lib_len; i++)
             {
@@ -94,7 +94,7 @@ int show_32x32_ch_vertical(uint16_t x, uint16_t y, const char * ch, uint16_t ch_
 
     for(ch_cnt = 0; ch_cnt < ch_len; ch_cnt++)
     {
-        if((x < LCD_WIDTH - 32 + 1) && (y < LCD_LENGTH - 32 + 1))
+        if((x < LCD_X_MAX - 32 + 1) && (y < LCD_Y_MAX - 32 + 1))
         {
             for(i = 0; i < ch_lib_len; i++)
             {
@@ -131,7 +131,7 @@ int show_32x32_ch_vertical_ex(uint16_t x_start, uint16_t y_start, uint16_t x_end
 
     for(ch_cnt = 0; ch_cnt < ch_len; ch_cnt++)
     {
-        if((x_start < LCD_WIDTH - 32 + 1) && (x_start < LCD_LENGTH - 32 + 1))
+        if((x_start < LCD_X_MAX - 32 + 1) && (x_start < LCD_Y_MAX - 32 + 1))
         {
             for(i = 0; i < ch_lib_len; i++)
             {
@@ -172,7 +172,7 @@ int show_part_32x32_ch_vertical(\
     }
     for(ch_cnt = 0; ch_cnt < ch_len; ch_cnt++)
     {
-        if((x < LCD_WIDTH - 32 + 1) && (y < LCD_LENGTH - 32 + 1))
+        if((x < LCD_Y_MAX - 32 + 1) && (y < LCD_X_MAX - 32 + 1))
         {
             for(i = 0; i < ch_lib_len; i++)
             {

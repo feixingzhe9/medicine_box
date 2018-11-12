@@ -1,3 +1,5 @@
+#ifndef __HARDWARE_LCD_H__
+#define __HARDWARE_LCD_H__
 #include "stm32f10x.h"
 
 //屏幕开始时显示方式，注意：当IDelay时显示第一幅画面是逐像素刷新的
@@ -21,9 +23,27 @@
 #define Lcd_Light_OFF  GPIOA->BRR  = GPIO_Pin_1;
 
 
-#define LCD_WIDTH       320
-#define LCD_LENGTH      480
+//typedef enum
+//{
+//    DIRECTION_VERTICAL = 1,
+//    DIRECTION_HORIZONTAL,
+//}dis_direction_enum;
 
+#define DIRECTION_VERTICAL          1
+#define DIRECTION_HORIZONTAL        2
+#define DIS_DIRECTION   DIRECTION_HORIZONTAL
+
+#if DIS_DIRECTION == DIRECTION_VERTICAL
+
+#define LCD_Y_MAX       480
+#define LCD_X_MAX       320
+
+#elif DIS_DIRECTION == DIRECTION_HORIZONTAL
+
+#define LCD_Y_MAX       320
+#define LCD_X_MAX       480
+
+#endif
 
 //Lcd初始化及其低级控制函数
 void Lcd_Configuration(void);
@@ -59,3 +79,5 @@ char Tiky_Button(char *filename,u16 x,u16 y);
 #define Green          0x07E0
 #define Cyan           0x7FFF
 #define Yellow         0xFFE0
+
+#endif

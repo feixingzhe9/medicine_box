@@ -41,15 +41,17 @@ void lcd_color_box_ex(u16 xStart, u16 yStart, u16 xLong, u16 yLong, const unsign
 {
     u32 i;
     uint16_t color = 0;
-
-    lcd_block_write(xStart, xStart + xLong - 1, yStart, yStart + yLong - 1);
-    for (i = 0; i < xLong * yLong - 1; i++)
+    if((xLong > 0) && (yLong > 0))
     {
-        color = pic[i];
-        color <<= 8;
-        color += pic[i + 1];
-        *(__IO u16 *) (Bank1_LCD_D) = color;
-        //*(__IO u16 *) (Bank1_LCD_D) = pic[temp];
+        lcd_block_write(xStart, xStart + xLong - 1, yStart, yStart + yLong - 1);
+        for (i = 0; i < xLong * yLong - 1; i++)
+        {
+            color = pic[i];
+            color <<= 8;
+            color += pic[i + 1];
+            *(__IO u16 *) (Bank1_LCD_D) = color;
+            //*(__IO u16 *) (Bank1_LCD_D) = pic[temp];
+        }
     }
 }
 
