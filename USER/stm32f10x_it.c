@@ -81,49 +81,58 @@ void DebugMon_Handler(void)
 //}
 
 
-void DMA1_Channel4_IRQHandler(void)					//USART1-TX
+void DMA1_Channel4_IRQHandler(void)     //USART1-TX
 {
     OSIntEnter();
     if (DMA_GetITStatus(DMA1_IT_TC4) != RESET)
     {
         DMA_Cmd(DMA1_Channel4, DISABLE);
         DMA_ClearFlag(DMA1_FLAG_TC4);
-        DMA_ClearITPendingBit(DMA1_IT_TC4);  // 清除中断标志位
-        while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET); //等待一包数据发送完成
+        DMA_ClearITPendingBit(DMA1_IT_TC4); // 清除中断标志位
+        while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);    //等待一包数据发送完成
     }
     OSIntExit();
 }
 
-void DMA1_Channel5_IRQHandler(void)					//USART1-TX
+void DMA1_Channel5_IRQHandler(void)     //USART1-TX
 {
     OSIntEnter();
     if (DMA_GetITStatus(DMA1_IT_TC5) != RESET)
     {
         DMA_Cmd(DMA1_Channel5, DISABLE);
         DMA_ClearFlag(DMA1_FLAG_TC5);
-        DMA_ClearITPendingBit(DMA1_IT_TC5);  // 清除中断标志位
-        while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET); //等待一包数据发送完成
+        DMA_ClearITPendingBit(DMA1_IT_TC5); // 清除中断标志位
+        while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);    //等待一包数据发送完成
     }
     OSIntExit();
 }
 
 
+uint32_t uart1_rcv_test_cnt = 0;
+uint32_t uart1_rcv_test_len = 0;
 /*    USART1 IDLE interrupt    */
 void USART1_IRQHandler(void)
 {
-	volatile unsigned char temper=0;
+    volatile unsigned char temper=0;
     uint16_t rcv_len = 0;
+    uint32_t test = 0;
     OSIntEnter();
     if (USART_GetITStatus(USART1, USART_IT_IDLE) != RESET)
     {
         temper = USART1->SR;
-        temper = USART1->DR;	//清USART_IT_IDLE
+        temper = USART1->DR;    //清USART_IT_IDLE
 
+        uart1_rcv_test_cnt++;
         DMA_Cmd(DMA1_Channel5, DISABLE);
         rcv_len = LC12S_RCV_SIZE - DMA_GetCurrDataCounter(DMA1_Channel5);
+        uart1_rcv_test_len = rcv_len;
+        if(uart1_rcv_test_len == 1)
+        {
+            test = 1;
+        }
         DMA_SetCurrDataCounter(DMA1_Channel5, LC12S_RCV_SIZE);
         //put_fp_rcv_buf(lc12s_uart_rcv_buf, rcv_len);
-        OSSemPost(fp_uart_data_come_sem);
+        //OSSemPost(fp_uart_data_come_sem);
         DMA_Cmd(DMA1_Channel5,ENABLE);
     }
     OSIntExit();
@@ -131,28 +140,28 @@ void USART1_IRQHandler(void)
 
 
 
-void DMA1_Channel7_IRQHandler(void)					//USART2-TX
+void DMA1_Channel7_IRQHandler(void)     //USART2-TX
 {
     OSIntEnter();
     if (DMA_GetITStatus(DMA1_IT_TC7) != RESET)
     {
         DMA_Cmd(DMA1_Channel7, DISABLE);
         DMA_ClearFlag(DMA1_FLAG_TC7);
-        DMA_ClearITPendingBit(DMA1_IT_TC7);  // 清除中断标志位
-        while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET); //等待一包数据发送完成
+        DMA_ClearITPendingBit(DMA1_IT_TC7); // 清除中断标志位
+        while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET);    //等待一包数据发送完成
     }
     OSIntExit();
 }
 
-void DMA1_Channel6_IRQHandler(void)					//USART2-TX
+void DMA1_Channel6_IRQHandler(void)     //USART2-TX
 {
     OSIntEnter();
     if (DMA_GetITStatus(DMA1_IT_TC6) != RESET)
     {
         DMA_Cmd(DMA1_Channel6, DISABLE);
         DMA_ClearFlag(DMA1_FLAG_TC6);
-        DMA_ClearITPendingBit(DMA1_IT_TC6);  // 清除中断标志位
-        while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET); //等待一包数据发送完成
+        DMA_ClearITPendingBit(DMA1_IT_TC6); // 清除中断标志位
+        while (USART_GetFlagStatus(USART2, USART_FLAG_TC) == RESET);    //等待一包数据发送完成
     }
     OSIntExit();
 }
@@ -162,14 +171,14 @@ uint32_t rcv_dma_test_cnt = 0;
 /*    USART2 IDLE interrupt    */
 void USART2_IRQHandler(void)
 {
-	volatile unsigned char temper=0;
+    volatile unsigned char temper=0;
     uint16_t rcv_len = 0;
     OSIntEnter();
     if (USART_GetITStatus(USART2, USART_IT_IDLE) != RESET)
     {
         rcv_dma_test_cnt++;
         temper = USART2->SR;
-        temper = USART2->DR;	//清USART_IT_IDLE
+        temper = USART2->DR;    //清USART_IT_IDLE
 
         DMA_Cmd(DMA1_Channel6, DISABLE);
         rcv_len = FP_RCV_SIZE - DMA_GetCurrDataCounter(DMA1_Channel6);

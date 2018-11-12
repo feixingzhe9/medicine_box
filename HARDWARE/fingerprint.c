@@ -3,7 +3,7 @@
  *  brief: fingerprint hardware operation
  */
  
- #include "fingerprint.h"
+#include "fingerprint.h"
  
 void fp_com_init(void)
 {
