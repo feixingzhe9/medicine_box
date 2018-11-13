@@ -2,7 +2,7 @@
  *  Author: Kaka Xie
  *  brief: fingerprint process
  */
- 
+
 
 #include "fingerprint_task.h"
 #include "delay.h"

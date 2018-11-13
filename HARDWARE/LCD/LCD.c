@@ -2,17 +2,17 @@
 
  *重要说明！
  在.h文件中，#define Immediately时是立即显示当前画面
- 而如果#define Delay，则只有在执行了lcd_wr_reg(0x0007,0x0173);
+ 而如果#define lcd_delay，则只有在执行了lcd_wr_reg(0x0007,0x0173);
  之后才会显示，执行一次lcd_wr_reg(0x0007,0x0173)后，所有写入数
  据都立即显示。
-#define Delay一般用在开机画面的显示，防止显示出全屏图像的刷新过程
+#define lcd_delay一般用在开机画面的显示，防止显示出全屏图像的刷新过程
  ******************************************************************************/
 #include "stm32f10x.h"
-#include "LCD.h"
-//#include "ff.h"
+#include "lcd.h"
 #include <stdio.h>
 #include <stm32f10x_fsmc.h>
-// #include "MM_T035.h"
+
+
 /*
  * 函数名：lcd_gpio_config
  * 描述  ：根据FSMC配置LCD的I/O
@@ -86,13 +86,6 @@ void lcd_gpio_config(void)
 
 }
 
-/*
- * 函数名：lcd_fsmc_config
- * 描述  ：LCD  FSMC 模式配置
- * 输入  ：无
- * 输出  ：无
- * 调用  ：内部调用
- */
 
 static void lcd_fsmc_config(void)
 {
@@ -130,34 +123,32 @@ static void lcd_fsmc_config(void)
     FSMC_NORSRAMCmd(FSMC_Bank1_NORSRAM1, ENABLE);
 }
 
-volatile static void Delay(__IO u32 nCount)
+static void lcd_delay(__IO u32 count)
 {
-    volatile int i;
-    for(i=0;i<0XFFFF;i++)
-        for(; nCount != 0; nCount--);
+    volatile int i = 0;
+    for(i = 0;i < 0XFFFF; i++)
+        for(; count != 0; count--);
 }
 
 static void lcd_rst(void)
 {
-    Clr_Rst;
-    Delay(10000);
-    Set_Rst;
-    Delay(10000);
+    LCD_CLR_RST;
+    lcd_delay(10000);
+    LCD_SET_RST;
+    lcd_delay(10000);
 }
 
 static void lcd_write_cmd(u16 CMD)
 {
-    *(__IO u16 *) (Bank1_LCD_C) = CMD;
+    *(__IO u16 *) (BANK_1_LCD_CMD) = CMD;
 }
 
-static void lcd_write_data(u16 tem_data)
-{
-    *(__IO u16 *) (Bank1_LCD_D) = tem_data;
-}
+//static void lcd_write_data(u16 tem_data)
+//{
+//    *(__IO u16 *) (BANK_1_LCD_DATA) = tem_data;
+//}
 
-/**********************************************
-  Lcd初始化函数
- ***********************************************/
+
 void lcd_init(void)
 {
     //	int a;
@@ -167,7 +158,7 @@ void lcd_init(void)
 
     //================= Command page 0 =================
     lcd_wr_reg(0xFF,0x00); // Command page 0
-    Delay(15);
+    lcd_delay(15);
     lcd_wr_reg(0x1A,0x04);//VGH VGL VCL  DDVDH
     lcd_wr_reg(0x1B,0x1C);
     // Power Settng
@@ -175,16 +166,16 @@ void lcd_init(void)
     lcd_wr_reg(0x24,0x69); // Set VCOMH voltage, VHH=0x64
     lcd_wr_reg(0x25,0x63); // Set VCOML voltage, VML=0x71
     lcd_wr_reg(0x19,0x01);
-    Delay(10);
+    lcd_delay(10);
     lcd_wr_reg(0x1A,0x00);//VGH VGL VCL  DDVDH
     lcd_wr_reg(0x1F,0x8A);//
     lcd_wr_reg(0x01,0x00);//
     lcd_wr_reg(0x1C,0x05);//
     lcd_wr_reg(0x1F,0x82);//
-    Delay(10);
+    lcd_delay(10);
 
     lcd_wr_reg(0x1F,0x92);//
-    Delay(10);
+    lcd_delay(10);
     lcd_wr_reg(0x1F,0xD4);//
     // Set GRAM aea 320x480
     lcd_wr_reg(0x02,0x00);
@@ -484,7 +475,7 @@ void lcd_init(void)
     lcd_wr_reg(0xE8,0xD1);
     lcd_wr_reg(0xE9,0xC0);
     lcd_wr_reg(0x28,0x38);
-    Delay(80);
+    lcd_delay(80);
     lcd_wr_reg(0x28,0x3C);// GON=0, DTE=0, D[1:0]=01
 
     lcd_wr_reg(0x80,0x00);
@@ -492,15 +483,15 @@ void lcd_init(void)
     lcd_wr_reg(0x82,0x00);
     lcd_wr_reg(0x83,0x00);
 
-    Delay(100);
+    lcd_delay(100);
 
 
-    *(__IO u16 *) (Bank1_LCD_C) = (0x22);
+    *(__IO u16 *) (BANK_1_LCD_CMD) = (0x22);
 
 
-    Delay(10);
+    lcd_delay(10);
 
-    Lcd_Light_ON;
+    LCD_BACK_LIGHT_ON;
     lcd_color_box(0,0,320,480,Yellow);
     //printf("lcd_read_pixel=%04x\r\n",lcd_read_pixel(8, 8));
     lcd_draw_pixel(10, 10, 0xaaaa);
@@ -520,18 +511,18 @@ void lcd_init(void)
   入口参数：Index 要寻址的寄存器地址
   ConfigTemp 写入的数据或命令值
  ******************************************/
-void lcd_wr_reg(u16 Index,u16 CongfigTemp)
+void lcd_wr_reg(u16 index,u16 config)
 {
-    *(__IO u16 *) (Bank1_LCD_C) = Index;
-    *(__IO u16 *) (Bank1_LCD_D) = CongfigTemp;
+    *(__IO u16 *) (BANK_1_LCD_CMD) = index;
+    *(__IO u16 *) (BANK_1_LCD_DATA) = config;
 }
 /************************************************
   函数名：Lcd写开始函数
   功能：控制Lcd控制引脚 执行写操作
  ************************************************/
-void Lcd_WR_Start(void)
+void lcd_wr_start(void)
 {
-    *(__IO u16 *) (Bank1_LCD_C) = 0x2C;
+    *(__IO u16 *) (BANK_1_LCD_CMD) = 0x2C;
 }
 /**********************************************
   函数名：Lcd块选函数
@@ -545,23 +536,23 @@ void Lcd_WR_Start(void)
   Yend   y方向的终止点
   返回值：无
  ***********************************************/
-void lcd_block_write(unsigned int Xstart,unsigned int Xend,unsigned int Ystart,unsigned int Yend)
+void lcd_block_write(unsigned int x_start,unsigned int x_end,unsigned int y_start,unsigned int y_end)
 {
     //HX8357-A
-    lcd_wr_reg(0x80, Xstart >> 8); // Set CAC=0x0000
-    lcd_wr_reg(0x81, Xstart & 0xff);
-    lcd_wr_reg(0x82, Ystart >> 8); // Set RAC=0x0000
-    lcd_wr_reg(0x83, Ystart & 0xff);
+    lcd_wr_reg(0x80, x_start >> 8); // Set CAC=0x0000
+    lcd_wr_reg(0x81, x_start & 0xff);
+    lcd_wr_reg(0x82, y_start >> 8); // Set RAC=0x0000
+    lcd_wr_reg(0x83, y_start & 0xff);
 
-    lcd_wr_reg(0x02, Xstart >> 8);
-    lcd_wr_reg(0x03, Xstart & 0xff);     //Column Start
-    lcd_wr_reg(0x04, Xend >> 8);
-    lcd_wr_reg(0x05, Xend & 0xff);     //Column End
+    lcd_wr_reg(0x02, x_start >> 8);
+    lcd_wr_reg(0x03, x_start & 0xff);     //Column Start
+    lcd_wr_reg(0x04, x_end >> 8);
+    lcd_wr_reg(0x05, x_end & 0xff);     //Column End
 
-    lcd_wr_reg(0x06, Ystart >> 8);
-    lcd_wr_reg(0x07, Ystart & 0xff);     //Row Start
-    lcd_wr_reg(0x08, Yend >> 8);
-    lcd_wr_reg(0x09, Yend & 0xff);     //Row End
+    lcd_wr_reg(0x06, y_start >> 8);
+    lcd_wr_reg(0x07, y_start & 0xff);     //Row Start
+    lcd_wr_reg(0x08, y_end >> 8);
+    lcd_wr_reg(0x09, y_end & 0xff);     //Row End
 
 
     lcd_write_cmd(0x22);
@@ -578,24 +569,24 @@ void lcd_block_write(unsigned int Xstart,unsigned int Xend,unsigned int Ystart,u
   yLong  要选定矩形的y方向长度
   返回值：无
  ***********************************************/
-void lcd_color_box(u16 xStart, u16 yStart, u16 xLong, u16 yLong, u16 Color)
+void lcd_color_box(u16 x_start, u16 y_start, u16 x_long, u16 y_long, u16 color)
 {
-    u32 temp;
+    u32 i = 0;
 
-    lcd_block_write(xStart, xStart + xLong - 1, yStart, yStart + yLong - 1);
-    for (temp = 0; temp < xLong * yLong; temp++)
+    lcd_block_write(x_start, x_start + x_long - 1, y_start, y_start + y_long - 1);
+    for (i = 0; i < x_long * y_long; i++)
     {
-        *(__IO u16 *) (Bank1_LCD_D) = Color;
+        *(__IO u16 *) (BANK_1_LCD_DATA) = color;
     }
 }
 
 /******************************************
-  函数名：Lcd图像填充100*100
+  函数名：Lcd图像填充
   功能：向Lcd指定位置填充图像
   入口参数：Index 要寻址的寄存器地址
   ConfigTemp 写入的数据或命令值
  ******************************************/
-void lcd_fill_pic(u16 x, u16 y, u16 pic_H, u16 pic_V, const unsigned char* pic)
+void lcd_fill_pic(u16 x, u16 y,u16 pic_h, u16 pic_v, const unsigned char* pic)
 {
     unsigned long i;
     unsigned int j;
@@ -603,18 +594,18 @@ void lcd_fill_pic(u16 x, u16 y, u16 pic_H, u16 pic_V, const unsigned char* pic)
 //     	lcd_write_cmd(0x16); //Set_address_mode
 //     	lcd_write_data(0x20); //横屏，从左下角开始，从左到右，从下到上
 //     	lcd_block_write(x,x+pic_H-1,y,y+pic_V-1);
-    for (i = 0; i < pic_H * pic_V * 2; i += 2)
+    for (i = 0; i < pic_h * pic_v * 2; i += 2)
     {
         j = pic[i];
         j = j << 8;
         j = j + pic[i + 1];
-        *(__IO u16 *) (Bank1_LCD_D) = j;
+        *(__IO u16 *) (BANK_1_LCD_DATA) = j;
     }
 //     	lcd_write_cmd(0x36); //Set_address_mode
 //     	lcd_write_data(0xaa);
 }
 
-void lcd_draw_pixel(u16 x, u16 y, u16 Color)
+void lcd_draw_pixel(u16 x, u16 y, u16 color)
 {
 #if (DIS_DIRECTION & DIRECTION_HORIZONTAL)
     lcd_wr_reg(0x02, 0);
@@ -650,10 +641,10 @@ void lcd_draw_pixel(u16 x, u16 y, u16 Color)
     lcd_wr_reg(0x83, y & 0xff);
 #endif
     lcd_write_cmd(0x22);
-    *(__IO u16 *) (Bank1_LCD_D) = Color;
+    *(__IO u16 *) (BANK_1_LCD_DATA) = color;
 }
 
-u16 lcd_read_pixel(u16 x,u8 y)
+u16 lcd_read_pixel(u16 x, u8 y)
 {
     u16 dat;
     lcd_wr_reg(0x80, x >> 8); // Set CAC=0x0000
@@ -662,9 +653,9 @@ u16 lcd_read_pixel(u16 x,u8 y)
     lcd_wr_reg(0x83, y);
     lcd_write_cmd(0x22);
 
-    dat = *(__IO u16 *) (Bank1_LCD_D);
-    dat = *(__IO u16 *) (Bank1_LCD_D);
-    dat = (dat & 0xf800) | ((dat & 0x00fc) << 3) | ((*(__IO u16 *) (Bank1_LCD_D)) >> 11);
+    dat = *(__IO u16 *) (BANK_1_LCD_DATA);
+    dat = *(__IO u16 *) (BANK_1_LCD_DATA);
+    dat = (dat & 0xf800) | ((dat & 0x00fc) << 3) | ((*(__IO u16 *) (BANK_1_LCD_DATA)) >> 11);
     return dat;
 }
 

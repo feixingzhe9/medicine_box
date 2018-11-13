@@ -1,11 +1,10 @@
 #ifndef __LED_H
-#define __LED_H	 
+#define __LED_H
 #include "sys.h"
 
-#define LED0 PGout(5)// PB5
-#define LED1 PCout(9)// PE5	
+#define LED0 PGout(5)// PG5
+#define LED1 PCout(9)// PC9
 
-void LED_Init(void);//初始化
+void led_init(void);//初始化
 
-		 				    
 #endif

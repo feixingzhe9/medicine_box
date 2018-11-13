@@ -1,17 +1,22 @@
+/*
+ *  Author: Kaka Xie
+ *  brief: usart operation
+ */
+
 #include "sys.h"
 #include "usart.h"
 
 #if SYSTEM_SUPPORT_UCOS
-#include "includes.h"					//ucos 使用	  
+#include "includes.h"					//ucos 使用
 #endif
 
 
 #if 1
-#pragma import(__use_no_semihosting)             
-//标准库需要的支持函数                 
-struct __FILE 
-{ 
-	int handle; 
+#pragma import(__use_no_semihosting)
+//标准库需要的支持函数
+struct __FILE
+{
+    int handle;
 
 };
 
@@ -19,14 +24,14 @@ FILE __stdout;
 //定义_sys_exit()以避免使用半主机模式
 void _sys_exit(int x)
 {
-	x = x;
+    x = x;
 }
 //重定义fputc函数
 int fputc(int ch, FILE *f)
 {
-	//while((USART1->SR&0X40)==0);//循环发送,直到发送完毕
+    //while((USART1->SR&0X40)==0);//循环发送,直到发送完毕
     //USART1->DR = (u8) ch;
-	return ch;
+    return ch;
 }
 #endif
 
@@ -40,7 +45,7 @@ void uart2_dma_init(u32 bound)
     GPIO_InitTypeDef	GPIO_InitStructure;
     NVIC_InitTypeDef NVIC_InitStructure;
 
-   {
+    {
         RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
         RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);
         RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
@@ -74,7 +79,7 @@ void uart2_dma_init(u32 bound)
 
     USART_ITConfig(USART2, USART_IT_IDLE, ENABLE);
     USART_DMACmd(USART2, USART_DMAReq_Tx, ENABLE);  //
-	USART_DMACmd(USART2, USART_DMAReq_Rx, ENABLE);
+    USART_DMACmd(USART2, USART_DMAReq_Rx, ENABLE);
     //USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
     USART_Cmd(USART2, ENABLE);
 
@@ -84,8 +89,8 @@ void uart2_dma_init(u32 bound)
     NVIC_Init(&NVIC_InitStructure);
 
 
-	//DMA configuration,  COM1-TX
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&USART2->DR);    // 外设地址
+    //DMA configuration,  COM1-TX
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&USART2->DR);    // 外设地址
     DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&fp_uart_send_buf[0];    // 内存地址
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;                  // 内存-->外设
     DMA_InitStructure.DMA_BufferSize = FP_SEND_SIZE;             // 缓存大小
@@ -100,8 +105,8 @@ void uart2_dma_init(u32 bound)
     DMA_Init(DMA1_Channel7, &DMA_InitStructure);
     DMA_Cmd(DMA1_Channel7, DISABLE);
 
-	//COM1-RX
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&USART2->DR);    // 外设地址
+    //COM1-RX
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&USART2->DR);    // 外设地址
     DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&fp_uart_rcv_buf[0];    // 内存地址
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;                  // 内存-->外设
     DMA_InitStructure.DMA_BufferSize = FP_RCV_SIZE;             // 缓存大小
@@ -115,11 +120,6 @@ void uart2_dma_init(u32 bound)
     //DMA_ITConfig(DMA1_Channel7, DMA_IT_TC, ENABLE);                     // 允许DMA传输完中断
     DMA_Init(DMA1_Channel6, &DMA_InitStructure);
     DMA_Cmd(DMA1_Channel6, ENABLE);
-
-//    NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel6_IRQn;
-//    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
-//    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-//    NVIC_Init(&NVIC_InitStructure);
 
     NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel7_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
@@ -152,7 +152,7 @@ void uart1_dma_init(u32 bound)
     GPIO_InitTypeDef	GPIO_InitStructure;
     NVIC_InitTypeDef NVIC_InitStructure;
 
-   {
+    {
         RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
         RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
@@ -184,7 +184,7 @@ void uart1_dma_init(u32 bound)
 
     USART_ITConfig(USART1, USART_IT_IDLE, ENABLE);
     USART_DMACmd(USART1, USART_DMAReq_Tx, ENABLE);  //
-	USART_DMACmd(USART1, USART_DMAReq_Rx, ENABLE);
+    USART_DMACmd(USART1, USART_DMAReq_Rx, ENABLE);
     //USART_ITConfig(USART1, USART_IT_RXNE, ENABLE);
     USART_Cmd(USART1, ENABLE);
 
@@ -194,8 +194,8 @@ void uart1_dma_init(u32 bound)
     NVIC_Init(&NVIC_InitStructure);
 
 
-	//DMA configuration,  COM1-TX
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&USART1->DR);    // 外设地址
+    //DMA configuration,  COM1-TX
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&USART1->DR);    // 外设地址
     DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&lc12s_send_buf[0];    // 内存地址
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;                  // 内存-->外设
     DMA_InitStructure.DMA_BufferSize = LC12S_SEND_SIZE;             // 缓存大小
@@ -210,8 +210,8 @@ void uart1_dma_init(u32 bound)
     DMA_Init(DMA1_Channel4, &DMA_InitStructure);
     DMA_Cmd(DMA1_Channel4, DISABLE);
 
-	//COM1-RX
-	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&USART1->DR);    // 外设地址
+    //COM1-RX
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&USART1->DR);    // 外设地址
     DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&lc12s_uart_rcv_buf[0];    // 内存地址
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;                  // 内存-->外设
     DMA_InitStructure.DMA_BufferSize = LC12S_RCV_SIZE;             // 缓存大小
@@ -226,10 +226,6 @@ void uart1_dma_init(u32 bound)
     DMA_Init(DMA1_Channel5, &DMA_InitStructure);
     DMA_Cmd(DMA1_Channel5, ENABLE);
 
-//    NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel5_IRQn;
-//    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
-//    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-//    NVIC_Init(&NVIC_InitStructure);
 
     NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel4_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;

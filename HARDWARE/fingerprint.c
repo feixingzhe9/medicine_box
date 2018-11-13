@@ -2,9 +2,9 @@
  *  Author: Kaka Xie
  *  brief: fingerprint hardware operation
  */
- 
+
 #include "fingerprint.h"
- 
+
 void fp_com_init(void)
 {
     uart2_dma_init(19200);

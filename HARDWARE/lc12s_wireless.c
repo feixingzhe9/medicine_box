@@ -2,9 +2,9 @@
  *  Author: Kaka Xie
  *  brief: lc12s wireless module hardware operation
  */
- 
- #include "lc12s_wireless.h"
- 
+
+#include "lc12s_wireless.h"
+
 void lc12s_com_init(void)
 {
     uart1_dma_init(9600);
@@ -26,5 +26,6 @@ void lc12s_send_com_test(void)
         test_buf[i] = i;
     }
     lc12s_com_send("abcdefghijklmn", 10);
+    //lc12s_com_send(test_buf, sizeof(test_buf));
 
 }

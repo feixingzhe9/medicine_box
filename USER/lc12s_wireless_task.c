@@ -2,7 +2,7 @@
  *  Author: Kaka Xie
  *  brief: lc12s wireless module task process
  */
- 
+
 #include "lc12s_wireless_task.h"
 #include "delay.h"
 

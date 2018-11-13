@@ -1,7 +1,7 @@
 #ifndef __USART_H
 #define __USART_H
-#include "stdio.h"	
-#include "sys.h" 
+#include "stdio.h"
+#include "sys.h"
 
 #define FP_SEND_SIZE   255
 #define FP_RCV_SIZE    255

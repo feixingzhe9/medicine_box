@@ -131,8 +131,6 @@ void USART1_IRQHandler(void)
             test = 1;
         }
         DMA_SetCurrDataCounter(DMA1_Channel5, LC12S_RCV_SIZE);
-        //put_fp_rcv_buf(lc12s_uart_rcv_buf, rcv_len);
-        //OSSemPost(fp_uart_data_come_sem);
         DMA_Cmd(DMA1_Channel5,ENABLE);
     }
     OSIntExit();

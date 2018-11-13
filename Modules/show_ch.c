@@ -9,7 +9,6 @@
 
 /*显示汉字字符是高频操作，为了提高效率，将16X16 32X32 以及横排 竖排的分开操作，牺牲空间换时间*/
 
-
 //------ show 16X16 ------//
 int show_16x16_ch(uint16_t x, uint16_t y, const char * ch, uint16_t ch_len, uint16_t color)
 {

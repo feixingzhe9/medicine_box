@@ -1,6 +1,11 @@
+/*
+ *  Author: Kaka Xie
+ *  brief: led init
+ */
+
 #include "led.h"
 
-void LED_Init(void)
+void led_init(void)
 {
 
     GPIO_InitTypeDef  GPIO_InitStructure;

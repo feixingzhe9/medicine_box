@@ -21,9 +21,8 @@ int main(void)
     delay_init();
     NVIC_Configuration();
     __disable_irq();
-    LED_Init();
+    led_init();
     lcd_init();
-    //lcd_color_box(0,0,320,480,Red);
     fp_com_init();
     lc12s_com_init();
     os_user_config();
