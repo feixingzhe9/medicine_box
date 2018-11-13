@@ -24,8 +24,8 @@ extern fp_rcv_buf_t fp_rcv_mem[FP_RCV_BUF_NUM][1];
 extern fp_short_ack_t fp_short_ack_mem[FP_SHORT_ACK_NUM][1];
 
 /*os related*/
-extern OS_MEM	*fp_rcv_mem_handle;
-extern OS_MEM	*fp_short_ack_mem_handle;
+extern OS_MEM   *fp_rcv_mem_handle;
+extern OS_MEM   *fp_short_ack_mem_handle;
 extern OS_EVENT *fp_uart_data_come_sem;
 extern OS_EVENT *fp_com_get_feature_sem;
 extern OS_EVENT *fp_com_read_feature_sem;
@@ -33,13 +33,13 @@ extern OS_EVENT *fp_com_set_feature_sem;
 
 #define FP_SHORT_ACK_QUEUE_NUM  FP_SHORT_ACK_NUM
 #define FP_LONG_ACK_QUEUE_NUM   FP_LONG_ACK_NUM
-extern OS_EVENT	*fp_short_ack_queue_handle;
+extern OS_EVENT *fp_short_ack_queue_handle;
 extern void* fp_short_ack_queue_p[FP_SHORT_ACK_QUEUE_NUM];
 
-extern OS_EVENT	*fp_long_ack_queue_handle;
+extern OS_EVENT *fp_long_ack_queue_handle;
 extern void* fp_long_ack_queue_p[FP_SHORT_ACK_QUEUE_NUM];
 
-extern OS_MEM	*fp_long_ack_mem_handle;
+extern OS_MEM   *fp_long_ack_mem_handle;
 extern fp_long_ack_t fp_long_ack_mem[FP_LONG_ACK_NUM][1];
 
 void fp_uart_com_send_task(void *pdata);

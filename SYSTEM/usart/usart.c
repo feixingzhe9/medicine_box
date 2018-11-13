@@ -7,7 +7,7 @@
 #include "usart.h"
 
 #if SYSTEM_SUPPORT_UCOS
-#include "includes.h"					//ucos 使用
+#include "includes.h"           //ucos 使用
 #endif
 
 
@@ -89,15 +89,15 @@ void uart2_dma_init(u32 bound)
     NVIC_Init(&NVIC_InitStructure);
 
 
-    //DMA configuration,  COM1-TX
+    //DMA configuration,  USART2 TX
     DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&USART2->DR);    // 外设地址
     DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&fp_uart_send_buf[0];    // 内存地址
-    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;                  // 内存-->外设
+    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;                  // 内存 to 外设
     DMA_InitStructure.DMA_BufferSize = FP_SEND_SIZE;             // 缓存大小
     DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;    // 外设地址不增加
     DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;             // 内存地址增加
     DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte; // 数据宽度8位
-    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte; // 内存数据宽度
+    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte; // 数据宽度
     DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;                     // 循环缓存模式
     DMA_InitStructure.DMA_Priority = DMA_Priority_High;                 // DMA优先级
     DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;                        // MEM到MEM传输禁止
@@ -105,10 +105,10 @@ void uart2_dma_init(u32 bound)
     DMA_Init(DMA1_Channel7, &DMA_InitStructure);
     DMA_Cmd(DMA1_Channel7, DISABLE);
 
-    //COM1-RX
+    //USART2 RX
     DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&USART2->DR);    // 外设地址
     DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&fp_uart_rcv_buf[0];    // 内存地址
-    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;                  // 内存-->外设
+    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;                  // 内存 to 外设
     DMA_InitStructure.DMA_BufferSize = FP_RCV_SIZE;             // 缓存大小
     DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;    // 外设地址不增加
     DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;             // 内存地址增加
@@ -197,7 +197,7 @@ void uart1_dma_init(u32 bound)
     //DMA configuration,  COM1-TX
     DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&USART1->DR);    // 外设地址
     DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&lc12s_send_buf[0];    // 内存地址
-    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;                  // 内存-->外设
+    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;                  // 内存 to 外设
     DMA_InitStructure.DMA_BufferSize = LC12S_SEND_SIZE;             // 缓存大小
     DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;    // 外设地址不增加
     DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;             // 内存地址增加
@@ -213,12 +213,12 @@ void uart1_dma_init(u32 bound)
     //COM1-RX
     DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)(&USART1->DR);    // 外设地址
     DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)&lc12s_uart_rcv_buf[0];    // 内存地址
-    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;                  // 内存-->外设
+    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;                  // 内存 to 外设
     DMA_InitStructure.DMA_BufferSize = LC12S_RCV_SIZE;             // 缓存大小
     DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;    // 外设地址不增加
     DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;             // 内存地址增加
     DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte; // 数据宽度8位
-    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte; // 内存数据宽度
+    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte; // 数据宽度
     DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;                     // 循环缓存模式
     DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;                 // DMA优先级
     DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;                        // MEM到MEM传输禁止

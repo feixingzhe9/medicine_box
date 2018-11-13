@@ -7,7 +7,7 @@
 #include "fingerprint_task.h"
 #include "delay.h"
 #include "sys.h"
-#include "usart.h"	
+#include "usart.h"
 #include "led.h"
 #include "fingerprint.h"
 
@@ -24,20 +24,20 @@ OS_EVENT *fp_com_set_feature_sem;
 
 fp_rcv_buf_t fp_rcv_mem[FP_RCV_BUF_NUM][1];
 fp_rcv_buf_t *fp_rcv_buf_head = NULL;
-OS_MEM	*fp_rcv_mem_handle;
+OS_MEM *fp_rcv_mem_handle;
 
 //OSQCreate
-OS_EVENT	*fp_short_ack_queue_handle;
+OS_EVENT *fp_short_ack_queue_handle;
 void* fp_short_ack_queue_p[FP_SHORT_ACK_QUEUE_NUM];
 
-OS_EVENT	*fp_long_ack_queue_handle;
+OS_EVENT *fp_long_ack_queue_handle;
 void* fp_long_ack_queue_p[FP_SHORT_ACK_QUEUE_NUM];
 
 
 fp_short_ack_t fp_short_ack_mem[FP_SHORT_ACK_NUM][1];
 fp_long_ack_t fp_long_ack_mem[FP_LONG_ACK_NUM][1];
-OS_MEM	*fp_short_ack_mem_handle;
-OS_MEM	*fp_long_ack_mem_handle;
+OS_MEM *fp_short_ack_mem_handle;
+OS_MEM *fp_long_ack_mem_handle;
 
 
 //OSMemPut
@@ -69,7 +69,7 @@ int fp_rcv_buf_head_init(void)
 uint16_t get_used_buf_size(void)
 {
     uint16_t cnt = 0;
-    fp_rcv_buf_t	*ptr = NULL;
+    fp_rcv_buf_t *ptr = NULL;
     ptr = fp_rcv_buf_head;
     while(ptr->next != NULL)
     {

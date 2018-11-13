@@ -84,7 +84,7 @@ void dis_test_task(void *pdata)
         //lcd_fill_pic(0, 0, 320, 480, gImage_MM_T035);delay_ms(1000);
 
 
-        
+
 //        for(i = 0; i < 480; i += 10)
 //        {
 //            lcd_color_box_ex(0, i, 320, 480 - i, gImage_MM_T035);
