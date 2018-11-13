@@ -196,13 +196,27 @@ void lcd_init(void)
     lcd_wr_reg(0x08,0x01);
     lcd_wr_reg(0x09,0xDF);
 
-#if (DIS_DIRECTION == DIRECTION_VERTICAL)
+#if (DIS_DIRECTION & DIRECTION_VERTICAL)
+    #if (DIS_DIRECTION & DIRECTION_TYPE_A)
 
-    lcd_wr_reg(0x016,0x58);//set my mx mv bgr...
+    lcd_wr_reg(0x016,0x58);//set my mx mv bgr...    HX8357-A芯片手册datasheet.pdf  page 89 and page 153
+
+    #elif (DIS_DIRECTION & DIRECTION_TYPE_B)
+
+    lcd_wr_reg(0x016,0x98);//set my mx mv bgr...    HX8357-A芯片手册datasheet.pdf  page 89 and page 153
+
+    #endif
 
 #else
+    #if (DIS_DIRECTION & DIRECTION_TYPE_A)
 
-    lcd_wr_reg(0x16,0xe8);//set my mx mv bgr...
+    lcd_wr_reg(0x16,0x38);//set my mx mv bgr...     HX8357-A芯片手册datasheet.pdf  page 89 and page 153
+
+    #elif (DIS_DIRECTION & DIRECTION_TYPE_B)
+
+    lcd_wr_reg(0x16,0xe8);//set my mx mv bgr...     HX8357-A芯片手册datasheet.pdf  page 89 and page 153
+
+    #endif
 
 #endif
 
@@ -497,6 +511,9 @@ void lcd_init(void)
     //printf("lcd_read_pixel=%04x\r\n",lcd_read_pixel(10, 12));
 
 }
+
+
+//void change_dis_direction()
 /******************************************
   函数名：Lcd写命令函数
   功能：向Lcd指定位置写入应有命令或数据
@@ -599,7 +616,7 @@ void lcd_fill_pic(u16 x, u16 y, u16 pic_H, u16 pic_V, const unsigned char* pic)
 
 void lcd_draw_pixel(u16 x, u16 y, u16 Color)
 {
-#if DIS_DIRECTION == DIRECTION_HORIZONTAL
+#if (DIS_DIRECTION & DIRECTION_HORIZONTAL)
     lcd_wr_reg(0x02, 0);
     lcd_wr_reg(0x03, 0);     //Column Start
     lcd_wr_reg(0x04, (LCD_X_MAX - 1) >> 8);
