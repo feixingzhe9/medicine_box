@@ -46,9 +46,9 @@ void lcd_color_box_ex(u16 x_start, u16 y_start, u16 x_long, u16 y_long, const un
         lcd_block_write(x_start, x_start + x_long - 1, y_start, y_start + y_long - 1);
         for (i = 0; i < x_long * y_long - 1; i++)
         {
-            color = pic[i];
+            color = pic[i * 2 + 1];
             color <<= 8;
-            color += pic[i + 1];
+            color += pic[i * 2];
             *(__IO u16 *) (BANK_1_LCD_DATA) = color;
             //*(__IO u16 *) (BANK_1_LCD_DATA) = pic[temp];
         }

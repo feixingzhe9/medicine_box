@@ -11,6 +11,7 @@
 
 OS_STK DIS_TEST_TASK_STK[DIS_TEST_STK_SIZE];
 
+extern const unsigned char g_image_test[76808];
 void dis_test_task(void *pdata)
 {
     int i = 0;
@@ -92,7 +93,7 @@ void dis_test_task(void *pdata)
 
 //        lcd_color_box_ex(0, 0, 320, 480, gImage_MM_T035);
         lcd_color_box_ex(0, 0, LCD_X_MAX, LCD_Y_MAX, g_image_test);
-        delay_ms(1000);
+        delay_ms(35000);
     }
 
 }

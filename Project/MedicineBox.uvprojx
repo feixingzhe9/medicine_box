@@ -626,6 +626,16 @@
             </File>
           </Files>
         </Group>
+        <Group>
+          <GroupName>PIC</GroupName>
+          <Files>
+            <File>
+              <FileName>test.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\pic\test.c</FilePath>
+            </File>
+          </Files>
+        </Group>
       </Groups>
     </Target>
   </Targets>
