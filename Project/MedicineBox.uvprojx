@@ -630,9 +630,9 @@
           <GroupName>PIC</GroupName>
           <Files>
             <File>
-              <FileName>test.c</FileName>
+              <FileName>background.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\pic\test.c</FilePath>
+              <FilePath>..\pic\background.c</FilePath>
             </File>
           </Files>
         </Group>

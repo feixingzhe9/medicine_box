@@ -5,11 +5,26 @@
 
 #include "lc12s_wireless.h"
 
+
+fifo_data_struct wireless_uart_fifo_data_in_ram[RCV_DATA_LEN_MAX];
+fifo_t wireless_uart_fifo_in_ram;
+fifo_t *wireless_uart_fifo = &wireless_uart_fifo_in_ram;
+
 void lc12s_com_init(void)
 {
     uart1_dma_init(9600);
 }
 
+void lc12s_fifo_init(void)
+{
+    init_fifo(wireless_uart_fifo, wireless_uart_fifo_data_in_ram, RCV_DATA_LEN_MAX);
+}
+
+void lc12s_init(void)
+{
+    lc12s_com_init();
+    lc12s_fifo_init();
+}
 
 int lc12s_com_send(uint8_t *data, uint16_t len)
 {
@@ -25,7 +40,7 @@ void lc12s_send_com_test(void)
     {
         test_buf[i] = i;
     }
-    lc12s_com_send("abcdefghijklmn", 10);
-    //lc12s_com_send(test_buf, sizeof(test_buf));
+    //lc12s_com_send("abcdefghijklmn", 10);
+    lc12s_com_send(test_buf, sizeof(test_buf));
 
 }

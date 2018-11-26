@@ -11,14 +11,9 @@
 #define FP_UART_COM_SEND_TASK_STK_SIZE                  1024
 extern OS_STK FP_UART_COM_SEND_TASK_STK[FP_UART_COM_SEND_TASK_STK_SIZE];
 
-
 #define FP_UART_COM_RCV_TASK_PRIO                       10
 #define FP_UART_COM_RCV_TASK_STK_SIZE                   1024
 extern OS_STK FP_UART_COM_RCV_TASK_STK[FP_UART_COM_RCV_TASK_STK_SIZE];
-
-
-
-
 
 extern fp_rcv_buf_t fp_rcv_mem[FP_RCV_BUF_NUM][1];
 extern fp_short_ack_t fp_short_ack_mem[FP_SHORT_ACK_NUM][1];

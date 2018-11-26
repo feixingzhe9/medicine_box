@@ -24,7 +24,7 @@ int main(void)
     led_init();
     lcd_init();
     fp_com_init();
-    lc12s_com_init();
+    lc12s_init();
     os_user_config();
     user_init_depend_on_os_config();
     __enable_irq();

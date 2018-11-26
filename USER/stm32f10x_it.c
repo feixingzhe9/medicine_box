@@ -26,6 +26,7 @@
 #include "includes.h"
 #include "usart.h"
 #include "fingerprint_task.h"
+#include "lc12s_wireless.h"
  
 void NMI_Handler(void)
 {
@@ -109,13 +110,13 @@ void DMA1_Channel5_IRQHandler(void)     //USART1-TX
 
 
 uint32_t uart1_rcv_test_cnt = 0;
-uint32_t uart1_rcv_test_len = 0;
+
 /*    USART1 IDLE interrupt    */
 void USART1_IRQHandler(void)
 {
     volatile unsigned char temper=0;
     uint16_t rcv_len = 0;
-    uint32_t test = 0;
+    uint32_t i = 0;
     OSIntEnter();
     if (USART_GetITStatus(USART1, USART_IT_IDLE) != RESET)
     {
@@ -125,11 +126,11 @@ void USART1_IRQHandler(void)
         uart1_rcv_test_cnt++;
         DMA_Cmd(DMA1_Channel5, DISABLE);
         rcv_len = LC12S_RCV_SIZE - DMA_GetCurrDataCounter(DMA1_Channel5);
-        uart1_rcv_test_len = rcv_len;
-        if(uart1_rcv_test_len == 1)
+        for(i = 0; i < rcv_len; i++)
         {
-            test = 1;
+            put_data_to_fifo(wireless_uart_fifo, *((fifo_data_struct *)(&lc12s_uart_rcv_buf[i])));
         }
+        OSSemPost(wireless_com_data_come_sem);
         DMA_SetCurrDataCounter(DMA1_Channel5, LC12S_RCV_SIZE);
         DMA_Cmd(DMA1_Channel5,ENABLE);
     }

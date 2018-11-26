@@ -23,6 +23,8 @@ static void sem_create(void)
     fp_com_get_feature_sem = OSSemCreate(0);
     fp_com_read_feature_sem = OSSemCreate(0);
     fp_com_set_feature_sem = OSSemCreate(0);
+
+    wireless_com_data_come_sem = OSSemCreate(0);
 }
 
 
