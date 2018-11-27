@@ -47,7 +47,7 @@ void lc12s_send_task(void *pdata)
     while(1)
     {
 //        send_heart_beat(cnt++);
-        delay_ms(1000);
+        delay_ms(100);
     }
 }
 
@@ -100,6 +100,7 @@ void lc12s_rcv_task(void *pdata)
         fifo_data_struct data_tmp;
 
         OSSemPend(wireless_com_data_come_sem, 0, &err);
+        OSSemSet(wireless_com_data_come_sem, 0, &err);
 
         while(is_fifo_empty(wireless_uart_fifo) == FALSE)
         {
