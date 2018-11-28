@@ -21,7 +21,7 @@ int main(void)
     delay_init();
     NVIC_Configuration();
     __disable_irq();
-    led_init();
+    delay_us_ex(2000 * 1000);
     lcd_init();
     fp_com_init();
     lc12s_init();
@@ -29,6 +29,5 @@ int main(void)
     user_init_depend_on_os_config();
     __enable_irq();
     OSStart();
-
 }
 

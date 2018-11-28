@@ -15,6 +15,7 @@ extern const unsigned char pic_background[307200];
 void dis_test_task(void *pdata)
 {
     int i = 0;
+
     while(1)
     {
 //        for(i = 0; i < 100; i++)

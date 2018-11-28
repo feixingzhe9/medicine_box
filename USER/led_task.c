@@ -27,6 +27,7 @@ void led1_task(void *pdata)
 
 void led2_task(void *pdata)
 {
+    led_init();
     while(1)
     {
         LED1=0;

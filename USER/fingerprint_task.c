@@ -341,7 +341,6 @@ void fp_uart_com_send_task(void *pdata)
     fp_long_ack_t *fp_long_ack = NULL;
     fp_feature_t fp_feature;
 
-
     test_cmd = 5;
     while(1)
     {

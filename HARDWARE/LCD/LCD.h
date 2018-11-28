@@ -29,7 +29,7 @@
                                 GPIOD->BRR  = GPIO_Pin_13;\
                             }while(0)
 
-
+#if 0
 #define LCD_BACK_LIGHT_ON   do\
                             {\
                                 GPIOA->BSRR = GPIO_Pin_1;\
@@ -40,6 +40,18 @@
                             {\
                                 GPIOA->BRR  = GPIO_Pin_1;\
                             }while(0)
+#else
+#define LCD_BACK_LIGHT_ON   do\
+                            {\
+                                GPIOB->BSRR = GPIO_Pin_0;\
+                            }while(0)
+
+
+#define LCD_BACK_LIGHT_OFF  do\
+                            {\
+                                GPIOB->BRR  = GPIO_Pin_0;\
+                            }while(0)
+#endif
 
 
 #define DIRECTION_VERTICAL          0x0001

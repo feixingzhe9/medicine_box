@@ -48,7 +48,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>..\OBJ\</OutputDirectory>
-          <OutputName>UCOSII-1</OutputName>
+          <OutputName>medicine-box</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
@@ -438,6 +438,11 @@
               <FileName>fifo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Modules\fifo.c</FilePath>
+            </File>
+            <File>
+              <FileName>show_en.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Modules\show_en.c</FilePath>
             </File>
           </Files>
         </Group>

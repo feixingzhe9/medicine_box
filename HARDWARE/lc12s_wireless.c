@@ -20,8 +20,23 @@ void lc12s_fifo_init(void)
     init_fifo(wireless_uart_fifo, wireless_uart_fifo_data_in_ram, RCV_DATA_LEN_MAX);
 }
 
+void lc12s_gpio_init(void)
+{
+    GPIO_InitTypeDef  GPIO_InitStructure;
+
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);	 //使能端口时钟
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;				 // 端口配置
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 //推挽输出
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		 //IO口速度为50MHz
+    GPIO_Init(GPIOD, &GPIO_InitStructure);					 //根据设定参数初始化GPIO
+    GPIO_ResetBits(GPIOD,GPIO_Pin_3);						 //
+
+}
+
 void lc12s_init(void)
 {
+    lc12s_gpio_init();
     lc12s_com_init();
     lc12s_fifo_init();
 }
