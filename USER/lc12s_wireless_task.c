@@ -13,6 +13,9 @@ OS_STK LC12S_UART_COM_RCV_TASK_STK[LC12S_UART_COM_RCV_TASK_STK_SIZE];
 OS_EVENT *wireless_com_data_come_sem;
 
 
+uint32_t my_id = 0x12345678;
+uint32_t rcv_id = 0;
+
 uint8_t cal_check_sum(uint8_t *data, uint8_t len)
 {
     uint8_t i = 0;
@@ -28,17 +31,27 @@ uint8_t cal_check_sum(uint8_t *data, uint8_t len)
 extern void lc12s_send_com_test(void);
 static void send_heart_beat(uint32_t cnt)
 {
-    uint8_t send_buf[9] = {0};
+    uint8_t send_buf[13] = {0};
     send_buf[0] = FRAME_HEADER;
-    send_buf[1] = 9;
+    send_buf[1] = 13;
     send_buf[2] = FRAME_HEART_BEAT;
-    send_buf[3] = (uint8_t)(cnt >> 24);
-    send_buf[4] = (uint8_t)((cnt >> 16) & 0xff);
-    send_buf[5] = (uint8_t)((cnt >> 8) & 0xff);
-    send_buf[6] = (uint8_t)(cnt  & 0xff);
-    send_buf[7] = cal_check_sum(send_buf, 7);
-    send_buf[8] = FRAME_FOOTER;
-    lc12s_com_send(send_buf, 9);
+    send_buf[3] = my_id >> 24;
+    send_buf[4] = (my_id >> 16) & 0xff;
+    send_buf[5] = (my_id >> 8) & 0xff;
+    send_buf[6] = my_id & 0xff;
+    send_buf[7] = (uint8_t)(cnt >> 24);
+    send_buf[8] = (uint8_t)((cnt >> 16) & 0xff);
+    send_buf[9] = (uint8_t)((cnt >> 8) & 0xff);
+    send_buf[10] = (uint8_t)(cnt  & 0xff);
+    send_buf[11] = cal_check_sum(send_buf, 11);
+    send_buf[12] = FRAME_FOOTER;
+    lc12s_com_send(send_buf, 13);
+}
+
+
+static void send_test(void)
+{
+    lc12s_com_send("123456789", 9);
 }
 
 void lc12s_send_task(void *pdata)
@@ -47,7 +60,8 @@ void lc12s_send_task(void *pdata)
     while(1)
     {
         send_heart_beat(cnt++);
-        delay_ms(500);
+//        send_test();
+        delay_ms(300);
     }
 }
 
@@ -78,10 +92,15 @@ static int frame_proc(uint8_t *frame, uint16_t len)
     {
         case FRAME_HEART_BEAT:
             heart_beat_cnt_2++;
-            heart_beat_cnt = frame[4];
-            heart_beat_cnt |= frame[3] << 8;
-            heart_beat_cnt |= frame[2] << 16;
-            heart_beat_cnt |= frame[1] << 24;
+            rcv_id = frame[4];
+            rcv_id |= frame[3] << 8;
+            rcv_id |= frame[2] << 16;
+            rcv_id |= frame[1] << 24;
+
+            heart_beat_cnt = frame[8];
+            heart_beat_cnt |= frame[7] << 8;
+            heart_beat_cnt |= frame[6] << 16;
+            heart_beat_cnt |= frame[5] << 24;
             printf("frame heart beat %d", heart_beat_cnt);
             break;
         default :
