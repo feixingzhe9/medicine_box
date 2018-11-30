@@ -14,10 +14,10 @@
  * 当选择不同的地址线时，地址要重新计算。
  */
 
-#define BANK_1_LCD_DATA     ((u32)0x60020000)//Disp Data ADDR
-#define BANK_1_LCD_CMD      ((u32)0x60000000)//Disp Reg ADDR
+#define BANK_1_LCD_DATA     ((u32)0x68020000)//Disp Data ADDR
+#define BANK_1_LCD_CMD      ((u32)0x68000000)//Disp Reg ADDR
 
-
+#if 0
 #define LCD_SET_RST         do\
                             {\
                                 GPIOD->BSRR = GPIO_Pin_13;\
@@ -28,7 +28,18 @@
                             {\
                                 GPIOD->BRR  = GPIO_Pin_13;\
                             }while(0)
+#else
+#define LCD_SET_RST         do\
+                            {\
+                                GPIOG->BSRR = GPIO_Pin_8;\
+                            }while(0)
 
+
+#define LCD_CLR_RST         do\
+                            {\
+                                GPIOG->BRR  = GPIO_Pin_8;\
+                            }while(0)
+#endif
 #if 0
 #define LCD_BACK_LIGHT_ON   do\
                             {\

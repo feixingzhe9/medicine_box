@@ -17,11 +17,11 @@
 
 int main(void)
 {
+    delay_us_ex(2000 * 1000);
     OSInit();
     delay_init();
     NVIC_Configuration();
     __disable_irq();
-    delay_us_ex(2500 * 1000);
     lcd_init();
     fp_com_init();
     lc12s_init();
