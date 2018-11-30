@@ -11,7 +11,7 @@
 
 OS_STK DIS_TEST_TASK_STK[DIS_TEST_STK_SIZE];
 
-extern const unsigned char pic_background[307200];
+//extern const unsigned char pic_background[307200];
 void dis_test_task(void *pdata)
 {
     int i = 0;
@@ -28,9 +28,9 @@ void dis_test_task(void *pdata)
 //        lcd_color_box(0,0,320,480,Blue);delay_ms(1000);
         lcd_color_box(0, 0, LCD_X_MAX, LCD_Y_MAX, Red);delay_ms(1000);
         lcd_color_box(0, 0, LCD_X_MAX, LCD_Y_MAX, White);delay_ms(1000);
-        lcd_color_box_ex(0, 0, LCD_X_MAX, LCD_Y_MAX, pic_background);delay_ms(1000);
+//        lcd_color_box_ex(0, 0, LCD_X_MAX, LCD_Y_MAX, pic_background);delay_ms(1000);
         lcd_color_box(100, 100, 60, 90, Green);delay_ms(1000);
-        lcd_color_box_ex(0, 0, LCD_X_MAX, LCD_Y_MAX, pic_background);delay_ms(1000);
+//        lcd_color_box_ex(0, 0, LCD_X_MAX, LCD_Y_MAX, pic_background);delay_ms(1000);
 //        lcd_color_box(0,0,20,80,Green);delay_ms(1000);
 //        lcd_color_box(100,100,20,80,Green);delay_ms(1000);
 //        lcd_color_box(200,260,20,80,Green);delay_ms(1000);

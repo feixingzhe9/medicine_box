@@ -13,6 +13,11 @@ extern OS_STK LED1_TASK_STK[LED1_STK_SIZE];
 #define LED2_STK_SIZE                   64
 extern OS_STK LED2_TASK_STK[LED2_STK_SIZE];
 
+
+#define FLASH_TEST_TASK_PRIO                  11
+#define FLASH_TEST_STK_SIZE                   64
+extern OS_STK FLASH_TEST_TASK_STK[FLASH_TEST_STK_SIZE];
+
 void led1_task(void *pdata);
 void led2_task(void *pdata);
 

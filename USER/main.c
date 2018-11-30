@@ -15,6 +15,8 @@
 #include "fingerprint.h"
 #include "lc12s_wireless.h"
 
+#include "flash.h"
+
 int main(void)
 {
     delay_us_ex(2000 * 1000);
@@ -25,6 +27,7 @@ int main(void)
     lcd_init();
     fp_com_init();
     lc12s_init();
+    SPI_Flash_Init();
     os_user_config();
     user_init_depend_on_os_config();
     __enable_irq();
