@@ -26,6 +26,7 @@ void dis_test_task(void *pdata)
 
 //        lcd_color_box(0,0,320,480,Red);delay_ms(1000);
 //        lcd_color_box(0,0,320,480,Blue);delay_ms(1000);
+        delay_ms(1000);
         lcd_color_box(0, 0, LCD_X_MAX, LCD_Y_MAX, Red);delay_ms(1000);
         lcd_color_box(0, 0, LCD_X_MAX, LCD_Y_MAX, White);delay_ms(1000);
 //        lcd_color_box_ex(0, 0, LCD_X_MAX, LCD_Y_MAX, pic_background);delay_ms(1000);

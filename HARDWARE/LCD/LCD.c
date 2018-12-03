@@ -43,20 +43,20 @@ void lcd_gpio_config(void)
     GPIO_SetBits(GPIOB, GPIO_Pin_0);
 
     /* config tft back_light gpio base on the PT4101 */
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1 ;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 ;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
 
     /* config tft data lines base on FSMC
      * data lines,FSMC-D0~D15: PD 14 15 0 1,PE 7 8 9 10 11 12 13 14 15,PD 8 9 10
      */
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;    //GPIO_Speed_50MHz
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_8 | GPIO_Pin_9 |
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_8 | GPIO_Pin_9 |\
         GPIO_Pin_10 | GPIO_Pin_14 | GPIO_Pin_15;
     GPIO_Init(GPIOD, &GPIO_InitStructure);
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 |
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 |\
         GPIO_Pin_11 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
     GPIO_Init(GPIOE, &GPIO_InitStructure);
 
@@ -66,41 +66,41 @@ void lcd_gpio_config(void)
      * PD7-FSMC_NE1  :LCD-CS
      * PD11-FSMC_A16 :LCD-DC
      */
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;// RD
     GPIO_Init(GPIOD, &GPIO_InitStructure);
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;// WR
     GPIO_Init(GPIOD, &GPIO_InitStructure);
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-    GPIO_Init(GPIOD, &GPIO_InitStructure);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+    GPIO_Init(GPIOG, &GPIO_InitStructure);  //CS
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11 ;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11 ;//DC
     GPIO_Init(GPIOD, &GPIO_InitStructure);
 
     /* tft control gpio init */
 
 
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
     GPIO_Init(GPIOG, &GPIO_InitStructure);
-    
-    
+
+
     GPIO_SetBits(GPIOG, GPIO_Pin_8);		 // RST = 1
     GPIO_SetBits(GPIOD, GPIO_Pin_4);		 // RD = 1
     GPIO_SetBits(GPIOD, GPIO_Pin_5);		 // WR = 1
-    GPIO_SetBits(GPIOD, GPIO_Pin_7);		 //	CS = 1
-    
-    
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_SetBits(GPIOG, GPIO_Pin_10);		 //	CS = 1
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
-    GPIO_Init(GPIOG, &GPIO_InitStructure);
 
-    GPIO_ResetBits(GPIOG, GPIO_Pin_6);		 //	DE = 0
+//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_2MHz;
+//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+
+//    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
+//    GPIO_Init(GPIOG, &GPIO_InitStructure);
+
+//    GPIO_ResetBits(GPIOG, GPIO_Pin_6);		 //	DE = 0
 }
 
 
@@ -109,6 +109,8 @@ static void lcd_fsmc_config(void)
     FSMC_NORSRAMInitTypeDef  FSMC_NORSRAMInitStructure;
     FSMC_NORSRAMTimingInitTypeDef  p;
 
+    FSMC_NORSRAMDeInit(FSMC_Bank1_NORSRAM3);
+    FSMC_NORSRAMCmd(FSMC_Bank1_NORSRAM3, ENABLE);
 
     p.FSMC_AddressSetupTime = 0x02;	 //地址建立时间
     p.FSMC_AddressHoldTime = 0x00;	 //地址保持时间
@@ -124,6 +126,7 @@ static void lcd_fsmc_config(void)
     FSMC_NORSRAMInitStructure.FSMC_MemoryType = FSMC_MemoryType_NOR;
     FSMC_NORSRAMInitStructure.FSMC_MemoryDataWidth = FSMC_MemoryDataWidth_16b;
     FSMC_NORSRAMInitStructure.FSMC_BurstAccessMode = FSMC_BurstAccessMode_Disable;
+    FSMC_NORSRAMInitStructure.FSMC_AsynchronousWait = FSMC_AsynchronousWait_Disable;
     FSMC_NORSRAMInitStructure.FSMC_WaitSignalPolarity = FSMC_WaitSignalPolarity_Low;
     FSMC_NORSRAMInitStructure.FSMC_WrapMode = FSMC_WrapMode_Disable;
     FSMC_NORSRAMInitStructure.FSMC_WaitSignalActive = FSMC_WaitSignalActive_BeforeWaitState;
@@ -135,6 +138,7 @@ static void lcd_fsmc_config(void)
     FSMC_NORSRAMInitStructure.FSMC_WriteTimingStruct = &p;
 
     FSMC_NORSRAMInit(&FSMC_NORSRAMInitStructure);
+
 
     /* Enable FSMC Bank1_SRAM Bank */
     FSMC_NORSRAMCmd(FSMC_Bank1_NORSRAM3, ENABLE);
@@ -150,9 +154,9 @@ static void lcd_delay(__IO u32 count)
 static void lcd_rst(void)
 {
     LCD_CLR_RST;
-    lcd_delay(10000);
+    lcd_delay(90000);
     LCD_SET_RST;
-    lcd_delay(10000);
+    lcd_delay(90000);
 }
 
 static void lcd_write_cmd(u16 CMD)
@@ -509,14 +513,10 @@ void lcd_init(void)
     lcd_delay(10);
 
     LCD_BACK_LIGHT_ON;
-    lcd_color_box(0,0,320,480,Yellow);
-    //printf("lcd_read_pixel=%04x\r\n",lcd_read_pixel(8, 8));
-    lcd_draw_pixel(10, 10, 0xaaaa);
-    //printf("lcd_read_pixel=%04x\r\n",lcd_read_pixel(10, 10));
-    lcd_draw_pixel(10, 11, 0XFFFF);
-    //printf("lcd_read_pixel=%04x\r\n",lcd_read_pixel(10, 11));
-    lcd_draw_pixel(10, 12, 0X00);
-    //printf("lcd_read_pixel=%04x\r\n",lcd_read_pixel(10, 12));
+//    lcd_color_box(0, 0, 320, 480, Yellow);
+//    lcd_draw_pixel(10, 10, 0xaaaa);
+//    lcd_draw_pixel(10, 11, 0XFFFF);
+//    lcd_draw_pixel(10, 12, 0X00);
 
 }
 
