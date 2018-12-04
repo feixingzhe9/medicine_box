@@ -36,6 +36,7 @@ int main(void)
 //    fp_com_init();
 //    lc12s_init();
     SPI_Flash_Init();
+    delay_us_ex(100 * 1000);
     os_user_config();
     user_init_depend_on_os_config();
     __enable_irq();

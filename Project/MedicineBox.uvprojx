@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\HARDWARE\LED;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\STM32F10x_FWLib\inc;..\CORE;..\UCOSII\CONFIG;..\UCOSII\CORE;..\UCOSII\PORT;..\HARDWARE\LCD;..\Modules;..\HARDWARE;..\ExternLib\GT30L24M1Z</IncludePath>
+              <IncludePath>..\HARDWARE\LED;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\STM32F10x_FWLib\inc;..\CORE;..\UCOSII\CONFIG;..\UCOSII\CORE;..\UCOSII\PORT;..\HARDWARE\LCD;..\Modules;..\HARDWARE;..\ExternLib\GT31L16M1Y80</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -675,9 +675,9 @@
           <GroupName>ExternLib</GroupName>
           <Files>
             <File>
-              <FileName>GT30L24M1Z_STM32F103ZE_keil5.lib</FileName>
+              <FileName>GT31L16M1Y80_STM32F103ZE_keil5.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>..\ExternLib\GT30L24M1Z\GT30L24M1Z_STM32F103ZE_keil5.lib</FilePath>
+              <FilePath>..\ExternLib\GT31L16M1Y80\GT31L16M1Y80_STM32F103ZE_keil5.lib</FilePath>
             </File>
           </Files>
         </Group>
