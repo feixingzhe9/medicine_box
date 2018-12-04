@@ -24,15 +24,17 @@ void led1_task(void *pdata)
     };
 }
 
-
+#include "lock.h"
 void led2_task(void *pdata)
 {
     led_init();
     while(1)
     {
         LED1=0;
+//        lock_on();
         delay_ms(500);
         LED1=1;
+//        lock_off();
         delay_ms(500);
     };
 }
@@ -44,9 +46,14 @@ void led2_task(void *pdata)
 uint32_t cal_ascii_addr(char ascii)
 {
     uint32_t base_addr = 0x1F6500;
+    uint32_t addr = 0;
     if((ascii >= 0x20) && (ascii < 0x7e))
     {
-        return  (ascii - 0x20 ) * 48 + base_addr;
+        addr = ascii - 0x20;
+        addr *= 48;
+        addr += base_addr;
+        return addr;
+//        return ((ascii - 0x20 ) * 48 + base_addr);
     }
     return 0;
 }
@@ -56,33 +63,43 @@ uint32_t cal_ascii_addr(char ascii)
 
 
 
-unsigned long gt (unsigned char c1, unsigned char c2, unsigned char c3, unsigned char c4)
+uint32_t get_ch_addr(unsigned char c1, unsigned char c2, unsigned char c3, unsigned char c4)
 {
-    unsigned long h=0;
+    uint32_t h=0;
 
     if(c2==0x7f)
         return (h);
 
     if(c1>=0xA1 && c1 <= 0xAB && c2>=0xa1) //Section 1
+    {
         h= (c1 - 0xA1) * 94 + (c2 - 0xA1);
+    }
     else if(c1>=0xa8 && c1 <= 0xa9 && c2<0xa1) //Section 5
     {
         if(c2>0x7f)
-        c2--;
+        {
+            c2--;
+        }
         h=(c1-0xa8)*96 + (c2-0x40)+846;
     }
     if(c1>=0xb0 && c1 <= 0xf7 && c2>=0xa1) //Section 2
+    {
         h= (c1 - 0xB0) * 94 + (c2 - 0xA1)+1038;
+    }
     else if(c1<0xa1 && c1>=0x81 && c2>=0x40) //Section 3
     {
         if(c2>0x7f)
-        c2--;
+        {
+            c2--;
+        }
         h=(c1-0x81)*190 + (c2-0x40) + 1038 +6768;
     }
     else if(c1>=0xaa && c2<0xa1) //Section 4
     {
         if(c2>0x7f)
+        {
             c2--;
+        }
         h=(c1-0xaa)*96 + (c2-0x40) + 1038 +12848;
     }
     else if(c1==0x81 && c2>=0x39) // 四字节区 1
@@ -118,8 +135,12 @@ uint8_t ch_lib_1[] =
 
 
 #include "flash.h"
+#include "display_task.h"
+#include "show_ch.h"
+#include "show_pic.h"
 extern int show_24X24_ch(uint16_t x, uint16_t y, const char * ch, uint16_t ch_len, uint16_t color, uint8_t *data);
 extern int show_12X24_ch(uint16_t x, uint16_t y, char ch, uint16_t ch_len, uint16_t color, uint8_t *data);
+
 OS_STK FLASH_TEST_TASK_STK[LED1_STK_SIZE];
 uint8_t flash_read_test_buf[100];
 void falsh_test_task(void *pdata)
@@ -127,15 +148,16 @@ void falsh_test_task(void *pdata)
     while(1)
     {
         delay_ms(1000);
+        lcd_color_box(0, 0, LCD_X_MAX, LCD_Y_MAX, White);delay_ms(1000);
+        SPI_Flash_Read(flash_read_test_buf, cal_ascii_addr('C'), 48);
+//        SPI_Flash_Read(flash_read_test_buf, 0x1F6500 + 48 * 0x0d, 48);
+        show_12X24_ch(160, 60, 'A', 1, 0x001f, flash_read_test_buf);delay_ms(1000);
+        show_8X16_ch(160, 160, 'b', 1, 0x001f, flash_read_test_buf);delay_ms(1000);
+        show_12X24_ch(190, 90, 'A', 1, 0x001f, A_lib);delay_ms(1000);
 
-        SPI_Flash_Read(flash_read_test_buf, cal_ascii_addr('A'), 48);
-        show_12X24_ch(160, 60, 'A', 1, 0x001f, flash_read_test_buf);
-        delay_ms(1000);
 
-        show_12X24_ch(190, 90, 'A', 1, 0x001f, A_lib);
-        delay_ms(1000);
-
-        SPI_Flash_Read(flash_read_test_buf, gt(0xc3, 0xba, 0, 0), 72);
+        SPI_Flash_Read(flash_read_test_buf, get_ch_addr(0xba, 0xc3, 0, 0), 72);
+//        SPI_Flash_Read(flash_read_test_buf, get_ch_addr(0x81, 0x39, 0xee, 0x39), 72);
         show_24X24_ch(130, 30, "人", 1, 0x001F, flash_read_test_buf);
         delay_ms(1000);
 

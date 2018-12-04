@@ -26,7 +26,7 @@ u16 SPI_FLASH_TYPE=W25Q64;//默认就是25Q64
 void SPI_Flash_Init(void)
 {	
   	GPIO_InitTypeDef GPIO_InitStructure;
-	RCC_APB2PeriphClockCmd(	RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOD|RCC_APB2Periph_GPIOG, ENABLE );//PORTB时钟使能 
+	RCC_APB2PeriphClockCmd(	RCC_APB2Periph_GPIOB, ENABLE );//PORTB时钟使能 
 
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;  // PB12 推挽 
  	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;  //推挽输出
@@ -34,17 +34,17 @@ void SPI_Flash_Init(void)
  	GPIO_Init(GPIOB, &GPIO_InitStructure);
  	GPIO_SetBits(GPIOB,GPIO_Pin_12);
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;  // PD2 推挽 
- 	GPIO_Init(GPIOD, &GPIO_InitStructure);
- 	GPIO_SetBits(GPIOD,GPIO_Pin_2);
+//	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;  // PD2 推挽 
+// 	GPIO_Init(GPIOD, &GPIO_InitStructure);
+// 	GPIO_SetBits(GPIOD,GPIO_Pin_2);
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;  // PG7 推挽 
- 	GPIO_Init(GPIOG, &GPIO_InitStructure);
- 	GPIO_SetBits(GPIOG,GPIO_Pin_7);
+//	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;  // PG7 推挽 
+// 	GPIO_Init(GPIOG, &GPIO_InitStructure);
+// 	GPIO_SetBits(GPIOG,GPIO_Pin_7);
 
 	SPI2_Init();		   	//初始化SPI
-	SPI2_SetSpeed(SPI_BaudRatePrescaler_32);//设置为18M时钟,高速模式
-	SPI_FLASH_TYPE=SPI_Flash_ReadID();//读取FLASH ID.  
+	SPI2_SetSpeed(SPI_BaudRatePrescaler_2);//设置为18M时钟,高速模式
+//	SPI_FLASH_TYPE=SPI_Flash_ReadID();//读取FLASH ID.  
 
 }  
 
@@ -95,7 +95,7 @@ u16 SPI_Flash_ReadID(void)
 {
 	u16 Temp = 0;	  
 	SPI_FLASH_CS=0;				    
-	SPI2_ReadWriteByte(0x90);//发送读取ID命令	    
+	SPI2_ReadWriteByte(0x90);//发送读取ID命令
 	SPI2_ReadWriteByte(0x00); 	    
 	SPI2_ReadWriteByte(0x00); 	    
 	SPI2_ReadWriteByte(0x00); 	 			   

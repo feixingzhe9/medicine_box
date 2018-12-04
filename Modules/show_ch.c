@@ -245,3 +245,27 @@ int show_12X24_ch(uint16_t x, uint16_t y, const char * ch, uint16_t ch_len, uint
 
     return 1;
 }
+
+
+int show_8X16_ch(uint16_t x, uint16_t y, const char ch, uint16_t ch_len, uint16_t color, uint8_t *data)
+{
+    uint8_t j = 0;
+    uint8_t bit_cnt = 0;
+    uint16_t ch_cnt = 0;
+
+    if((x < LCD_X_MAX - 8 + 1) && (y < LCD_Y_MAX - 16 + 1))
+    {
+        for(j = 0; j < 16; j++)
+        {
+            for(bit_cnt = 0; bit_cnt < 8; bit_cnt++)
+            {
+                if(data[j] & (1 << bit_cnt))
+                {
+                    lcd_draw_pixel(x + bit_cnt, y + j, color);
+                }
+            }
+        }
+    }
+
+    return 1;
+}

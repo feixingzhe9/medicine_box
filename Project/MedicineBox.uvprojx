@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\HARDWARE\LED;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\STM32F10x_FWLib\inc;..\CORE;..\UCOSII\CONFIG;..\UCOSII\CORE;..\UCOSII\PORT;..\HARDWARE\LCD;..\Modules;..\HARDWARE</IncludePath>
+              <IncludePath>..\HARDWARE\LED;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\STM32F10x_FWLib\inc;..\CORE;..\UCOSII\CONFIG;..\UCOSII\CORE;..\UCOSII\PORT;..\HARDWARE\LCD;..\Modules;..\HARDWARE;..\ExternLib\GT30L24M1Z</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -443,6 +443,16 @@
               <FileName>show_en.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Modules\show_en.c</FilePath>
+            </File>
+            <File>
+              <FileName>id.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Modules\id.c</FilePath>
+            </File>
+            <File>
+              <FileName>lock.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Modules\lock.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -658,6 +668,16 @@
               <FileName>background.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\pic\background.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>ExternLib</GroupName>
+          <Files>
+            <File>
+              <FileName>GT30L24M1Z_STM32F103ZE_keil5.lib</FileName>
+              <FileType>4</FileType>
+              <FilePath>..\ExternLib\GT30L24M1Z\GT30L24M1Z_STM32F103ZE_keil5.lib</FilePath>
             </File>
           </Files>
         </Group>
