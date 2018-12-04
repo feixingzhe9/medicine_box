@@ -9,9 +9,9 @@
 extern OS_STK LED1_TASK_STK[LED1_STK_SIZE];
 
 
-#define LED2_TASK_PRIO                  6
-#define LED2_STK_SIZE                   64
-extern OS_STK LED2_TASK_STK[LED2_STK_SIZE];
+#define INDICATOR_LED_TASK_PRIO                  6
+#define INDICATOR_LED_STK_SIZE                   64
+extern OS_STK INDICATOR_LED_TASK_STK[INDICATOR_LED_STK_SIZE];
 
 
 #define FLASH_TEST_TASK_PRIO                  11
@@ -19,6 +19,6 @@ extern OS_STK LED2_TASK_STK[LED2_STK_SIZE];
 extern OS_STK FLASH_TEST_TASK_STK[FLASH_TEST_STK_SIZE];
 
 void led1_task(void *pdata);
-void led2_task(void *pdata);
+void indicator_led_task(void *pdata);
 
 #endif

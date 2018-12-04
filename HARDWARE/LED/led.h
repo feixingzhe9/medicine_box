@@ -3,7 +3,7 @@
 #include "sys.h"
 
 #define LED0 PGout(5)// PG5
-#define LED1 PCout(9)// PC9
+#define INDICATOR_LED PCout(9)// PC9
 
 void led_init(void);//≥ı ºªØ
 

@@ -284,7 +284,7 @@ int show_8X16_ch_vertical(uint16_t x, uint16_t y, const char ch, uint16_t ch_len
             {
                 if(data[j] & (1 << bit_cnt))
                 {
-                    lcd_draw_pixel(x + j, y + bit_cnt, color);
+                    lcd_draw_pixel(x + j % 8, y + bit_cnt + (j / 8) * 8, color);
                 }
             }
         }
@@ -315,3 +315,29 @@ int show_16X32_ch_vertical(uint16_t x, uint16_t y, const char ch, uint16_t ch_le
 
     return 1;
 }
+
+int show_16X16_ch_vertical(uint16_t x, uint16_t y, const char ch, uint16_t ch_len, uint16_t color, uint8_t *data)
+{
+    uint8_t j = 0;
+    uint8_t bit_cnt = 0;
+    uint16_t ch_cnt = 0;
+
+    if((x < LCD_X_MAX - 16 + 1) && (y < LCD_Y_MAX - 16 + 1))
+    {
+        for(j = 0; j < 32; j++)
+        {
+            for(bit_cnt = 0; bit_cnt < 8; bit_cnt++)
+            {
+                if(data[j] & (1 << bit_cnt))
+                {
+                    lcd_draw_pixel(x + j % 16, y + bit_cnt + (j / 16) * 8, color);
+                }
+            }
+        }
+    }
+
+    return 1;
+}
+
+
+

@@ -477,9 +477,9 @@ void fp_uart_com_rcv_task(void *pdata)
 
     while(1)
     {
-        LED1 = 1;
+        INDICATOR_LED = 1;
         OSSemPend(fp_uart_data_come_sem, 0, &err);
-        LED1 = 0;
+        INDICATOR_LED = 0;
         delay_ms(50);
         OS_ENTER_CRITICAL();
         fp_rcv_node = get_latest_fp_buf();

@@ -59,7 +59,7 @@ void lc12s_send_task(void *pdata)
     uint32_t cnt = 0;
     while(1)
     {
-        send_heart_beat(cnt++);
+//        send_heart_beat(cnt++);
 //        send_test();
         delay_ms(1000);
     }

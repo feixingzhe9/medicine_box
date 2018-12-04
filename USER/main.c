@@ -28,13 +28,13 @@ int main(void)
     __disable_irq();
     init_lock();
     delay_us_ex(3000 * 1000);
-//    id_key_init();
-//    test_id = get_my_id();
+    id_key_init();
+    test_id = get_my_id();
     lcd_init();
     delay_us_ex(1000 * 1000);
     lcd_init();
-//    fp_com_init();
-//    lc12s_init();
+    fp_com_init();
+    lc12s_init();
     SPI_Flash_Init();
     delay_us_ex(100 * 1000);
     os_user_config();
