@@ -50,7 +50,7 @@ uint8_t flash_read_test_buf[100];
 
 unsigned char r_dat_bat(unsigned long address,unsigned long byte_long,unsigned char *p_arr)
 {
-    SPI_Flash_Read(p_arr, address, byte_long);
+    spi2_flash_read(p_arr, address, byte_long);
     return 0;
 }
 
