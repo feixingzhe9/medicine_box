@@ -3,11 +3,27 @@
 #include "stm32f10x.h"
 #include "ucos_ii.h"
 
+
+
+typedef enum
+{
+    FRAME_CLASS_COMMON = 1,
+    FRAME_CLASS_FP,
+    FRAME_CLASS_DIS,
+    FRAME_CLASS_MAX
+}frame_class_e;
+
 typedef enum
 {
     FRAME_HEART_BEAT = 1,
     FRAME_MAX
-}wireless_frame_type_e;
+}frame_common_type_e;
+
+typedef enum
+{
+    FRAME_FP_DEL_ALL_USER = 1,
+    FRAME_FP_ADD_USER,
+}frame_fp_type_e;
 
 #define LC12S_UART_COM_SEND_TASK_PRIO                   5
 #define LC12S_UART_COM_SEND_TASK_STK_SIZE               1024

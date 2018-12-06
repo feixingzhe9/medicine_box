@@ -31,21 +31,43 @@ uint8_t cal_check_sum(uint8_t *data, uint8_t len)
 extern void lc12s_send_com_test(void);
 static void send_heart_beat(uint32_t cnt)
 {
-    uint8_t send_buf[13] = {0};
+    uint8_t send_buf[14] = {0};
     send_buf[0] = FRAME_HEADER;
-    send_buf[1] = 13;
-    send_buf[2] = FRAME_HEART_BEAT;
-    send_buf[3] = my_id >> 24;
-    send_buf[4] = (my_id >> 16) & 0xff;
-    send_buf[5] = (my_id >> 8) & 0xff;
-    send_buf[6] = my_id & 0xff;
-    send_buf[7] = (uint8_t)(cnt >> 24);
-    send_buf[8] = (uint8_t)((cnt >> 16) & 0xff);
-    send_buf[9] = (uint8_t)((cnt >> 8) & 0xff);
-    send_buf[10] = (uint8_t)(cnt  & 0xff);
-    send_buf[11] = cal_check_sum(send_buf, 11);
-    send_buf[12] = FRAME_FOOTER;
-    lc12s_com_send(send_buf, 13);
+    send_buf[1] = 14;
+    send_buf[2] = FRAME_CLASS_COMMON;
+    send_buf[3] = FRAME_HEART_BEAT;
+    send_buf[4] = my_id >> 24;
+    send_buf[5] = (my_id >> 16) & 0xff;
+    send_buf[6] = (my_id >> 8) & 0xff;
+    send_buf[7] = my_id & 0xff;
+    send_buf[8] = (uint8_t)(cnt >> 24);
+    send_buf[9] = (uint8_t)((cnt >> 16) & 0xff);
+    send_buf[10] = (uint8_t)((cnt >> 8) & 0xff);
+    send_buf[11] = (uint8_t)(cnt  & 0xff);
+    send_buf[12] = cal_check_sum(send_buf, 12);
+    send_buf[13] = FRAME_FOOTER;
+    lc12s_com_send(send_buf, 14);
+}
+
+static void fp_ack_del_all_user(uint8_t status, uint32_t serial_num)
+{
+    uint8_t send_buf[15] = {0};
+    send_buf[0] = FRAME_HEADER;
+    send_buf[1] = 15;
+    send_buf[2] = FRAME_CLASS_FP;
+    send_buf[3] = FRAME_FP_DEL_ALL_USER;
+    send_buf[4] = my_id >> 24;
+    send_buf[5] = (my_id >> 16) & 0xff;
+    send_buf[6] = (my_id >> 8) & 0xff;
+    send_buf[7] = my_id & 0xff;
+    send_buf[8] = (uint8_t)(serial_num >> 24);
+    send_buf[9] = (uint8_t)((serial_num >> 16) & 0xff);
+    send_buf[10] = (uint8_t)((serial_num >> 8) & 0xff);
+    send_buf[11] = (uint8_t)(serial_num  & 0xff);
+    send_buf[12] = status;
+    send_buf[13] = cal_check_sum(send_buf, 13);
+    send_buf[14] = FRAME_FOOTER;
+    lc12s_com_send(send_buf, 15);
 }
 
 
@@ -82,30 +104,62 @@ uint32_t heart_beat_cnt = 0;
 uint32_t heart_beat_cnt_2 = 0;
 static int frame_proc(uint8_t *frame, uint16_t len)
 {
-    uint8_t type = frame[0];
+    uint8_t frame_class = frame[0];
+    uint8_t frame_type = frame[1];
+    static uint32_t serial_num = 0;
     if(len > LC12S_RCV_SIZE - 4)
     {
         return -2;  //parameter error
     }
 
-    switch(type)
+    switch(frame_class)
     {
-        case FRAME_HEART_BEAT:
-            heart_beat_cnt_2++;
-            rcv_id = frame[4];
-            rcv_id |= frame[3] << 8;
-            rcv_id |= frame[2] << 16;
-            rcv_id |= frame[1] << 24;
+        case FRAME_CLASS_COMMON:
+        {
+            switch(frame_type)
+            {
+                case FRAME_HEART_BEAT:
+                    heart_beat_cnt_2++;
+                    rcv_id = frame[4];
+                    rcv_id |= frame[3] << 8;
+                    rcv_id |= frame[2] << 16;
+                    rcv_id |= frame[1] << 24;
 
-            heart_beat_cnt = frame[8];
-            heart_beat_cnt |= frame[7] << 8;
-            heart_beat_cnt |= frame[6] << 16;
-            heart_beat_cnt |= frame[5] << 24;
-            printf("frame heart beat %d", heart_beat_cnt);
+                    heart_beat_cnt = frame[8];
+                    heart_beat_cnt |= frame[7] << 8;
+                    heart_beat_cnt |= frame[6] << 16;
+                    heart_beat_cnt |= frame[5] << 24;
+                    printf("frame heart beat %d", heart_beat_cnt);
+                    break;
+                default :
+                    break;
+            }
             break;
-        default :
+        }
+
+        case FRAME_CLASS_FP:
+        {
+            switch(frame_type)
+            {
+                case FRAME_FP_DEL_ALL_USER:
+                {
+                    uint32_t get_serial_num = (frame[2] << 24) | (frame[3] << 16) | (frame[4] << 8) | frame[5];
+                    if(get_serial_num != serial_num)
+                    {
+                        serial_num = get_serial_num;
+                        /*
+                        todo: add delete all user function
+                        */
+                    }
+                    fp_ack_del_all_user(1, serial_num);
+                    printf("hehe");
+                    break;
+                }
+            }
             break;
+        }
     }
+
     return -1;
 }
 
