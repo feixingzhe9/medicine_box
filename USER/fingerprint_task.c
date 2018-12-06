@@ -341,7 +341,7 @@ void fp_uart_com_send_task(void *pdata)
     fp_long_ack_t *fp_long_ack = NULL;
     fp_feature_t fp_feature;
 
-    test_cmd = 5;
+    test_cmd = 0;
     while(1)
     {
         //LED0=0;
@@ -349,7 +349,7 @@ void fp_uart_com_send_task(void *pdata)
         //uart_send(send_buf, 8);
         switch(test_cmd)
         {
-            case 1:     // capture feature
+            case 1:     // capture feature  Â¼ÈëÖ¸ÎÆ ? ? ?
                 for(i = 0; i < 6; i++)
                 {
                     fp_capture_feature(0x025, FP_PERMISSION_2, test_cap_cnt[i]);
@@ -488,5 +488,38 @@ void fp_uart_com_rcv_task(void *pdata)
         OS_EXIT_CRITICAL();
         fp_uart_frame_proc(&node);
     }
+}
+
+
+
+uint8_t add_fp_by_press(uint16_t id, fp_permission_e permission)
+{
+    int i = 0;
+    uint8_t err = 0;
+    uint8_t test_cap_cnt[6] = {1,2,2,2,2,3};
+    fp_short_ack_t *fp_short_ack = NULL;
+    uint8_t ret = 0;
+    uint8_t err_flag = 0;
+    for(i = 0; i < 6; i++)
+    {
+        fp_capture_feature(id, FP_PERMISSION_2, test_cap_cnt[i]);
+        fp_short_ack = (fp_short_ack_t *)OSQPend(fp_short_ack_queue_handle, 0, &err);
+        if((fp_short_ack->result == FINGERPRINT_ACK_SUCCESS) && (fp_short_ack->cmd == i))
+        {
+            delay_ms(10);  //test code: get right ack
+        }
+        if(fp_short_ack->result != FINGERPRINT_ACK_SUCCESS)
+        {
+            ret = fp_short_ack->result;
+            err_flag = 1;
+        }
+        OSMemPut(fp_short_ack_mem_handle, fp_short_ack);
+        if(err_flag == 1)
+        {
+            return ret;
+        }
+
+    }
+    return FINGERPRINT_ACK_SUCCESS;
 }
 

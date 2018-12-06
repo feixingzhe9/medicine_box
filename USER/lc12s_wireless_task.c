@@ -71,6 +71,29 @@ static void fp_ack_del_all_user(uint8_t status, uint32_t serial_num)
 }
 
 
+static void fp_ack_add_fp_by_press(uint8_t status, uint32_t serial_num)
+{
+    uint8_t send_buf[15] = {0};
+    uint8_t len = 15;
+    send_buf[0] = FRAME_HEADER;
+    send_buf[1] = 15;
+    send_buf[2] = FRAME_CLASS_FP;
+    send_buf[3] = FRAME_FP_ADD_USER_BY_PRESSING;
+    send_buf[4] = my_id >> 24;
+    send_buf[5] = (my_id >> 16) & 0xff;
+    send_buf[6] = (my_id >> 8) & 0xff;
+    send_buf[7] = my_id & 0xff;
+    send_buf[8] = (uint8_t)(serial_num >> 24);
+    send_buf[9] = (uint8_t)((serial_num >> 16) & 0xff);
+    send_buf[10] = (uint8_t)((serial_num >> 8) & 0xff);
+    send_buf[11] = (uint8_t)(serial_num  & 0xff);
+    send_buf[12] = status;
+    send_buf[13] = cal_check_sum(send_buf, len - 2);
+    send_buf[14] = FRAME_FOOTER;
+    lc12s_com_send(send_buf, 15);
+}
+
+
 static void send_test(void)
 {
     lc12s_com_send("123456789", 9);
@@ -106,7 +129,9 @@ static int frame_proc(uint8_t *frame, uint16_t len)
 {
     uint8_t frame_class = frame[0];
     uint8_t frame_type = frame[1];
+    uint32_t get_serial_num = (frame[6] << 24) | (frame[7] << 16) | (frame[8] << 8) | frame[9];
     static uint32_t serial_num = 0;
+    uint32_t get_mcu_id = (frame[2] << 24) | (frame[3] << 16) | (frame[4] << 8) | frame[5];;
     if(len > LC12S_RCV_SIZE - 4)
     {
         return -2;  //parameter error
@@ -143,17 +168,41 @@ static int frame_proc(uint8_t *frame, uint16_t len)
             {
                 case FRAME_FP_DEL_ALL_USER:
                 {
-                    uint32_t get_serial_num = (frame[2] << 24) | (frame[3] << 16) | (frame[4] << 8) | frame[5];
-                    if(get_serial_num != serial_num)
+
+                    if(get_mcu_id == my_id)
                     {
-                        serial_num = get_serial_num;
-                        /*
-                        todo: add delete all user function
-                        */
+                        if(get_serial_num != serial_num)
+                        {
+                            serial_num = get_serial_num;
+                            /*
+                            todo: add delete all user function
+                            */
+                        }
+                        fp_ack_del_all_user(1, serial_num);
+                        printf("hehe");
+                        break;
                     }
-                    fp_ack_del_all_user(1, serial_num);
-                    printf("hehe");
-                    break;
+                }
+
+                case FRAME_FP_ADD_USER_BY_PRESSING:
+                {
+                    uint16_t id = frame[10] << 8 | frame[11];
+                    uint8_t permission = frame[12];
+                    uint8_t status = 0;
+                    if(get_mcu_id == my_id)
+                    {
+                        if(get_serial_num != serial_num)
+                        {
+                            serial_num = get_serial_num;
+                            /*
+                            todo: add delete all user function
+                            */
+                            status = add_fp_by_press(id, permission);
+                        }
+                        fp_ack_add_fp_by_press(status, serial_num);
+                        printf("hehe");
+                        break;
+                    }
                 }
             }
             break;

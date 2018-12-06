@@ -33,6 +33,7 @@ int main(void)
     lcd_init();
     delay_us_ex(1000 * 1000);
     lcd_init();
+    fp_en();
     fp_com_init();
     lc12s_init();
     spi2_flash_init();

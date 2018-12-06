@@ -44,4 +44,7 @@ int put_fp_rcv_buf(uint8_t *buf, uint16_t len);
 int free_one_fp_rcv_buf(fp_rcv_buf_t *buf);
 int fp_rcv_buf_head_init(void);
 
+
+uint8_t add_fp_by_press(uint16_t id, fp_permission_e permission);
+
 #endif

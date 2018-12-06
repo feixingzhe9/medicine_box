@@ -22,7 +22,7 @@ typedef enum
 typedef enum
 {
     FRAME_FP_DEL_ALL_USER = 1,
-    FRAME_FP_ADD_USER,
+    FRAME_FP_ADD_USER_BY_PRESSING,
 }frame_fp_type_e;
 
 #define LC12S_UART_COM_SEND_TASK_PRIO                   5

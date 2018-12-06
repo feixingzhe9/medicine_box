@@ -76,6 +76,7 @@ typedef struct
 }fp_feature_t;
 #pragma pack()
 
+void fp_en(void);
 void fp_com_init(void);
 
 int fp_capture_feature(uint16_t id, fp_permission_e permission, uint8_t cnt);
