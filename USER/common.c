@@ -18,6 +18,8 @@ static void task_create(void)
 
 
     OSTaskCreate(falsh_test_task,           (void *)0,  (OS_STK*)&FLASH_TEST_TASK_STK[FLASH_TEST_STK_SIZE - 1],                             FLASH_TEST_TASK_PRIO);
+
+    OSTaskCreate(lock_task,                 (void *)0,  (OS_STK*)&LOCK_TASK_STK[LOCK_TASK_STK_SIZE - 1],                                    LOCK_TASK_PRIO);
 }
 
 static void sem_create(void)
@@ -28,6 +30,8 @@ static void sem_create(void)
     fp_com_set_feature_sem = OSSemCreate(0);
 
     wireless_com_data_come_sem = OSSemCreate(0);
+
+    unlock_sem = OSSemCreate(0);
 }
 
 

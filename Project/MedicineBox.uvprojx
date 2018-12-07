@@ -419,6 +419,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\lc12s_wireless_task.c</FilePath>
             </File>
+            <File>
+              <FileName>lock_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\lock_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

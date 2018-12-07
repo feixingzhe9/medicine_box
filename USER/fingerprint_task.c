@@ -10,6 +10,7 @@
 #include "usart.h"
 #include "led.h"
 #include "fingerprint.h"
+#include "lock_task.h"
 
 OS_STK FP_UART_COM_SEND_TASK_STK[FP_UART_COM_SEND_TASK_STK_SIZE];
 OS_STK FP_UART_COM_RCV_TASK_STK[FP_UART_COM_RCV_TASK_STK_SIZE];
@@ -371,6 +372,7 @@ void fp_uart_com_send_task(void *pdata)
                     if((fp_short_ack->result >= FP_PERMISSION_1) && (fp_short_ack->result <= FP_PERMISSION_3) && (fp_short_ack->cmd == FINGERPRINT_UART_PROTOCOL_CMD_COPARE_1_TO_N))
                     {
                         delay_ms(100);  //test code: get right ack
+                        OSSemPost(unlock_sem);
                     }
                     else if(fp_short_ack->result == FINGERPRINT_ACK_NO_USER)
                     {
