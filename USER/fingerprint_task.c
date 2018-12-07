@@ -341,7 +341,7 @@ void fp_uart_com_send_task(void *pdata)
     fp_long_ack_t *fp_long_ack = NULL;
     fp_feature_t fp_feature;
 
-    test_cmd = 0;
+    test_cmd = 2;
     while(1)
     {
         //LED0=0;
@@ -349,40 +349,48 @@ void fp_uart_com_send_task(void *pdata)
         //uart_send(send_buf, 8);
         switch(test_cmd)
         {
-            case 1:     // capture feature  录入指纹 ? ? ?
-                for(i = 0; i < 6; i++)
-                {
-                    fp_capture_feature(0x025, FP_PERMISSION_2, test_cap_cnt[i]);
-                    fp_short_ack = (fp_short_ack_t *)OSQPend(fp_short_ack_queue_handle, 0, &err);
-                    if((fp_short_ack->result == FINGERPRINT_ACK_SUCCESS) && (fp_short_ack->cmd == i))
-                    {
-                        delay_ms(100);  //test code: get right ack
-                    }
-                    OSMemPut(fp_short_ack_mem_handle, fp_short_ack);
-                }
-                test_cmd = 2;
-                break;
+//            case 1:     // capture feature  录入指纹 ? ? ?
+//                for(i = 0; i < 6; i++)
+//                {
+//                    fp_capture_feature(0x025, FP_PERMISSION_2, test_cap_cnt[i]);
+//                    fp_short_ack = (fp_short_ack_t *)OSQPend(fp_short_ack_queue_handle, 0, &err);
+//                    if((fp_short_ack->result == FINGERPRINT_ACK_SUCCESS) && (fp_short_ack->cmd == i))
+//                    {
+//                        delay_ms(100);  //test code: get right ack
+//                    }
+//                    OSMemPut(fp_short_ack_mem_handle, fp_short_ack);
+//                }
+//                test_cmd = 2;
+//                break;
 
             case 2:     //compare test: 1 to N
                 fp_compare_feature();
-                fp_short_ack = (fp_short_ack_t *)OSQPend(fp_short_ack_queue_handle, 0, &err);
-                if((fp_short_ack->result >= FP_PERMISSION_1) && (fp_short_ack->result <= FP_PERMISSION_3) && (fp_short_ack->cmd == FINGERPRINT_UART_PROTOCOL_CMD_COPARE_1_TO_N))
+                fp_short_ack = (fp_short_ack_t *)OSQPend(fp_short_ack_queue_handle, 500, &err);
+                if(err == OS_ERR_NONE)
                 {
-                    delay_ms(100);  //test code: get right ack
+                    if((fp_short_ack->result >= FP_PERMISSION_1) && (fp_short_ack->result <= FP_PERMISSION_3) && (fp_short_ack->cmd == FINGERPRINT_UART_PROTOCOL_CMD_COPARE_1_TO_N))
+                    {
+                        delay_ms(100);  //test code: get right ack
+                    }
+                    else if(fp_short_ack->result == FINGERPRINT_ACK_NO_USER)
+                    {
+                        /*
+                        todo: no such user
+                        */
+                    }
+                    else if(fp_short_ack->result == FINGERPRINT_ACK_TIMEOUT)
+                    {
+                        /*
+                        todo: timeout
+                        */
+                    }
+                    OSMemPut(fp_short_ack_mem_handle, fp_short_ack);
                 }
-                else if(fp_short_ack->result == FINGERPRINT_ACK_NO_USER)
+                else if(err == OS_ERR_TIMEOUT)
                 {
-                    /*
-                    todo: no such user
-                    */
+                    break;
                 }
-                else if(fp_short_ack->result == FINGERPRINT_ACK_TIMEOUT)
-                {
-                    /*
-                    todo: timeout
-                    */
-                }
-                OSMemPut(fp_short_ack_mem_handle, fp_short_ack);
+
                 break;
 
             case 3:     //get user number
@@ -477,9 +485,9 @@ void fp_uart_com_rcv_task(void *pdata)
 
     while(1)
     {
-        INDICATOR_LED = 1;
-        OSSemPend(fp_uart_data_come_sem, 0, &err);
-        INDICATOR_LED = 0;
+//        INDICATOR_LED = 1;
+//        OSSemPend(fp_uart_data_come_sem, 0, &err);
+//        INDICATOR_LED = 0;
         delay_ms(50);
         OS_ENTER_CRITICAL();
         fp_rcv_node = get_latest_fp_buf();
@@ -500,6 +508,7 @@ uint8_t add_fp_by_press(uint16_t id, fp_permission_e permission)
     fp_short_ack_t *fp_short_ack = NULL;
     uint8_t ret = 0;
     uint8_t err_flag = 0;
+    OSTaskSuspend(FP_UART_COM_SEND_TASK_PRIO);
     for(i = 0; i < 6; i++)
     {
         fp_capture_feature(id, FP_PERMISSION_2, test_cap_cnt[i]);
@@ -516,10 +525,12 @@ uint8_t add_fp_by_press(uint16_t id, fp_permission_e permission)
         OSMemPut(fp_short_ack_mem_handle, fp_short_ack);
         if(err_flag == 1)
         {
+            OSTaskResume(FP_UART_COM_SEND_TASK_PRIO);
             return ret;
         }
 
     }
+    OSTaskResume(FP_UART_COM_SEND_TASK_PRIO);
     return FINGERPRINT_ACK_SUCCESS;
 }
 

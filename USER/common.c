@@ -22,7 +22,7 @@ static void task_create(void)
 
 static void sem_create(void)
 {
-    fp_uart_data_come_sem = OSSemCreate(0);
+    fp_uart_data_come_sem = OSSemCreate(5);
     fp_com_get_feature_sem = OSSemCreate(0);
     fp_com_read_feature_sem = OSSemCreate(0);
     fp_com_set_feature_sem = OSSemCreate(0);
