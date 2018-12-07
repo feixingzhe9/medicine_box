@@ -13,6 +13,7 @@ static void task_create(void)
 //    OSTaskCreate(led1_task,                 (void *)0,  (OS_STK*)&LED1_TASK_STK[LED1_STK_SIZE-1],                                           LED1_TASK_PRIO);
     OSTaskCreate(indicator_led_task,        (void *)0,  (OS_STK*)&INDICATOR_LED_TASK_STK[INDICATOR_LED_STK_SIZE-1],                         INDICATOR_LED_TASK_PRIO);
 //    OSTaskCreate(dis_test_task,             (void *)0,  (OS_STK*)&DIS_TEST_TASK_STK[DIS_TEST_STK_SIZE - 1],                                 DIS_TEST_TASK_PRIO);
+    OSTaskCreate(display_task,              (void *)0,  (OS_STK*)&DISPLAY_TASK_STK[DISPLAY_STK_SIZE - 1],                                   DISPLAY_TASK_PRIO);
     OSTaskCreate(lc12s_send_task,           (void *)0,  (OS_STK*)&LC12S_UART_COM_SEND_TASK_STK[LC12S_UART_COM_SEND_TASK_STK_SIZE - 1],      LC12S_UART_COM_SEND_TASK_PRIO);
     OSTaskCreate(lc12s_rcv_task,            (void *)0,  (OS_STK*)&LC12S_UART_COM_RCV_TASK_STK[LC12S_UART_COM_RCV_TASK_STK_SIZE - 1],        LC12S_UART_COM_RCV_TASK_PRIO);
 

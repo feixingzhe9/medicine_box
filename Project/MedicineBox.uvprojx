@@ -459,6 +459,11 @@
               <FileType>1</FileType>
               <FilePath>..\Modules\lock.c</FilePath>
             </File>
+            <File>
+              <FileName>character_lib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Modules\character_lib.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
