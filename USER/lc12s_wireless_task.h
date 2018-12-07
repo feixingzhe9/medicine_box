@@ -3,8 +3,6 @@
 #include "stm32f10x.h"
 #include "ucos_ii.h"
 
-
-
 typedef enum
 {
     FRAME_CLASS_COMMON = 1,
@@ -16,6 +14,7 @@ typedef enum
 typedef enum
 {
     FRAME_HEART_BEAT = 1,
+    FRAME_COMMON_UNLOCK,
     FRAME_MAX
 }frame_common_type_e;
 

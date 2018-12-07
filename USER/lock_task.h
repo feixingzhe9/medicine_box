@@ -11,5 +11,6 @@ extern OS_STK LOCK_TASK_STK[LOCK_TASK_STK_SIZE];
 extern OS_EVENT *unlock_sem;
 
 void lock_task(void *pdata);
+void start_to_unlock(void);
 
 #endif

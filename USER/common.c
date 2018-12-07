@@ -17,7 +17,7 @@ static void task_create(void)
     OSTaskCreate(lc12s_rcv_task,            (void *)0,  (OS_STK*)&LC12S_UART_COM_RCV_TASK_STK[LC12S_UART_COM_RCV_TASK_STK_SIZE - 1],        LC12S_UART_COM_RCV_TASK_PRIO);
 
 
-    OSTaskCreate(falsh_test_task,           (void *)0,  (OS_STK*)&FLASH_TEST_TASK_STK[FLASH_TEST_STK_SIZE - 1],                             FLASH_TEST_TASK_PRIO);
+//    OSTaskCreate(falsh_test_task,           (void *)0,  (OS_STK*)&FLASH_TEST_TASK_STK[FLASH_TEST_STK_SIZE - 1],                             FLASH_TEST_TASK_PRIO);
 
     OSTaskCreate(lock_task,                 (void *)0,  (OS_STK*)&LOCK_TASK_STK[LOCK_TASK_STK_SIZE - 1],                                    LOCK_TASK_PRIO);
 }

@@ -29,6 +29,7 @@ uint8_t cal_check_sum(uint8_t *data, uint8_t len)
 
 
 extern void lc12s_send_com_test(void);
+
 static void send_heart_beat(uint32_t cnt)
 {
     uint8_t send_buf[14] = {0};
@@ -94,6 +95,28 @@ static void fp_ack_add_fp_by_press(uint8_t status, uint32_t serial_num)
 }
 
 
+static void fp_ack_unlock(uint32_t serial_num)
+{
+    uint8_t send_buf[14] = {0};
+    uint8_t len = 14;
+    send_buf[0] = FRAME_HEADER;
+    send_buf[1] = len;
+    send_buf[2] = FRAME_CLASS_COMMON;
+    send_buf[3] = FRAME_COMMON_UNLOCK;
+    send_buf[4] = my_id >> 24;
+    send_buf[5] = (my_id >> 16) & 0xff;
+    send_buf[6] = (my_id >> 8) & 0xff;
+    send_buf[7] = my_id & 0xff;
+    send_buf[8] = (uint8_t)(serial_num >> 24);
+    send_buf[9] = (uint8_t)((serial_num >> 16) & 0xff);
+    send_buf[10] = (uint8_t)((serial_num >> 8) & 0xff);
+    send_buf[11] = (uint8_t)(serial_num  & 0xff);
+    send_buf[12] = cal_check_sum(send_buf, len - 2);
+    send_buf[13] = FRAME_FOOTER;
+    lc12s_com_send(send_buf, len);
+}
+
+
 static void send_test(void)
 {
     lc12s_com_send("123456789", 9);
@@ -156,6 +179,19 @@ static int frame_proc(uint8_t *frame, uint16_t len)
                     heart_beat_cnt |= frame[5] << 24;
                     printf("frame heart beat %d", heart_beat_cnt);
                     break;
+
+                case FRAME_COMMON_UNLOCK:
+                    if(get_serial_num != serial_num)
+                    {
+                        serial_num = get_serial_num;
+                        /*
+                        todo: unlock
+                        */
+                        start_to_unlock();
+                    }
+                    fp_ack_unlock(get_serial_num);
+                    break;
+
                 default :
                     break;
             }
@@ -197,7 +233,7 @@ static int frame_proc(uint8_t *frame, uint16_t len)
                             /*
                             todo: add delete all user function
                             */
-                            status = add_fp_by_press(id, permission);
+                            status = add_fp_by_press(id, (fp_permission_e)permission);
                         }
                         fp_ack_add_fp_by_press(status, serial_num);
                         printf("hehe");

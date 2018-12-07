@@ -335,9 +335,9 @@ int fp_uart_frame_proc(fp_rcv_buf_t *node)
 void fp_uart_com_send_task(void *pdata)
 {
     uint8_t err = 0;
-    int i = 0;
+//    int i = 0;
     uint8_t test_cmd = 0;
-    uint8_t test_cap_cnt[6] = {1,2,2,2,2,3};
+//    uint8_t test_cap_cnt[6] = {1,2,2,2,2,3};
     fp_short_ack_t *fp_short_ack = NULL;
     fp_long_ack_t *fp_long_ack = NULL;
     fp_feature_t fp_feature;
@@ -371,8 +371,8 @@ void fp_uart_com_send_task(void *pdata)
                 {
                     if((fp_short_ack->result >= FP_PERMISSION_1) && (fp_short_ack->result <= FP_PERMISSION_3) && (fp_short_ack->cmd == FINGERPRINT_UART_PROTOCOL_CMD_COPARE_1_TO_N))
                     {
-                        delay_ms(100);  //test code: get right ack
-                        OSSemPost(unlock_sem);
+                        delay_ms(700);  //test code: get right ack
+                        start_to_unlock();
                     }
                     else if(fp_short_ack->result == FINGERPRINT_ACK_NO_USER)
                     {
@@ -481,7 +481,7 @@ void fp_uart_com_send_task(void *pdata)
 
 void fp_uart_com_rcv_task(void *pdata)
 {
-    uint8_t err = 0;
+//    uint8_t err = 0;
     fp_rcv_buf_t *fp_rcv_node = NULL;
     fp_rcv_buf_t node;
 
