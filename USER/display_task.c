@@ -125,14 +125,14 @@ void display_task(void *pdata)
             init_flag = 1;
             lcd_color_box(0, 0, LCD_X_MAX, LCD_Y_MAX, White);
         }
-//        display_one_chinese(10, 10, "上", Blue);
-        display_many_chinese_middle(120, "上海木木机器人", 14,0, Blue);
-        display_many_chinese(10, 30, "上海木木机器人", 14, Black);
-        display_many_ascii(10, 50, "hello world", sizeof("hello world"), ASCII_16X32_NORMAL, Blue);
-        display_many_ascii(10, 80, "hello world", sizeof("hello world"), ASCII_8X16_NORMAL, Blue);
-        display_many_ascii_middle(140, "Mrobot", sizeof("Mrobot"), ASCII_16X32_NORMAL, Blue);
-        display_one_ascii(10, 100, 'A', ASCII_16X32_NORMAL, Blue);
-        display_string(10, 180, "ABCDE木木机器人FG", sizeof("ABCDE木木机器人FG"), 0, Blue);
+////        display_one_chinese(10, 10, "上", Blue);
+//        display_many_chinese_middle(120, "上海木木机器人", 14,0, Blue);
+//        display_many_chinese(10, 30, "上海木木机器人", 14, Black);
+//        display_many_ascii(10, 50, "hello world", sizeof("hello world"), ASCII_16X32_NORMAL, Blue);
+//        display_many_ascii(10, 80, "hello world", sizeof("hello world"), ASCII_8X16_NORMAL, Blue);
+//        display_many_ascii_middle(140, "Mrobot", sizeof("Mrobot"), ASCII_16X32_NORMAL, Blue);
+//        display_one_ascii(10, 100, 'A', ASCII_16X32_NORMAL, Blue);
+//        display_string(10, 180, "ABCDE木木机器人FG", sizeof("ABCDE木木机器人FG"), 0, Blue);
         delay_ms(100);
     }
 }

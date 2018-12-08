@@ -72,6 +72,29 @@ static void fp_ack_del_all_user(uint8_t status, uint32_t serial_num)
 }
 
 
+
+static void display_ack_show_content(uint8_t status, uint32_t serial_num)
+{
+    uint8_t send_buf[15] = {0};
+    send_buf[0] = FRAME_HEADER;
+    send_buf[1] = 15;
+    send_buf[2] = FRAME_CLASS_DISPLAY;
+    send_buf[3] = FRAME_DISPLAY_SHOW_CONTENT;
+    send_buf[4] = my_id >> 24;
+    send_buf[5] = (my_id >> 16) & 0xff;
+    send_buf[6] = (my_id >> 8) & 0xff;
+    send_buf[7] = my_id & 0xff;
+    send_buf[8] = (uint8_t)(serial_num >> 24);
+    send_buf[9] = (uint8_t)((serial_num >> 16) & 0xff);
+    send_buf[10] = (uint8_t)((serial_num >> 8) & 0xff);
+    send_buf[11] = (uint8_t)(serial_num  & 0xff);
+    send_buf[12] = status;
+    send_buf[13] = cal_check_sum(send_buf, 13);
+    send_buf[14] = FRAME_FOOTER;
+    lc12s_com_send(send_buf, 15);
+}
+
+
 static void fp_ack_add_fp_by_press(uint8_t status, uint32_t serial_num)
 {
     uint8_t send_buf[15] = {0};
@@ -230,9 +253,6 @@ static int frame_proc(uint8_t *frame, uint16_t len)
                         if(get_serial_num != serial_num)
                         {
                             serial_num = get_serial_num;
-                            /*
-                            todo: add delete all user function
-                            */
                             status = add_fp_by_press(id, (fp_permission_e)permission);
                         }
                         fp_ack_add_fp_by_press(status, serial_num);
@@ -243,6 +263,44 @@ static int frame_proc(uint8_t *frame, uint16_t len)
             }
             break;
         }
+
+        case FRAME_CLASS_DISPLAY:
+        {
+            switch(frame_type)
+            {
+                case FRAME_DISPLAY_SHOW_CONTENT:
+                {
+                    uint8_t str[480 / 8] = {0};
+                    uint8_t str_len = len - 20;
+                    uint16_t start_x = (frame[10] << 8) | frame[11];
+                    uint16_t start_y = (frame[12] << 8) | frame[13];
+                    uint8_t resulotion = frame[15];
+                    uint16_t color = (frame[16] << 8) | frame[17];
+                    uint8_t layer = frame[19];
+                    uint16_t i;
+                    if(get_mcu_id == my_id)
+                    {
+                        for(i = 0; i < str_len; i++)
+                        {
+                            str[i] = frame[20 + i];
+                        }
+                        if(get_serial_num != serial_num)
+                        {
+                            serial_num = get_serial_num;
+                            display_string(start_x, start_y, str, str_len, resulotion, color);
+                            /*
+                            todo: show content
+                            */
+                        }
+                        display_ack_show_content(1, serial_num);
+                        printf("hehe");
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+
     }
 
     return -1;

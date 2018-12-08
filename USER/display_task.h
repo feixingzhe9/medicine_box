@@ -14,4 +14,6 @@ extern OS_STK DISPLAY_TASK_STK[DISPLAY_STK_SIZE];
 
 void display_task(void *pdata);
 void dis_test_task(void *pdata);
+
+void display_string(uint16_t start_x, uint16_t start_y, uint8_t* str, uint16_t len, uint8_t resolution, uint16_t color);
 #endif
