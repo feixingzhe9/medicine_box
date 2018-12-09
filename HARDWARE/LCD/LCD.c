@@ -553,13 +553,13 @@ void lcd_wr_start(void)
   Yend   y方向的终止点
   返回值：无
  ***********************************************/
-void lcd_block_write(unsigned int x_start,unsigned int x_end,unsigned int y_start,unsigned int y_end)
+void lcd_block_write(u16 x_start,u16 x_end,u16 y_start, u16 y_end)
 {
     //HX8357-A
-    lcd_wr_reg(0x80, x_start >> 8); // Set CAC=0x0000
-    lcd_wr_reg(0x81, x_start & 0xff);
-    lcd_wr_reg(0x82, y_start >> 8); // Set RAC=0x0000
-    lcd_wr_reg(0x83, y_start & 0xff);
+//    lcd_wr_reg(0x80, x_start >> 8); // Set CAC=0x0000
+//    lcd_wr_reg(0x81, x_start & 0xff);
+//    lcd_wr_reg(0x82, y_start >> 8); // Set RAC=0x0000
+//    lcd_wr_reg(0x83, y_start & 0xff);
 
     lcd_wr_reg(0x02, x_start >> 8);
     lcd_wr_reg(0x03, x_start & 0xff);     //Column Start
@@ -586,9 +586,9 @@ void lcd_block_write(unsigned int x_start,unsigned int x_end,unsigned int y_star
   yLong  要选定矩形的y方向长度
   返回值：无
  ***********************************************/
-void lcd_color_box(u16 x_start, u16 y_start, u16 x_long, u16 y_long, u16 color)
+void lcd_color_box(uint16_t x_start, uint16_t y_start, uint16_t x_long, uint16_t y_long, uint16_t color)
 {
-    u32 i = 0;
+    uint32_t i = 0;
 
     lcd_block_write(x_start, x_start + x_long - 1, y_start, y_start + y_long - 1);
     for (i = 0; i < x_long * y_long; i++)

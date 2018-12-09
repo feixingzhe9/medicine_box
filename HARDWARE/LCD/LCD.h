@@ -94,7 +94,7 @@ void lcd_color_box(u16 x_start, u16 y_start, u16 x_long, u16 y_long, u16 color);
 void lcd_draw_pixel(u16 x, u16 y, u16 color);
 u16 lcd_read_pixel(u16 x,u8 y);
 void lcd_fill_pic(u16 x, u16 y,u16 pic_h, u16 pic_v, const unsigned char* pic);
-void lcd_block_write(unsigned int x_start,unsigned int x_end,unsigned int y_start,unsigned int y_end);
+void lcd_block_write(u16 x_start,u16 x_end,u16 y_start, u16 y_end);
 
 
 #define White           0xFFFF
@@ -107,4 +107,5 @@ void lcd_block_write(unsigned int x_start,unsigned int x_end,unsigned int y_star
 #define Cyan            0x7FFF
 #define Yellow          0xFFE0
 
+#define BACKGROUD_COLOR     White
 #endif

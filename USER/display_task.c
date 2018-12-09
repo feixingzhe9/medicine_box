@@ -100,30 +100,176 @@ void display_many_ascii_middle(uint16_t start_y, char* ascii, uint16_t len, uint
 void display_string(uint16_t start_x, uint16_t start_y, uint8_t* str, uint16_t len, uint8_t resolution, uint16_t color)
 {
     uint16_t i;
+    uint8_t space_x = 8;
     for(i = 0; i < len; i++)
     {
         if(str[i] >= 0x80)
         {
-            display_one_chinese(start_x + i * 8, start_y, &str[i], color);
+            display_one_chinese(start_x + i * space_x, start_y, &str[i], color);
             i++;
         }
         else
         {
-            display_one_ascii(start_x + i * 8, start_y, str[i], ASCII_8X16_NORMAL, color);
+            display_one_ascii(start_x + i * space_x, start_y, str[i], ASCII_8X16_NORMAL, color);
+        }
+    }
+}
+
+
+void show_rectangle(uint8_t start_x, uint16_t start_y, uint16_t end_x, uint16_t end_y, const uint16_t color)
+{
+    if((end_x > start_x) && (end_y > start_y))
+    {
+        lcd_color_box(start_x, start_y, end_x - start_x, end_y - start_y, color);
+    }
+}
+
+void notify_string(uint16_t start_x, uint16_t start_y, uint8_t* str, uint16_t len, uint8_t resolution, uint16_t str_color, uint16_t rectangle_color)
+{
+    uint16_t rec_start_x, rec_start_y, rec_end_x, rec_end_y;
+    uint8_t space_x = 8;
+    uint8_t space_y = 16;
+#define RECTANGLE_DELTA_X   10
+#define RECTANGLE_DELTA_Y   20
+    if((start_x > RECTANGLE_DELTA_X / 2) && (start_y > RECTANGLE_DELTA_Y / 2))
+    {
+        rec_start_x = start_x - RECTANGLE_DELTA_X / 2;
+        rec_start_y = start_y - RECTANGLE_DELTA_Y / 2;
+
+        rec_end_x = start_x + space_x * len + RECTANGLE_DELTA_X / 2;
+        rec_end_y = start_y + space_y + RECTANGLE_DELTA_Y / 2;
+        show_rectangle(rec_start_x, rec_start_y, rec_end_x, rec_end_y, rectangle_color);
+        lcd_color_box(rec_start_x, rec_start_y, rec_end_x - rec_start_x, rec_end_y - rec_start_y, rectangle_color);
+//        for(i = 1; i < 320; i++)
+//        {
+//            lcd_color_box(0, 0, i, i, Green);
+//            delay_ms(30);
+//        }
+
+//        for(i = 1; i < 320; i++)
+//        {
+//            lcd_color_box(50, 0, 160, i, Green);
+//            delay_ms(10);
+//        }
+//        lcd_color_box(100, 200, 379, 10, Green);
+        display_string(start_x, start_y, str, len, resolution, str_color);
+    }
+}
+
+void clear_rectangle(uint8_t start_x, uint16_t start_y, uint16_t end_x, uint16_t end_y)
+{
+    if((end_x > start_x) && (end_y > start_y))
+    {
+        lcd_color_box(start_x, start_y, end_x - start_x, end_y - start_y, BACKGROUD_COLOR);
+    }
+}
+
+display_info_t display_info_ram = {0};
+display_info_t *display_info = &display_info_ram;
+
+void display_add_one_content(show_content_t content)
+{
+    if(display_info->content_len < DISPLAY_CONTENT_NUM_MAX)
+    {
+        display_info->need_update_flag = 1;
+        display_info->content[display_info->content_len] = content;
+        display_info->content_len++;
+    }
+}
+
+void display_remove_one_content(uint16_t cnt)       //cnt start from 0
+{
+    uint16_t i;
+    show_content_t content_tmp = {0};
+    if(display_info->content_len > 0)
+    {
+        if(cnt <= display_info->content_len - 1)
+        {
+            display_info->need_update_flag = 1;
+//            memset((void *)(&display_info->content[cnt - 1]), 1, sizeof(show_content_t));
+            display_info->content[cnt] = content_tmp;
+            for(i = cnt; i < display_info->content_len - 1; i++)
+            {
+                display_info->content[i] = display_info->content[i + 1];
+            }
+        }
+    }
+}
+
+void display_background(uint16_t color)
+{
+    lcd_color_box(0, 0, LCD_X_MAX, LCD_Y_MAX, color);
+}
+void display_main_func(void)
+{
+    uint16_t i;
+    if(display_info->need_update_flag == 1)
+    {
+        display_info->need_update_flag = 0;
+        display_background(BACKGROUD_COLOR);
+        for(i = 0; i < display_info->content_len; i++)
+        {
+            if(display_info->content[i].need_rectangle_flag == 1)
+            {
+                notify_string(display_info->content[i].start_x, display_info->content[i].start_y,display_info->content[i].str,\
+                display_info->content[i].str_len, display_info->content[i].resolution, display_info->content[i].str_color, display_info->content[i].rec_color);
+            }
+            else
+            {
+                display_string(display_info->content[i].start_x, display_info->content[i].start_y,display_info->content[i].str, \
+                display_info->content[i].str_len, display_info->content[i].resolution, display_info->content[i].str_color);
+            }
+            if(display_info->content[i].period_ms > 0)
+            {
+                delay_ms(display_info->content[i].period_ms);
+                display_remove_one_content(i);
+            }
         }
     }
 }
 
 extern uint8_t flash_read_test_buf[100];
+
 void display_task(void *pdata)
 {
     uint8_t init_flag = 0;
+    show_content_t content = {0};
+
     while(1)
     {
         if(init_flag == 0)
         {
             init_flag = 1;
-            lcd_color_box(0, 0, LCD_X_MAX, LCD_Y_MAX, White);
+
+            content.start_x = 10;
+            content.start_y = 20;
+            content.str = "1.显示测试 药品 A";
+            content.str_len = sizeof("1.显示测试 药品 A");
+            content.str_color = Blue;
+            content.period_ms = 0;
+            content.resolution = ASCII_8X16_NORMAL;
+            content.need_rectangle_flag = 0;
+            display_add_one_content(content);
+
+            content.start_x = 10;
+            content.start_y = 40;
+            content.str = "2.显示测试 药品 麻醉剂";
+            content.str_len = sizeof("2.显示测试 药品 麻醉剂");
+            content.resolution = ASCII_8X16_NORMAL;
+            content.need_rectangle_flag = 0;
+
+            display_add_one_content(content);
+
+            content.start_x = 10;
+            content.start_y = 60;
+            content.str = "3.显示测试 药品 吗啡";
+            content.str_len = sizeof("3.显示测试 药品 吗啡");
+            content.str_color = Blue;
+            content.period_ms = 1000;
+            content.resolution = ASCII_8X16_NORMAL;
+            content.need_rectangle_flag = 0;
+            display_add_one_content(content);
+
         }
 ////        display_one_chinese(10, 10, "上", Blue);
 //        display_many_chinese_middle(120, "上海木木机器人", 14,0, Blue);
@@ -133,6 +279,10 @@ void display_task(void *pdata)
 //        display_many_ascii_middle(140, "Mrobot", sizeof("Mrobot"), ASCII_16X32_NORMAL, Blue);
 //        display_one_ascii(10, 100, 'A', ASCII_16X32_NORMAL, Blue);
 //        display_string(10, 180, "ABCDE木木机器人FG", sizeof("ABCDE木木机器人FG"), 0, Blue);
+//
+//        notify_string(200, 280, "按下指纹开锁", sizeof("按下指纹开锁"), 0, Blue, Red);
+
+        display_main_func();
         delay_ms(100);
     }
 }

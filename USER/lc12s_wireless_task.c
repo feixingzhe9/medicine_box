@@ -200,16 +200,12 @@ static int frame_proc(uint8_t *frame, uint16_t len)
                     heart_beat_cnt |= frame[7] << 8;
                     heart_beat_cnt |= frame[6] << 16;
                     heart_beat_cnt |= frame[5] << 24;
-                    printf("frame heart beat %d", heart_beat_cnt);
                     break;
 
                 case FRAME_COMMON_UNLOCK:
                     if(get_serial_num != serial_num)
                     {
                         serial_num = get_serial_num;
-                        /*
-                        todo: unlock
-                        */
                         start_to_unlock();
                     }
                     fp_ack_unlock(get_serial_num);
@@ -238,7 +234,6 @@ static int frame_proc(uint8_t *frame, uint16_t len)
                             */
                         }
                         fp_ack_del_all_user(1, serial_num);
-                        printf("hehe");
                         break;
                     }
                 }
@@ -288,19 +283,14 @@ static int frame_proc(uint8_t *frame, uint16_t len)
                         {
                             serial_num = get_serial_num;
                             display_string(start_x, start_y, str, str_len, resulotion, color);
-                            /*
-                            todo: show content
-                            */
                         }
                         display_ack_show_content(1, serial_num);
-                        printf("hehe");
                         break;
                     }
                 }
             }
             break;
         }
-
     }
 
     return -1;
