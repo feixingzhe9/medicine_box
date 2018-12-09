@@ -329,7 +329,7 @@ int fp_uart_frame_proc(fp_rcv_buf_t *node)
     return -1;
 }
 
-
+void fp_id_notify_display(uint8_t status, uint32_t id);
 
 //------ test code for fingerprint uart protocol ------//
 void fp_uart_com_send_task(void *pdata)
@@ -372,6 +372,7 @@ void fp_uart_com_send_task(void *pdata)
                     if((fp_short_ack->result >= FP_PERMISSION_1) && (fp_short_ack->result <= FP_PERMISSION_3) && (fp_short_ack->cmd == FINGERPRINT_UART_PROTOCOL_CMD_COPARE_1_TO_N))
                     {
                         delay_ms(700);  //test code: get right ack
+                        fp_id_notify_display(1, 0);
                         start_to_unlock();
                     }
                     else if(fp_short_ack->result == FINGERPRINT_ACK_NO_USER)
@@ -379,6 +380,7 @@ void fp_uart_com_send_task(void *pdata)
                         /*
                         todo: no such user
                         */
+                        fp_id_notify_display(0, 0);
                     }
                     else if(fp_short_ack->result == FINGERPRINT_ACK_TIMEOUT)
                     {
@@ -501,6 +503,47 @@ void fp_uart_com_rcv_task(void *pdata)
 }
 
 
+#include "display_task.h"
+#include "lcd.h"
+#include "character_lib.h"
+void fp_press_notify_display()
+{
+    show_content_t content = {0};
+    content.start_x = 100;
+    content.start_y = 200;
+    content.str = "请按下指纹";
+    content.str_len = sizeof("请按下指纹");
+    content.str_color = Blue;
+    content.period_ms = 1000;
+    content.resolution = ASCII_8X16_NORMAL;
+    content.need_rectangle_flag = 0;
+    display_add_one_content(content);
+}
+
+
+void fp_id_notify_display(uint8_t status, uint32_t id)
+{
+    show_content_t content = {0};
+    content.start_x = 10;
+    content.start_y = 180;
+    if(status == 1)
+    {
+        content.str = "识别成功";
+        content.str_len = sizeof("识别成功");
+    }
+    else
+    {
+        content.str = "识别失败";
+        content.str_len = sizeof("识别失败");
+    }
+
+    content.str_color = Blue;
+    content.period_ms = 1000;
+    content.resolution = ASCII_8X16_NORMAL;
+    content.need_rectangle_flag = 0;
+    display_add_one_content(content);
+}
+
 
 uint8_t add_fp_by_press(uint16_t id, fp_permission_e permission)
 {
@@ -511,8 +554,10 @@ uint8_t add_fp_by_press(uint16_t id, fp_permission_e permission)
     uint8_t ret = 0;
     uint8_t err_flag = 0;
     OSTaskSuspend(FP_UART_COM_SEND_TASK_PRIO);
+
     for(i = 0; i < 6; i++)
     {
+        fp_press_notify_display();
         fp_capture_feature(id, FP_PERMISSION_2, test_cap_cnt[i]);
         fp_short_ack = (fp_short_ack_t *)OSQPend(fp_short_ack_queue_handle, 0, &err);
         if((fp_short_ack->result == FINGERPRINT_ACK_SUCCESS) && (fp_short_ack->cmd == i))
