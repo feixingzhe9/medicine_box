@@ -82,7 +82,7 @@ void fp_com_init(void);
 int fp_capture_feature(uint16_t id, fp_permission_e permission, uint8_t cnt);
 int fp_compare_feature(void);
 int fp_get_user_num(void);
-int fp_del_all_user(void);
+uint8_t fp_del_all_user(void);
 int fp_del_user(uint16_t id);
 int fp_cap_img_and_get_feature(void);
 int fp_compare_the_feature_with_cap_feature(uint8_t *feature, uint16_t len);

@@ -192,6 +192,7 @@ void display_remove_one_content(uint16_t cnt)       //cnt start from 0
             {
                 display_info->content[i] = display_info->content[i + 1];
             }
+            display_info->content_len--;
         }
     }
 }
@@ -200,6 +201,7 @@ void display_background(uint16_t color)
 {
     lcd_color_box(0, 0, LCD_X_MAX, LCD_Y_MAX, color);
 }
+
 void display_main_func(void)
 {
     uint16_t i;
@@ -243,8 +245,8 @@ void display_task(void *pdata)
 
             content.start_x = 10;
             content.start_y = 20;
-            content.str = "1.显示测试 药品 A";
             content.str_len = sizeof("1.显示测试 药品 A");
+            memcpy(content.str, "1.显示测试 药品 A", content.str_len);
             content.str_color = Blue;
             content.period_ms = 0;
             content.resolution = ASCII_8X16_NORMAL;
@@ -253,8 +255,8 @@ void display_task(void *pdata)
 
             content.start_x = 10;
             content.start_y = 40;
-            content.str = "2.显示测试 药品 麻醉剂";
             content.str_len = sizeof("2.显示测试 药品 麻醉剂");
+            memcpy(content.str, "2.显示测试 药品 麻醉剂", content.str_len);
             content.resolution = ASCII_8X16_NORMAL;
             content.need_rectangle_flag = 0;
 
@@ -262,8 +264,8 @@ void display_task(void *pdata)
 
             content.start_x = 10;
             content.start_y = 60;
-            content.str = "3.显示测试 药品 吗啡";
             content.str_len = sizeof("3.显示测试 药品 吗啡");
+            memcpy(content.str, "3.显示测试 药品 吗啡", content.str_len);
             content.str_color = Blue;
             content.period_ms = 1000;
             content.resolution = ASCII_8X16_NORMAL;
@@ -283,7 +285,7 @@ void display_task(void *pdata)
 //        notify_string(200, 280, "按下指纹开锁", sizeof("按下指纹开锁"), 0, Blue, Red);
 
         display_main_func();
-        delay_ms(100);
+        delay_ms(20);
     }
 }
 

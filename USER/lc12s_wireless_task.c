@@ -175,7 +175,7 @@ static int frame_proc(uint8_t *frame, uint16_t len)
 {
     uint8_t frame_class = frame[0];
     uint8_t frame_type = frame[1];
-    uint32_t get_serial_num = (frame[6] << 24) | (frame[7] << 16) | (frame[8] << 8) | frame[9];
+    volatile uint32_t get_serial_num = (frame[6] << 24) | (frame[7] << 16) | (frame[8] << 8) | frame[9];
     static uint32_t serial_num = 0;
     uint32_t get_mcu_id = (frame[2] << 24) | (frame[3] << 16) | (frame[4] << 8) | frame[5];;
     if(len > LC12S_RCV_SIZE - 4)
@@ -232,8 +232,9 @@ static int frame_proc(uint8_t *frame, uint16_t len)
                             /*
                             todo: add delete all user function
                             */
+                            fp_del_all_fp();
                         }
-                        fp_ack_del_all_user(1, serial_num);
+                        fp_ack_del_all_user(1, get_serial_num);
                         break;
                     }
                 }
@@ -250,7 +251,7 @@ static int frame_proc(uint8_t *frame, uint16_t len)
                             serial_num = get_serial_num;
                             status = add_fp_by_press(id, (fp_permission_e)permission);
                         }
-                        fp_ack_add_fp_by_press(status, serial_num);
+                        fp_ack_add_fp_by_press(status, get_serial_num);
                         printf("hehe");
                         break;
                     }
@@ -265,6 +266,7 @@ static int frame_proc(uint8_t *frame, uint16_t len)
             {
                 case FRAME_DISPLAY_SHOW_CONTENT:
                 {
+                    show_content_t content = {0};
                     uint8_t str[480 / 8] = {0};
                     uint8_t str_len = len - 20;
                     uint16_t start_x = (frame[10] << 8) | frame[11];
@@ -282,9 +284,18 @@ static int frame_proc(uint8_t *frame, uint16_t len)
                         if(get_serial_num != serial_num)
                         {
                             serial_num = get_serial_num;
-                            display_string(start_x, start_y, str, str_len, resulotion, color);
+//                            display_string(start_x, start_y, str, str_len, resulotion, color);
+                            memcpy(content.str, str, str_len);
+                            content.start_x = start_x;
+                            content.start_y = start_y;
+                            content.need_update_flag = 1;
+                            content.str_len = str_len;
+                            content.resolution = resulotion;
+                            content.str_color = color;
+                            display_add_one_content(content);
                         }
                         display_ack_show_content(1, serial_num);
+
                         break;
                     }
                 }
@@ -305,8 +316,8 @@ void lc12s_rcv_task(void *pdata)
     {
         fifo_data_struct data_tmp;
 
-        OSSemPend(wireless_com_data_come_sem, 0, &err);
-        OSSemSet(wireless_com_data_come_sem, 0, &err);
+//        OSSemPend(wireless_com_data_come_sem, 0, &err);
+//        OSSemSet(wireless_com_data_come_sem, 0, &err);
 
         while(is_fifo_empty(wireless_uart_fifo) == FALSE)
         {
@@ -360,7 +371,7 @@ void lc12s_rcv_task(void *pdata)
             }
         }
 
-//        delay_ms(1000);
+        delay_ms(50);
     }
 }
 

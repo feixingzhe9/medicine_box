@@ -6,7 +6,7 @@
 typedef struct
 {
     uint16_t start_x, start_y;
-    uint8_t *str;
+    uint8_t str[100];
     uint16_t str_len;
     uint8_t resolution;
     uint16_t str_color;
@@ -39,4 +39,5 @@ void display_task(void *pdata);
 void dis_test_task(void *pdata);
 
 void display_string(uint16_t start_x, uint16_t start_y, uint8_t* str, uint16_t len, uint8_t resolution, uint16_t color);
+void display_add_one_content(show_content_t content);
 #endif

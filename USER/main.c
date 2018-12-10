@@ -31,8 +31,8 @@ int main(void)
     id_key_init();
     test_id = get_my_id();
     lcd_init();
-    delay_us_ex(1000 * 1000);
-    lcd_init();
+//    delay_us_ex(1000 * 1000);
+//    lcd_init();
     fp_en();
     fp_com_init();
     delay_us_ex(1000 * 1000);

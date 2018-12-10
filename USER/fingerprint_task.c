@@ -509,12 +509,13 @@ void fp_uart_com_rcv_task(void *pdata)
 void fp_press_notify_display()
 {
     show_content_t content = {0};
-    content.start_x = 100;
+    content.start_x = 200;
     content.start_y = 200;
-    content.str = "请按下指纹";
     content.str_len = sizeof("请按下指纹");
+    memcpy(content.str, "请按下指纹", content.str_len);
+//    content.str = "请按下指纹";
     content.str_color = Blue;
-    content.period_ms = 1000;
+    content.period_ms = 1500;
     content.resolution = ASCII_8X16_NORMAL;
     content.need_rectangle_flag = 0;
     display_add_one_content(content);
@@ -524,20 +525,21 @@ void fp_press_notify_display()
 void fp_id_notify_display(uint8_t status, uint32_t id)
 {
     show_content_t content = {0};
-    content.start_x = 10;
+    content.start_x = 200;
     content.start_y = 180;
     if(status == 1)
     {
-        content.str = "识别成功";
+        content.str_color = Blue;
         content.str_len = sizeof("识别成功");
+        memcpy(content.str, "识别成功", content.str_len);
     }
     else
     {
-        content.str = "识别失败";
+        content.str_color = Red;
         content.str_len = sizeof("识别失败");
+        memcpy(content.str, "识别失败", content.str_len);
     }
 
-    content.str_color = Blue;
     content.period_ms = 1000;
     content.resolution = ASCII_8X16_NORMAL;
     content.need_rectangle_flag = 0;
@@ -558,6 +560,7 @@ uint8_t add_fp_by_press(uint16_t id, fp_permission_e permission)
     for(i = 0; i < 6; i++)
     {
         fp_press_notify_display();
+        delay_ms(50);
         fp_capture_feature(id, FP_PERMISSION_2, test_cap_cnt[i]);
         fp_short_ack = (fp_short_ack_t *)OSQPend(fp_short_ack_queue_handle, 0, &err);
         if((fp_short_ack->result == FINGERPRINT_ACK_SUCCESS) && (fp_short_ack->cmd == i))
@@ -581,3 +584,7 @@ uint8_t add_fp_by_press(uint16_t id, fp_permission_e permission)
     return FINGERPRINT_ACK_SUCCESS;
 }
 
+uint8_t fp_del_all_fp(void)
+{
+    return fp_del_all_user();
+}

@@ -95,7 +95,7 @@ int fp_get_user_num(void)
     return 0;
 }
 
-int fp_del_all_user(void)
+uint8_t fp_del_all_user(void)
 {
     uint8_t send_buf[8] = {0};
     uint8_t i = 0;

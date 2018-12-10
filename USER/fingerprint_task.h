@@ -46,5 +46,6 @@ int fp_rcv_buf_head_init(void);
 
 
 uint8_t add_fp_by_press(uint16_t id, fp_permission_e permission);
+uint8_t fp_del_all_fp(void);
 
 #endif
