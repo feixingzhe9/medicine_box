@@ -18,8 +18,5 @@ unsigned char  ASCII_GetData(unsigned char  ASCIICode,unsigned long  ascii_kind,
 unsigned long  gt_16_GetData (unsigned char  c1, unsigned char  c2, unsigned char  c3, unsigned char  c4,unsigned char *DZ_Data);
 unsigned long  U2GB(unsigned int  UCODE );
 unsigned long  BIG5_G(unsigned int  B5code) ;
-	
 
-
-	
-#endif 
+#endif

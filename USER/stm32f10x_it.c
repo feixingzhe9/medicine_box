@@ -22,16 +22,16 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f10x_it.h" 
+#include "stm32f10x_it.h"
 #include "includes.h"
 #include "usart.h"
 #include "fingerprint_task.h"
 #include "lc12s_wireless.h"
- 
+
 void NMI_Handler(void)
 {
 }
- 
+
 void HardFault_Handler(void)
 {
   /* Go to infinite loop when Hard Fault exception occurs */
@@ -39,7 +39,7 @@ void HardFault_Handler(void)
   {
   }
 }
- 
+
 void MemManage_Handler(void)
 {
   /* Go to infinite loop when Memory Manage exception occurs */
@@ -48,7 +48,7 @@ void MemManage_Handler(void)
   }
 }
 
- 
+
 void BusFault_Handler(void)
 {
   /* Go to infinite loop when Bus Fault exception occurs */
@@ -56,7 +56,7 @@ void BusFault_Handler(void)
   {
   }
 }
- 
+
 void UsageFault_Handler(void)
 {
   /* Go to infinite loop when Usage Fault exception occurs */
@@ -64,15 +64,15 @@ void UsageFault_Handler(void)
   {
   }
 }
- 
+
 void SVC_Handler(void)
 {
 }
- 
+
 void DebugMon_Handler(void)
 {
 }
- 
+
 //void PendSV_Handler(void)
 //{
 //}

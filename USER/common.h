@@ -11,6 +11,6 @@
 
 void os_user_config(void);
 void user_init_depend_on_os_config(void);
-extern OS_MEM	*fp_rcv_mem_handle;
+extern OS_MEM *fp_rcv_mem_handle;
 #endif
 

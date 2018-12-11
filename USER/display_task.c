@@ -1,6 +1,6 @@
 /*
  *  Author: Kaka Xie
- *  brief: display
+ *  brief: display operation
  */
 
 #include "delay.h"

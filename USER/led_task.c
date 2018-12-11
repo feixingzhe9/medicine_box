@@ -16,9 +16,9 @@ void led1_task(void *pdata)
 {
     while(1)
     {
-        LED0=1;
+        LED0 = 1;
         delay_ms(80);
-        LED0=0;
+        LED0 = 0;
         delay_ms(920);
     };
 }

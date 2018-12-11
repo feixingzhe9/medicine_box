@@ -21,9 +21,9 @@ void spi2_flash_init(void)
     GPIO_SetBits(GPIOB,GPIO_Pin_12);
 
 
-    spi2_init();		   	//初始化SPI
+    spi2_init();        //初始化SPI
     spi2_set_speed(SPI_BaudRatePrescaler_2);//设置为18M时钟,高速模式
-    //	SPI_FLASH_TYPE=spi2_flash_read_id();//读取FLASH ID.
+    //SPI_FLASH_TYPE=spi2_flash_read_id();//读取FLASH ID.
 
 }
 
@@ -118,7 +118,7 @@ void spi2_flash_write_page(u8* buffer,u32 write_addr,u16 num_to_write)
     spi2_read_write_byte((u8)write_addr);
     for(i = 0; i < num_to_write; i++)spi2_read_write_byte(buffer[i]);//循环写数
     SPI2_FLASH_CS = 1;                            //取消片选
-    spi2_flash_wait_busy();					   //等待写入结束
+    spi2_flash_wait_busy();                 //等待写入结束
 }
 //无检验写SPI FLASH
 //必须确保所写的地址范围内的数据全部为0XFF,否则在非0XFF处写入的数据将失败!
@@ -142,9 +142,9 @@ void spi2_flash_write_no_check(u8* buffer,u32 write_addr,u16 num_to_write)
             buffer += pageremain;
             write_addr += pageremain;
 
-            num_to_write -= pageremain;			  //减去已经写入了的字节数
+            num_to_write -= pageremain;             //减去已经写入了的字节数
             if(num_to_write > 256)pageremain = 256; //一次可以写入256个字节
-            else pageremain = num_to_write; 	  //不够256个字节了
+            else pageremain = num_to_write;         //不够256个字节了
         }
     };
 }
@@ -180,7 +180,7 @@ void spi2_flash_write(u8* buffer,u32 write_addr,u16 num_to_write)
         if(i<secremain)//需要擦除
         {
             spi2_flash_erase_sector(secpos);//擦除这个扇区
-            for(i=0;i<secremain;i++)	   //复制
+            for(i=0;i<secremain;i++)        //复制
             {
                 spi2_flash_buf[i+secoff]=buffer[i];
             }
@@ -195,9 +195,9 @@ void spi2_flash_write(u8* buffer,u32 write_addr,u16 num_to_write)
 
             buffer += secremain;  //指针偏移
             write_addr += secremain;//写地址偏移
-            num_to_write -= secremain;				//字节数递减
-            if(num_to_write > 4096)secremain = 4096;	//下一个扇区还是写不完
-            else secremain = num_to_write;			//下一个扇区可以写完了
+            num_to_write -= secremain;                  //字节数递减
+            if(num_to_write > 4096)secremain = 4096;    //下一个扇区还是写不完
+            else secremain = num_to_write;              //下一个扇区可以写完了
         }
     };
 }
@@ -214,7 +214,7 @@ void spi2_flash_erase_chip(void)
     SPI2_FLASH_CS = 0;                            //使能器件
     spi2_read_write_byte(W25X_ChipErase);        //发送片擦除命令
     SPI2_FLASH_CS = 1;                            //取消片选
-    spi2_flash_wait_busy();   				   //等待芯片擦除结束
+    spi2_flash_wait_busy();                     //等待芯片擦除结束
 }
 //擦除一个扇区
 //Dst_Addr:扇区地址 0~511 for w25x16
@@ -230,7 +230,7 @@ void spi2_flash_erase_sector(u32 dst_addr)
     spi2_read_write_byte((u8)((dst_addr) >> 8));
     spi2_read_write_byte((u8)dst_addr);
     SPI2_FLASH_CS = 1;                            //取消片选
-    spi2_flash_wait_busy();   				   //等待擦除完成
+    spi2_flash_wait_busy();                         //等待擦除完成
 }
 //等待空闲
 void spi2_flash_wait_busy(void)

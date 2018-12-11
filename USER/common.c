@@ -1,6 +1,6 @@
 /*
  *  Author: Kaka Xie
- *  brief: user configuration
+ *  brief: user configuration ucosii
  */
 
 #include "common.h"
