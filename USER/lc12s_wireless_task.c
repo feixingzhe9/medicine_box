@@ -271,7 +271,7 @@ static int frame_proc(uint8_t *frame, uint16_t len)
                     uint8_t str_len = len - 20;
                     uint16_t start_x = (frame[10] << 8) | frame[11];
                     uint16_t start_y = (frame[12] << 8) | frame[13];
-                    uint8_t resulotion = frame[15];
+                    char_resolution_high_e resulotion = (char_resolution_high_e)frame[15];
                     uint16_t color = (frame[16] << 8) | frame[17];
                     uint8_t layer = frame[19];
                     uint16_t i;

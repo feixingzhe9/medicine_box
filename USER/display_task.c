@@ -9,56 +9,61 @@
 #include "show_ch.h"
 #include "show_pic.h"
 #include "character_lib.h"
-#include "GT31L16M1Y80.h"
+#include "GT32L32M0180.h"
 
 OS_STK DIS_TEST_TASK_STK[DIS_TEST_STK_SIZE];
 
 OS_STK DISPLAY_TASK_STK[DIS_TEST_STK_SIZE];
 
-void display_one_chinese(uint16_t start_x, uint16_t start_y, uint8_t *chinese, uint16_t color)
+void display_one_chinese(uint16_t start_x, uint16_t start_y, char_resolution_high_e resolution, uint8_t *chinese, uint16_t color)
 {
     uint8_t chinese_matrix[32] = {0};   //max 16X16 need 32 bytes
-    get_chinese_dot_matrix(chinese, 0, chinese_matrix);
-    show_16X16_ch_vertical(start_x, start_y, ' ', 1, color, chinese_matrix);
+    get_chinese_dot_matrix(chinese, resolution, chinese_matrix);
+//    show_16X16_ch_vertical(start_x, start_y, ' ', 1, color, chinese_matrix);
+    show_16X16_ch_horizontal(start_x, start_y, ' ', 1, color, chinese_matrix);
 }
 
-void display_many_chinese(uint16_t start_x, uint16_t start_y, uint8_t *chinese, uint16_t len, uint16_t color)
+void display_many_chinese(uint16_t start_x, uint16_t start_y, char_resolution_high_e resolution, uint8_t *chinese, uint16_t len, uint16_t color)
 {
     uint16_t i;
     for(i = 0; i < len; i += 2)
     {
-        display_one_chinese(start_x + (i / 2) * 16, start_y, &chinese[i], color);
+        display_one_chinese(start_x + (i / 2) * 16, start_y, resolution, &chinese[i], color);
     }
 }
 
-void display_one_ascii(uint16_t start_x, uint16_t start_y, char ascii, uint8_t resolution, uint16_t color)
+
+
+void display_one_ascii(uint16_t start_x, uint16_t start_y, char ascii, char_resolution_high_e resolution, uint16_t color)
 {
     uint8_t ascii_matrix[64] = {0};    //max 16X32 need 64 bytes
-    get_ascii_dot_matrix(ascii, 0, ascii_matrix);
+    get_ascii_dot_matrix(ascii, resolution, ascii_matrix);
     switch(resolution)
     {
-        case ASCII_16X32_NORMAL:
+        case USER_CH_HIGH_32:
             get_ascii_dot_matrix(ascii, resolution, ascii_matrix);
             show_16X32_ch_vertical(start_x, start_y, ' ', 1, color, ascii_matrix);
             break;
-        case ASCII_8X16_NORMAL:
+        case USER_CH_HIGH_16:
             get_ascii_dot_matrix(ascii, resolution, ascii_matrix);
-            show_8X16_ch_vertical(start_x, start_y, ' ', 1, color, ascii_matrix);
+//            show_8X16_ch_vertical(start_x, start_y, ' ', 1, color, ascii_matrix);
+            show_8X16_ch_horizontal(start_x, start_y, ' ', 1, color, ascii_matrix);
+
             break;
         default: break;
     }
 }
 
-void display_many_ascii(uint16_t start_x, uint16_t start_y, char* ascii, uint16_t len, uint8_t resolution, uint16_t color)
+void display_many_ascii(uint16_t start_x, uint16_t start_y, char* ascii, uint16_t len, char_resolution_high_e resolution, uint16_t color)
 {
     uint8_t i;
     uint8_t space = 16;
     switch(resolution)
     {
-        case ASCII_16X32_NORMAL:
+        case USER_CH_HIGH_32:
             space = 16;
             break;
-        case ASCII_8X16_NORMAL:
+        case USER_CH_HIGH_16:
             space = 8;
             break;
         default: return;
@@ -70,25 +75,25 @@ void display_many_ascii(uint16_t start_x, uint16_t start_y, char* ascii, uint16_
 }
 
 
-void display_many_chinese_middle(uint16_t start_y, uint8_t* chinese, uint16_t len, uint8_t resolution, uint16_t color)
+void display_many_chinese_middle(uint16_t start_y, uint8_t* chinese, uint16_t len, char_resolution_high_e resolution, uint16_t color)
 {
     if(len <= (LCD_X_MAX / 16) * 2)
     {
-        display_many_chinese((LCD_X_MAX - ((len * 16) / 2)) / 2, start_y, chinese, len, color);
+        display_many_chinese((LCD_X_MAX - ((len * 16) / 2)) / 2, start_y, resolution, chinese, len, color);
     }
 
 }
 
 
-void display_many_ascii_middle(uint16_t start_y, char* ascii, uint16_t len, uint8_t resolution, uint16_t color)
+void display_many_ascii_middle(uint16_t start_y, char* ascii, uint16_t len, char_resolution_high_e resolution, uint16_t color)
 {
     uint16_t start_x = 0;
     switch(resolution)
     {
-        case ASCII_16X32_NORMAL:
+        case USER_CH_HIGH_32:
             start_x = (LCD_X_MAX - (len * 16)) / 2;
             break;
-        case ASCII_8X16_NORMAL:
+        case USER_CH_HIGH_16:
             start_x = (LCD_X_MAX - (len * 8)) / 2;
             break;
         default: return;
@@ -97,7 +102,7 @@ void display_many_ascii_middle(uint16_t start_y, char* ascii, uint16_t len, uint
 }
 
 
-void display_string(uint16_t start_x, uint16_t start_y, uint8_t* str, uint16_t len, uint8_t resolution, uint16_t color)
+void display_string(uint16_t start_x, uint16_t start_y, uint8_t* str, uint16_t len, char_resolution_high_e resolution, uint16_t color)
 {
     uint16_t i;
     uint8_t space_x = 8;
@@ -105,12 +110,12 @@ void display_string(uint16_t start_x, uint16_t start_y, uint8_t* str, uint16_t l
     {
         if(str[i] >= 0x80)
         {
-            display_one_chinese(start_x + i * space_x, start_y, &str[i], color);
+            display_one_chinese(start_x + i * space_x, start_y, resolution, &str[i], color);
             i++;
         }
         else
         {
-            display_one_ascii(start_x + i * space_x, start_y, str[i], ASCII_8X16_NORMAL, color);
+            display_one_ascii(start_x + i * space_x, start_y, str[i], USER_CH_HIGH_16, color);
         }
     }
 }
@@ -124,7 +129,7 @@ void show_rectangle(uint8_t start_x, uint16_t start_y, uint16_t end_x, uint16_t 
     }
 }
 
-void notify_string(uint16_t start_x, uint16_t start_y, uint8_t* str, uint16_t len, uint8_t resolution, uint16_t str_color, uint16_t rectangle_color)
+void notify_string(uint16_t start_x, uint16_t start_y, uint8_t* str, uint16_t len, char_resolution_high_e resolution, uint16_t str_color, uint16_t rectangle_color)
 {
     uint16_t rec_start_x, rec_start_y, rec_end_x, rec_end_y;
     uint8_t space_x = 8;
@@ -249,7 +254,7 @@ void display_task(void *pdata)
             memcpy(content.str, "1.œ‘ æ≤‚ ‘ “©∆∑ A", content.str_len);
             content.str_color = Blue;
             content.period_ms = 0;
-            content.resolution = ASCII_8X16_NORMAL;
+            content.resolution = USER_CH_HIGH_16;
             content.need_rectangle_flag = 0;
             display_add_one_content(content);
 
@@ -257,7 +262,7 @@ void display_task(void *pdata)
             content.start_y = 40;
             content.str_len = sizeof("2.œ‘ æ≤‚ ‘ “©∆∑ ¬È◊Ìº¡");
             memcpy(content.str, "2.œ‘ æ≤‚ ‘ “©∆∑ ¬È◊Ìº¡", content.str_len);
-            content.resolution = ASCII_8X16_NORMAL;
+            content.resolution = USER_CH_HIGH_16;
             content.need_rectangle_flag = 0;
 
             display_add_one_content(content);
@@ -268,7 +273,7 @@ void display_task(void *pdata)
             memcpy(content.str, "3.œ‘ æ≤‚ ‘ “©∆∑ ¬∑»", content.str_len);
             content.str_color = Blue;
             content.period_ms = 1000;
-            content.resolution = ASCII_8X16_NORMAL;
+            content.resolution = USER_CH_HIGH_16;
             content.need_rectangle_flag = 0;
             display_add_one_content(content);
 

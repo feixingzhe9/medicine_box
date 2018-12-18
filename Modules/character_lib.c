@@ -7,8 +7,8 @@
 #include "display_task.h"
 #include "show_ch.h"
 #include "show_pic.h"
-#include "GT31L16M1Y80.h"
 #include "character_lib.h"
+#include "GT32L32M0180.h"
 
 
 extern int show_24X24_ch(uint16_t x, uint16_t y, const char * ch, uint16_t ch_len, uint16_t color, uint8_t *data);
@@ -23,6 +23,7 @@ unsigned char r_dat_bat(unsigned long address,unsigned long byte_long,unsigned c
     return 0;
 }
 
+#if 0
 void get_chinese_dot_matrix(uint8_t *chinese, uint8_t resolution, uint8_t *matrix_out)
 {
     gt_16_GetData(chinese[0], chinese[1], 0, 0, matrix_out);
@@ -32,15 +33,55 @@ void get_ascii_dot_matrix(char ascii, uint8_t resolution, uint8_t *matrix_out)
 {
     switch(resolution)
     {
-        case ASCII_16X32_NORMAL:
+        case USER_ASCII_16X32_NORMAL:
             ASCII_GetData(ascii, ASCII_16X32, matrix_out);
             break;
-        case ASCII_8X16_NORMAL:
+        case USER_ASCII_8X16_NORMAL:
             ASCII_GetData(ascii, ASCII_8X16, matrix_out);
             break;
         default :break;
     }
 }
+
+#else
+
+void get_chinese_dot_matrix(uint8_t *chinese, uint8_t resolution, uint8_t *matrix_out)
+{
+    switch(resolution)
+    {
+        case USER_CH_HIGH_16:
+            gt_16_GetData(chinese[0], chinese[1], 0, 0, matrix_out);
+            break;
+        case USER_CH_HIGH_24:
+            gt_24_GetData(chinese[0], chinese[1], 0, 0, matrix_out);
+            break;
+        case USER_CH_HIGH_32:
+            gt_32_GetData(chinese[0], chinese[1], 0, 0, matrix_out);
+        break;
+        default :break;
+    }
+}
+
+
+
+
+void get_ascii_dot_matrix(char ascii, uint8_t resolution, uint8_t *matrix_out)
+{
+    switch(resolution)
+    {
+        case USER_CH_HIGH_32:
+            ASCII_GetData(ascii, ASCII_16X32, matrix_out);
+            break;
+        case USER_CH_HIGH_16:
+            ASCII_GetData(ascii, ASCII_8X16, matrix_out);
+            break;
+        default :break;
+    }
+}
+
+
+
+#endif
 
 
 void falsh_test_task(void *pdata)

@@ -251,7 +251,7 @@ int show_8X16_ch(uint16_t x, uint16_t y, const char ch, uint16_t ch_len, uint16_
 {
     uint8_t j = 0;
     uint8_t bit_cnt = 0;
-    uint16_t ch_cnt = 0;
+//    uint16_t ch_cnt = 0;
 
     if((x < LCD_X_MAX - 8 + 1) && (y < LCD_Y_MAX - 16 + 1))
     {
@@ -270,11 +270,12 @@ int show_8X16_ch(uint16_t x, uint16_t y, const char ch, uint16_t ch_len, uint16_
     return 1;
 }
 
+
 int show_8X16_ch_vertical(uint16_t x, uint16_t y, const char ch, uint16_t ch_len, uint16_t color, uint8_t *data)
 {
     uint8_t j = 0;
     uint8_t bit_cnt = 0;
-    uint16_t ch_cnt = 0;
+//    uint16_t ch_cnt = 0;
 
     if((x < LCD_X_MAX - 8 + 1) && (y < LCD_Y_MAX - 16 + 1))
     {
@@ -293,11 +294,37 @@ int show_8X16_ch_vertical(uint16_t x, uint16_t y, const char ch, uint16_t ch_len
     return 1;
 }
 
+
+int show_8X16_ch_horizontal(uint16_t x, uint16_t y, const char ch, uint16_t ch_len, uint16_t color, uint8_t *data)
+{
+    uint8_t j = 0;
+    uint8_t bit_cnt = 0;
+//    uint16_t ch_cnt = 0;
+
+    if((x < LCD_X_MAX - 8 + 1) && (y < LCD_Y_MAX - 16 + 1))
+    {
+        for(j = 0; j < 16; j++)
+        {
+            for(bit_cnt = 0; bit_cnt < 8; bit_cnt++)
+            {
+                if(data[j] & (1 << (7 - bit_cnt)))
+                {
+                    lcd_draw_pixel(x + bit_cnt, y + j, color);
+                }
+            }
+        }
+    }
+
+    return 1;
+}
+
+
+
 int show_16X32_ch_vertical(uint16_t x, uint16_t y, const char ch, uint16_t ch_len, uint16_t color, uint8_t *data)
 {
     uint8_t j = 0;
     uint8_t bit_cnt = 0;
-    uint16_t ch_cnt = 0;
+//    uint16_t ch_cnt = 0;
 
     if((x < LCD_X_MAX - 16 + 1) && (y < LCD_Y_MAX - 32 + 1))
     {
@@ -320,7 +347,7 @@ int show_16X16_ch_vertical(uint16_t x, uint16_t y, const char ch, uint16_t ch_le
 {
     uint8_t j = 0;
     uint8_t bit_cnt = 0;
-    uint16_t ch_cnt = 0;
+//    uint16_t ch_cnt = 0;
 
     if((x < LCD_X_MAX - 16 + 1) && (y < LCD_Y_MAX - 16 + 1))
     {
@@ -331,6 +358,30 @@ int show_16X16_ch_vertical(uint16_t x, uint16_t y, const char ch, uint16_t ch_le
                 if(data[j] & (1 << bit_cnt))
                 {
                     lcd_draw_pixel(x + j % 16, y + bit_cnt + (j / 16) * 8, color);
+                }
+            }
+        }
+    }
+
+    return 1;
+}
+
+
+int show_16X16_ch_horizontal(uint16_t x, uint16_t y, const char ch, uint16_t ch_len, uint16_t color, uint8_t *data)
+{
+    uint8_t j = 0;
+    uint8_t bit_cnt = 0;
+//    uint16_t ch_cnt = 0;
+
+    if((x < LCD_X_MAX - 16 + 1) && (y < LCD_Y_MAX - 16 + 1))
+    {
+        for(j = 0; j < 32; j++)
+        {
+            for(bit_cnt = 0; bit_cnt < 8; bit_cnt++)
+            {
+                if(data[j] & (1 << (7 - bit_cnt)))
+                {
+                    lcd_draw_pixel(x + (j % 2) * 8 + bit_cnt, y + j / 2, color);
                 }
             }
         }

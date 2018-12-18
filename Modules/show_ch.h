@@ -18,5 +18,7 @@ int show_8X16_ch(uint16_t x, uint16_t y, const char ch, uint16_t ch_len, uint16_
 int show_8X16_ch_vertical(uint16_t x, uint16_t y, const char ch, uint16_t ch_len, uint16_t color, uint8_t *data);
 int show_16X32_ch_vertical(uint16_t x, uint16_t y, const char ch, uint16_t ch_len, uint16_t color, uint8_t *data);
 int show_16X16_ch_vertical(uint16_t x, uint16_t y, const char ch, uint16_t ch_len, uint16_t color, uint8_t *data);
+int show_16X16_ch_horizontal(uint16_t x, uint16_t y, const char ch, uint16_t ch_len, uint16_t color, uint8_t *data);
+int show_8X16_ch_horizontal(uint16_t x, uint16_t y, const char ch, uint16_t ch_len, uint16_t color, uint8_t *data);
 
 #endif

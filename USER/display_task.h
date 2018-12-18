@@ -2,13 +2,14 @@
 #define __MODULES_DISPLAY_TASK_H__
 #include "stm32f10x.h"
 #include "ucos_ii.h"
+#include "character_lib.h"
 
 typedef struct
 {
     uint16_t start_x, start_y;
     uint8_t str[100];
     uint16_t str_len;
-    uint8_t resolution;
+    char_resolution_high_e resolution;
     uint16_t str_color;
     uint8_t need_rectangle_flag;
     uint16_t rec_color;
@@ -38,6 +39,6 @@ extern OS_STK DISPLAY_TASK_STK[DISPLAY_STK_SIZE];
 void display_task(void *pdata);
 void dis_test_task(void *pdata);
 
-void display_string(uint16_t start_x, uint16_t start_y, uint8_t* str, uint16_t len, uint8_t resolution, uint16_t color);
+void display_string(uint16_t start_x, uint16_t start_y, uint8_t* str, uint16_t len, char_resolution_high_e resolution, uint16_t color);
 void display_add_one_content(show_content_t content);
 #endif

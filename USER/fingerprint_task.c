@@ -516,7 +516,7 @@ void fp_press_notify_display()
 //    content.str = "Çë°´ÏÂÖ¸ÎÆ";
     content.str_color = Blue;
     content.period_ms = 1500;
-    content.resolution = ASCII_8X16_NORMAL;
+    content.resolution = USER_CH_HIGH_16;
     content.need_rectangle_flag = 0;
     display_add_one_content(content);
 }
@@ -541,7 +541,7 @@ void fp_id_notify_display(uint8_t status, uint32_t id)
     }
 
     content.period_ms = 1000;
-    content.resolution = ASCII_8X16_NORMAL;
+    content.resolution = USER_CH_HIGH_16;
     content.need_rectangle_flag = 0;
     display_add_one_content(content);
 }
