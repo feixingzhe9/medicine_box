@@ -17,10 +17,23 @@ OS_STK DISPLAY_TASK_STK[DIS_TEST_STK_SIZE];
 
 void display_one_chinese(uint16_t start_x, uint16_t start_y, char_resolution_high_e resolution, uint8_t *chinese, uint16_t color)
 {
-    uint8_t chinese_matrix[32] = {0};   //max 16X16 need 32 bytes
+    uint8_t chinese_matrix[128] = {0};   //max 16X16 need 32 bytes
     get_chinese_dot_matrix(chinese, resolution, chinese_matrix);
+    switch(resolution)
+    {
+        case USER_CH_HIGH_32:
+            show_32X32_ch_horizontal(start_x, start_y, ' ', 1, color, chinese_matrix);
+            break;
+        case USER_CH_HIGH_24:
+            show_24X24_ch_horizontal(start_x, start_y, ' ', 1, color, chinese_matrix);
+            break;
+        case USER_CH_HIGH_16:
+            show_16X16_ch_horizontal(start_x, start_y, ' ', 1, color, chinese_matrix);
+            break;
+        default: break;
+    }
 //    show_16X16_ch_vertical(start_x, start_y, ' ', 1, color, chinese_matrix);
-    show_16X16_ch_horizontal(start_x, start_y, ' ', 1, color, chinese_matrix);
+//    show_16X16_ch_horizontal(start_x, start_y, ' ', 1, color, chinese_matrix);
 }
 
 void display_many_chinese(uint16_t start_x, uint16_t start_y, char_resolution_high_e resolution, uint8_t *chinese, uint16_t len, uint16_t color)
@@ -28,7 +41,20 @@ void display_many_chinese(uint16_t start_x, uint16_t start_y, char_resolution_hi
     uint16_t i;
     for(i = 0; i < len; i += 2)
     {
-        display_one_chinese(start_x + (i / 2) * 16, start_y, resolution, &chinese[i], color);
+        switch(resolution)
+        {
+            case USER_CH_HIGH_32:
+                display_one_chinese(start_x + (i / 2) * 32, start_y, resolution, &chinese[i], color);
+                break;
+            case USER_CH_HIGH_24:
+                display_one_chinese(start_x + (i / 2) * 24, start_y, resolution, &chinese[i], color);
+                break;
+            case USER_CH_HIGH_16:
+                display_one_chinese(start_x + (i / 2) * 16, start_y, resolution, &chinese[i], color);
+                break;
+            default: break;
+        }
+//        display_one_chinese(start_x + (i / 2) * 16, start_y, resolution, &chinese[i], color);
     }
 }
 
@@ -106,6 +132,19 @@ void display_string(uint16_t start_x, uint16_t start_y, uint8_t* str, uint16_t l
 {
     uint16_t i;
     uint8_t space_x = 8;
+    switch(resolution)
+    {
+        case USER_CH_HIGH_32:
+            space_x = 16;
+            break;
+        case USER_CH_HIGH_24:
+            space_x = 12;
+            break;
+        case USER_CH_HIGH_16:
+            space_x = 8;
+            break;
+        default: return;
+    }
     for(i = 0; i < len; i++)
     {
         if(str[i] >= 0x80)
@@ -274,6 +313,35 @@ void display_task(void *pdata)
             content.str_color = Blue;
             content.period_ms = 1000;
             content.resolution = USER_CH_HIGH_16;
+            content.need_rectangle_flag = 0;
+            display_add_one_content(content);
+
+            content.start_x = 10;
+            content.start_y = 80;
+            content.str_len = sizeof("œ‘ æ≤‚ ‘ “©∆∑");
+            memcpy(content.str, "1.œ‘ æ≤‚ ‘ “©∆∑ A", content.str_len);
+            content.str_color = Blue;
+            content.period_ms = 0;
+            content.resolution = USER_CH_HIGH_32;
+            content.need_rectangle_flag = 0;
+            display_add_one_content(content);
+
+            content.start_x = 10;
+            content.start_y = 120;
+            content.str_len = sizeof("2.œ‘ æ≤‚ ‘ “©∆∑ ¬È◊Ìº¡");
+            memcpy(content.str, "2.œ‘ æ≤‚ ‘ “©∆∑ ¬È◊Ìº¡", content.str_len);
+            content.resolution = USER_CH_HIGH_24;
+            content.need_rectangle_flag = 0;
+
+            display_add_one_content(content);
+
+            content.start_x = 10;
+            content.start_y = 160;
+            content.str_len = sizeof("3.œ‘ æ≤‚ ‘ “©∆∑ ¬∑»");
+            memcpy(content.str, "3.œ‘ æ≤‚ ‘ “©∆∑ ¬∑»", content.str_len);
+            content.str_color = Blue;
+            content.period_ms = 1000;
+            content.resolution = USER_CH_HIGH_32;
             content.need_rectangle_flag = 0;
             display_add_one_content(content);
 
