@@ -72,6 +72,9 @@ void get_ascii_dot_matrix(char ascii, uint8_t resolution, uint8_t *matrix_out)
         case USER_CH_HIGH_32:
             ASCII_GetData(ascii, ASCII_16X32, matrix_out);
             break;
+        case USER_CH_HIGH_24:
+            ASCII_GetData(ascii, ASCII_12X24, matrix_out);
+            break;
         case USER_CH_HIGH_16:
             ASCII_GetData(ascii, ASCII_8X16, matrix_out);
             break;

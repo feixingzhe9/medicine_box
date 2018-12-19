@@ -68,7 +68,11 @@ void display_one_ascii(uint16_t start_x, uint16_t start_y, char ascii, char_reso
     {
         case USER_CH_HIGH_32:
             get_ascii_dot_matrix(ascii, resolution, ascii_matrix);
-            show_16X32_ch_vertical(start_x, start_y, ' ', 1, color, ascii_matrix);
+            show_16X32_ch_horizontal(start_x, start_y, ' ', 1, color, ascii_matrix);
+            break;
+        case USER_CH_HIGH_24:
+            get_ascii_dot_matrix(ascii, resolution, ascii_matrix);
+            show_12X24_ch_horizontal(start_x, start_y, ' ', 1, color, ascii_matrix);
             break;
         case USER_CH_HIGH_16:
             get_ascii_dot_matrix(ascii, resolution, ascii_matrix);
@@ -154,7 +158,8 @@ void display_string(uint16_t start_x, uint16_t start_y, uint8_t* str, uint16_t l
         }
         else
         {
-            display_one_ascii(start_x + i * space_x, start_y, str[i], USER_CH_HIGH_16, color);
+//            display_one_ascii(start_x + i * space_x, start_y, str[i], USER_CH_HIGH_16, color);
+            display_one_ascii(start_x + i * space_x, start_y, str[i], resolution, color);
         }
     }
 }
@@ -308,8 +313,8 @@ void display_task(void *pdata)
 
             content.start_x = 10;
             content.start_y = 60;
-            content.str_len = sizeof("3.œ‘ æ≤‚ ‘ “©∆∑ ¬∑»");
-            memcpy(content.str, "3.œ‘ æ≤‚ ‘ “©∆∑ ¬∑»", content.str_len);
+            content.str_len = sizeof("3.œ‘ æ≤‚ ‘ “©∆∑ ¬∑» ! !");
+            memcpy(content.str, "3.œ‘ æ≤‚ ‘ “©∆∑ ¬∑» £° £°", content.str_len);
             content.str_color = Blue;
             content.period_ms = 1000;
             content.resolution = USER_CH_HIGH_16;
@@ -318,7 +323,7 @@ void display_task(void *pdata)
 
             content.start_x = 10;
             content.start_y = 80;
-            content.str_len = sizeof("œ‘ æ≤‚ ‘ “©∆∑");
+            content.str_len = sizeof("œ‘ æ≤‚ ‘ “©∆∑ A");
             memcpy(content.str, "1.œ‘ æ≤‚ ‘ “©∆∑ A", content.str_len);
             content.str_color = Blue;
             content.period_ms = 0;
@@ -341,6 +346,16 @@ void display_task(void *pdata)
             memcpy(content.str, "3.œ‘ æ≤‚ ‘ “©∆∑ ¬∑»", content.str_len);
             content.str_color = Blue;
             content.period_ms = 1000;
+            content.resolution = USER_CH_HIGH_32;
+            content.need_rectangle_flag = 0;
+            display_add_one_content(content);
+
+            content.start_x = 10;
+            content.start_y = 160;
+            content.str_len = sizeof("∑˚∫≈≤‚ ‘  £° @#£§%°≠°≠&* + - £ø< > °∂ °∑/°§ ~");
+            memcpy(content.str, "∑˚∫≈≤‚ ‘  £° @#£§%°≠°≠&* + - £ø< > °∂ °∑/°§ ~", content.str_len);
+            content.str_color = Blue;
+            content.period_ms = 0;
             content.resolution = USER_CH_HIGH_32;
             content.need_rectangle_flag = 0;
             display_add_one_content(content);
