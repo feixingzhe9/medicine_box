@@ -268,18 +268,19 @@ static int frame_proc(uint8_t *frame, uint16_t len)
                 {
                     show_content_t content = {0};
                     uint8_t str[480 / 8] = {0};
-                    uint8_t str_len = len - 20;
+                    uint8_t str_len = len - 22;
                     uint16_t start_x = (frame[10] << 8) | frame[11];
                     uint16_t start_y = (frame[12] << 8) | frame[13];
-                    char_resolution_high_e resulotion = (char_resolution_high_e)frame[15];
+                    char_resolution_high_e resulotion = (char_resolution_high_e)frame[18];
                     uint16_t color = (frame[16] << 8) | frame[17];
                     uint8_t layer = frame[19];
+                    uint16_t period = (frame[20] << 8) | frame[21];
                     uint16_t i;
                     if(get_mcu_id == my_id)
                     {
                         for(i = 0; i < str_len; i++)
                         {
-                            str[i] = frame[20 + i];
+                            str[i] = frame[22 + i];
                         }
                         if(get_serial_num != serial_num)
                         {
@@ -292,6 +293,7 @@ static int frame_proc(uint8_t *frame, uint16_t len)
                             content.str_len = str_len;
                             content.resolution = resulotion;
                             content.str_color = color;
+                            content.period_ms = period * 10;
                             display_add_one_content(content);
                         }
                         display_ack_show_content(1, serial_num);

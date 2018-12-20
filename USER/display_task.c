@@ -323,8 +323,8 @@ void display_task(void *pdata)
 
             content.start_x = 10;
             content.start_y = 80;
-            content.str_len = sizeof("ÏÔÊ¾²âÊÔ Ò©Æ· A");
-            memcpy(content.str, "1.ÏÔÊ¾²âÊÔ Ò©Æ· A", content.str_len);
+            content.str_len = sizeof("Ä¾Ä¾»úÆ÷ÈË  Mrobot");
+            memcpy(content.str, "Ä¾Ä¾»úÆ÷ÈË  Mrobot", content.str_len);
             content.str_color = Blue;
             content.period_ms = 0;
             content.resolution = USER_CH_HIGH_32;
@@ -352,8 +352,8 @@ void display_task(void *pdata)
 
             content.start_x = 10;
             content.start_y = 160;
-            content.str_len = sizeof("·ûºÅ²âÊÔ  £¡ @#£¤%¡­¡­&* + - £¿< > ¡¶ ¡·/¡¤ ~");
-            memcpy(content.str, "·ûºÅ²âÊÔ  £¡ @#£¤%¡­¡­&* + - £¿< > ¡¶ ¡·/¡¤ ~", content.str_len);
+            content.str_len = sizeof("·ûºÅ!@#$%^&-£¿< >¡¶ ¡·/¡¤");
+            memcpy(content.str, "·ûºÅ!@#$%^&-£¿< >¡¶ ¡·/¡¤", content.str_len);
             content.str_color = Blue;
             content.period_ms = 0;
             content.resolution = USER_CH_HIGH_32;
