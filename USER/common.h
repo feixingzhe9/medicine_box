@@ -8,6 +8,7 @@
 #include "display_task.h"
 #include "lc12s_wireless_task.h"
 #include "lock_task.h"
+#include "fingerprint_record.h"
 
 void os_user_config(void);
 void user_init_depend_on_os_config(void);

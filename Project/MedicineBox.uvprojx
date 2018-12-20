@@ -322,7 +322,7 @@
             <wLevel>0</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
-            <uC99>0</uC99>
+            <uC99>1</uC99>
             <useXO>0</useXO>
             <v6Lang>0</v6Lang>
             <v6LangP>0</v6LangP>
@@ -424,6 +424,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\lock_task.c</FilePath>
             </File>
+            <File>
+              <FileName>fingerprint_record.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\fingerprint_record.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -464,6 +469,11 @@
               <FileType>1</FileType>
               <FilePath>..\Modules\character_lib.c</FilePath>
             </File>
+            <File>
+              <FileName>time.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Modules\time.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -498,6 +508,11 @@
               <FileName>flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>mcu_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\mcu_flash.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -573,6 +588,11 @@
               <FileName>stm32f10x_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\STM32F10x_FWLib\src\stm32f10x_spi.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_flash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\STM32F10x_FWLib\src\stm32f10x_flash.c</FilePath>
             </File>
           </Files>
         </Group>
