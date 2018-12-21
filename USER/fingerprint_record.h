@@ -14,6 +14,8 @@
 #define FP_RECORD_START_ADDR    0X08060000      //flash共512K, 预留128K存储指纹开锁信息,512K - 128K = 384K, 384K = 0x60000
 #define FP_RECORD_SPACE         64              //一条指纹开锁信息记录预留64个字节
 
+#define IS_FP_RECORD_FLASH_ADDR(ADDRESS)        (((ADDRESS) >= FP_RECORD_START_ADDR) && ((ADDRESS) < 0x080FFFFF))
+
 #define FP_RECORD_HEADER_YES    0x12345678
 #define FP_RECORD_HEADER_NO     0xffffffff
 #pragma pack(1)

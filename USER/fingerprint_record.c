@@ -13,13 +13,32 @@ OS_STK FP_RECORD_TASK_STK[FP_RECORD_TASK_STK_SIZE];
 
 uint8_t fp_record_buf[FP_RECORD_SPACE] = {0};
 
+
+void fp_record_flash_read(uint32_t addr, uint16_t *buffer, uint16_t num_to_read)
+{
+    if(IS_FP_RECORD_FLASH_ADDR(addr))
+    {
+        flash_read(addr, buffer, num_to_read);
+    }
+}
+
+void fp_record_flash_write(uint32_t addr, uint16_t *buffer, uint16_t num_to_read)
+{
+    if(IS_FP_RECORD_FLASH_ADDR(addr))
+    {
+        flash_write(addr, buffer, num_to_read);
+    }
+}
+
+
+
 uint16_t read_till_last_record(void)
 {
     fp_record_t fp_record = {0};
     uint16_t cnt = 0;
     while(1)
     {
-        flash_read(FP_RECORD_START_ADDR + FP_RECORD_SPACE * cnt, (u16*)fp_record_buf, FP_RECORD_SPACE);
+        fp_record_flash_read(FP_RECORD_START_ADDR + FP_RECORD_SPACE * cnt, (u16*)fp_record_buf, FP_RECORD_SPACE);
         memcpy(&fp_record, fp_record_buf, sizeof(fp_record_t));
         if(fp_record.header == FP_RECORD_HEADER_YES)
         {
@@ -45,11 +64,23 @@ uint16_t read_till_last_record(void)
 void write_one_record(fp_record_t fp_record)
 {
     uint16_t cnt = read_till_last_record();
+//    memset(fp_record_buf, 0, FP_RECORD_SPACE);
     memcpy(fp_record_buf, &fp_record, sizeof(fp_record_t));
-    flash_write(FP_RECORD_START_ADDR + FP_RECORD_SPACE * cnt, (u16*)&fp_record, FP_RECORD_SPACE);
+    fp_record_flash_write(FP_RECORD_START_ADDR + FP_RECORD_SPACE * cnt, (uint16_t*)fp_record_buf, FP_RECORD_SPACE);
     return ;
 }
 
+
+void fp_record_flash_erase_all(void)
+{
+    uint16_t record_num;
+
+    record_num = read_till_last_record();
+    for(uint16_t i = 0; i < record_num * FP_RECORD_SPACE / STM_SECTOR_SIZE + 1; i++)
+    {
+        flash_erase(FP_RECORD_START_ADDR + i * STM_SECTOR_SIZE);
+    }
+}
 
 void write_read_fp_record_task(void *pdata)
 {
@@ -65,13 +96,14 @@ void write_read_fp_record_task(void *pdata)
             fp_record.fp_item.id = 0x5665;
             fp_record.fp_item.time.year = 2018;
             fp_record.fp_item.time.month = 12;
-            fp_record.fp_item.time.day = 20;
-            fp_record.fp_item.time.weekday = 4;
-            fp_record.fp_item.time.hour = 17;
-            fp_record.fp_item.time.min = 40;
-            fp_record.fp_item.time.sec = 18;
+            fp_record.fp_item.time.day = 21;
+            fp_record.fp_item.time.weekday = 5;
+            fp_record.fp_item.time.hour = 10;
+            fp_record.fp_item.time.min = 30;
+            fp_record.fp_item.time.sec = 12;
             write_one_record(fp_record);
             cnt = read_till_last_record();
+//            fp_record_flash_erase_all();
         }
         delay_ms(1000);
     }
