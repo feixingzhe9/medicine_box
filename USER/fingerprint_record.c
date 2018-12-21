@@ -8,11 +8,13 @@
 #include "delay.h"
 #include "fingerprint_record.h"
 #include "mcu_flash.h"
+#include "flash.h"
 
 OS_STK FP_RECORD_TASK_STK[FP_RECORD_TASK_STK_SIZE];
 
-uint8_t fp_record_buf[FP_RECORD_SPACE] = {0};
 
+#if 0   //mcu FLASH
+uint8_t fp_record_buf[FP_RECORD_SPACE] = {0};
 
 void fp_record_flash_read(uint32_t addr, uint16_t *buffer, uint16_t num_to_read)
 {
@@ -81,17 +83,42 @@ void fp_record_flash_erase_all(void)
         flash_erase(FP_RECORD_START_ADDR + i * STM_SECTOR_SIZE);
     }
 }
+#else
+
+
+uint8_t init_fp_flash(void)
+{
+    uint8_t fp_record_read_buf[64] = {0};
+    fp_record_main_index_t main_index;
+    spi2_flash_read_data(0, fp_record_read_buf, sizeof(fp_record_read_buf));
+    memcpy(&main_index, fp_record_read_buf, sizeof(fp_record_main_index_t));
+    if(main_index.init_flag != FP_RECORD_MAIN_INDEX_INIT_FLAG)
+    {
+        
+    }
+}
+
+
+
+#endif
+
+
+
 
 void write_read_fp_record_task(void *pdata)
 {
     uint8_t init_flag = 0;
     uint16_t cnt = 0;
     fp_record_t fp_record = {0};
+    uint8_t write_test_data[10] = {1,2,3,4,5,6,7,8,9,10};
+    uint8_t read_test_data[200] = {0};
     while(1)
     {
         if(init_flag == 0)
         {
             init_flag = 1;
+#if 0
+
             fp_record.header = FP_RECORD_HEADER_YES;
             fp_record.fp_item.id = 0x5665;
             fp_record.fp_item.time.year = 2018;
@@ -104,6 +131,14 @@ void write_read_fp_record_task(void *pdata)
             write_one_record(fp_record);
             cnt = read_till_last_record();
 //            fp_record_flash_erase_all();
+#endif
+
+
+            spi2_flash_write_data(16, write_test_data, sizeof(write_test_data));
+            delay_ms(20);
+            spi2_flash_read_data(0, read_test_data, sizeof(read_test_data));
+            spi2_flash_erase_sector(0);
+            spi2_flash_read_data(0, read_test_data, sizeof(read_test_data));
         }
         delay_ms(1000);
     }

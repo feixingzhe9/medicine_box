@@ -255,5 +255,23 @@ void spi2_flash_wakeup(void)
 }
 
 
+uint8_t spi2_flash_write_data(uint32_t addr, uint8_t *data, uint16_t len)
+{
+    spi2_flash_write_enable();
+//    spi2_flash_write_page(data, addr, len);
+    spi2_flash_write(data, addr, len);
+    spi2_flash_write_disable();
+    return 1;
+}
+
+
+uint8_t spi2_flash_read_data(uint32_t addr, uint8_t *data, uint16_t len)
+{
+    spi2_flash_read(data, addr, len);
+    return 1;
+}
+
+
+
 
 

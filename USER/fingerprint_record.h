@@ -34,6 +34,15 @@ typedef struct
 }fp_record_t;
 
 
+
+#define FP_RECORD_MAIN_INDEX_INIT_FLAG  0x20150719
+typedef struct
+{
+    uint32_t init_flag;
+    uint32_t cycle;
+    uint32_t current_addr;
+}fp_record_main_index_t;
+
 extern OS_STK FP_RECORD_TASK_STK[FP_RECORD_TASK_STK_SIZE];
 
 void write_read_fp_record_task(void *pdata);

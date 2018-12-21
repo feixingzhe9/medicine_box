@@ -50,6 +50,11 @@ void spi2_flash_erase_sector(u32 Dst_Addr); //扇区擦除
 void spi2_flash_wait_busy(void);            //等待空闲
 void spi2_flash_power_dow(void);            //进入掉电模式
 void spi2_flash_wakeup(void);               //唤醒
+
+
+
+uint8_t spi2_flash_write_data(uint32_t addr, uint8_t *data, uint16_t len);
+uint8_t spi2_flash_read_data(uint32_t addr, uint8_t *data, uint16_t len);
 #endif
 
 
