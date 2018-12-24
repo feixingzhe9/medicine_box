@@ -19,6 +19,12 @@ void lock_gpio_init(void)
     GPIO_Init(GPIOG, &GPIO_InitStructure);                  //根据设定参数初始化GPIO
 //    GPIO_SetBits(GPIOG,GPIO_Pin_5);                       // 输出高
     GPIO_ResetBits(GPIOG,GPIO_Pin_5);                       // 输出高
+
+    /* lock input detection config */
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;               // 端口配置
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;        //推挽输出
+    GPIO_Init(GPIOG, &GPIO_InitStructure);                  //根据设定参数初始化GPIO
+
 }
 
 
@@ -38,3 +44,7 @@ void lock_off(void)
     GPIO_ResetBits(GPIOG,GPIO_Pin_5);
 }
 
+uint8_t get_lock_status(void)
+{
+    return GPIO_ReadInputDataBit(GPIOG, GPIO_Pin_13);
+}

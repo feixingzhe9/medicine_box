@@ -26,17 +26,17 @@ uint8_t get_id_key_value(id_key_enum key)
     switch(key)
     {
         case ID_KEY_1:
-            return GPIO_ReadInputDataBit(GPIOB, 3);
+            return GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_3);
         case ID_KEY_2:
-            return GPIO_ReadInputDataBit(GPIOB, 4);
+            return GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_4);
         case ID_KEY_3:
-            return GPIO_ReadInputDataBit(GPIOB, 5);
+            return GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_5);
         case ID_KEY_4:
-            return GPIO_ReadInputDataBit(GPIOB, 6);
+            return GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_6);
         case ID_KEY_5:
-            return GPIO_ReadInputDataBit(GPIOB, 7);
+            return GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_7);
         case ID_KEY_6:
-            return GPIO_ReadInputDataBit(GPIOB, 8);
+            return GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_8);
         default:
             return 0xff;
     }

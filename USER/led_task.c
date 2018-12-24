@@ -23,6 +23,9 @@ void led1_task(void *pdata)
     };
 }
 
+
+#include "lock.h"
+uint8_t test_lock_status = 0;
 void indicator_led_task(void *pdata)
 {
     led_init();
@@ -32,6 +35,7 @@ void indicator_led_task(void *pdata)
         delay_ms(500);
         INDICATOR_LED = 1;
         delay_ms(500);
+        test_lock_status = get_lock_status();
     };
 }
 
