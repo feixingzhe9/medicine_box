@@ -24,18 +24,19 @@ void led1_task(void *pdata)
 }
 
 
-#include "lock.h"
-uint8_t test_lock_status = 0;
+#include "battery.h"
+uint16_t test_adc_voltage = 0;
 void indicator_led_task(void *pdata)
 {
     led_init();
+    battery_adc_init();
     while(1)
     {
         INDICATOR_LED = 0;
         delay_ms(500);
         INDICATOR_LED = 1;
         delay_ms(500);
-        test_lock_status = get_lock_status();
+        test_adc_voltage =  get_battery_voltage();
     };
 }
 

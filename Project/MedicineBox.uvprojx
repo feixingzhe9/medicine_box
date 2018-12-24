@@ -474,6 +474,11 @@
               <FileType>1</FileType>
               <FilePath>..\Modules\time.c</FilePath>
             </File>
+            <File>
+              <FileName>battery.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Modules\battery.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -513,6 +518,11 @@
               <FileName>mcu_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\mcu_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\adc.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -593,6 +603,11 @@
               <FileName>stm32f10x_flash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\STM32F10x_FWLib\src\stm32f10x_flash.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_adc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\STM32F10x_FWLib\src\stm32f10x_adc.c</FilePath>
             </File>
           </Files>
         </Group>
