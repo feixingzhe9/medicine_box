@@ -29,10 +29,10 @@ typedef enum
     FRAME_DISPLAY_SHOW_CONTENT = 1,
 }frame_display_e;
 
-#define LC12S_UART_COM_SEND_TASK_PRIO                   5
+
 #define LC12S_UART_COM_SEND_TASK_STK_SIZE               1024
 
-#define LC12S_UART_COM_RCV_TASK_PRIO                    4
+
 #define LC12S_UART_COM_RCV_TASK_STK_SIZE                1024
 
 

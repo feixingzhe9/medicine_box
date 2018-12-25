@@ -4,6 +4,20 @@
 #include "ucos_ii.h"
 #include "character_lib.h"
 
+
+
+typedef enum
+{
+    DISPLAY_ID_NONE = 0,
+    DISPLAY_ID_FP_ID_SUCCESS = 1,
+    DISPLAY_ID_FP_ID_ERROR,
+    DISPLAY_ID_TO_DESTINATION,
+    DISPLAY_ID_CONNECT_STATUS,
+    DISPLAY_ID_LOW_POWER,
+    DISPLAY_ID_LOCK_STATUS,
+    DISPLAY_ID_MAX
+}display_id_e;
+
 typedef struct
 {
     uint16_t start_x, start_y;
@@ -16,18 +30,21 @@ typedef struct
     uint8_t need_update_flag;
     uint16_t period_ms;
     uint8_t layer;
+    uint16_t id;
 }show_content_t;
 
-#define DISPLAY_CONTENT_NUM_MAX     50
+#define DISPLAY_CONTENT_NUM_MAX     20
 typedef struct
 {
     uint8_t need_update_flag;
     uint16_t content_len;
-    show_content_t content[DISPLAY_CONTENT_NUM_MAX];
+    show_content_t content[DISPLAY_ID_MAX - 1];
 }display_info_t;
 
 
-#define DIS_TEST_TASK_PRIO                      8
+
+
+
 #define DIS_TEST_STK_SIZE                       1024
 extern OS_STK DIS_TEST_TASK_STK[DIS_TEST_STK_SIZE];
 

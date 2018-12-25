@@ -96,13 +96,11 @@ uint8_t init_fp_flash(void)
     {
         
     }
+    return 0;
 }
 
 
-
 #endif
-
-
 
 
 void write_read_fp_record_task(void *pdata)

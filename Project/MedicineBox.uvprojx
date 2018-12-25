@@ -429,6 +429,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\fingerprint_record.c</FilePath>
             </File>
+            <File>
+              <FileName>battery_task.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\battery_task.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

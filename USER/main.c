@@ -18,6 +18,7 @@
 #include "flash.h"
 #include "id.h"
 #include "lock.h"
+#include "battery.h"
 
 uint8_t test_id = 0;
 int main(void)
@@ -38,6 +39,7 @@ int main(void)
     delay_us_ex(1000 * 1000);
     lc12s_init();
     spi2_flash_init();
+    battery_adc_init();
     os_user_config();
     user_init_depend_on_os_config();
     __enable_irq();

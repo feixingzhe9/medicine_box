@@ -4,12 +4,12 @@
 #include "ucos_ii.h"
 
 
-#define LED1_TASK_PRIO                  7
+
 #define LED1_STK_SIZE                   64
 extern OS_STK LED1_TASK_STK[LED1_STK_SIZE];
 
 
-#define INDICATOR_LED_TASK_PRIO                  6
+
 #define INDICATOR_LED_STK_SIZE                   64
 extern OS_STK INDICATOR_LED_TASK_STK[INDICATOR_LED_STK_SIZE];
 

@@ -546,7 +546,7 @@ void fp_id_notify_display(uint8_t status, uint32_t id)
     display_add_one_content(content);
 }
 
-
+#include "common.h"
 uint8_t add_fp_by_press(uint16_t id, fp_permission_e permission)
 {
     int i = 0;

@@ -24,6 +24,8 @@ static void task_create(void)
     OSTaskCreate(unlock_task,               (void *)0,  (OS_STK*)&UNLOCK_TASK_STK[UNLOCK_TASK_STK_SIZE - 1],                                UNLOCK_TASK_PRIO);
     OSTaskCreate(lock_status_task,          (void *)0,  (OS_STK*)&LOCK_STATUS_TASK_STK[LOCK_STATUS_TASK_STK_SIZE - 1],                      LOCK_STATUS_TASK_PRIO);
     OSTaskCreate(write_read_fp_record_task, (void *)0,  (OS_STK*)&FP_RECORD_TASK_STK[FP_RECORD_TASK_STK_SIZE - 1],                          FP_RECORD_TASK_PRIO);
+    OSTaskCreate(battery_task,              (void *)0,  (OS_STK*)&BATTERY_TASK_STK[BATTERY_TASK_STK_SIZE - 1],                              BATTERY_TASK_PRIO);
+
 }
 
 static void sem_create(void)

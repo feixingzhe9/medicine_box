@@ -7,11 +7,11 @@
 #include "sys.h"
 #include <string.h>
 
-#define FP_UART_COM_SEND_TASK_PRIO                      9
+
 #define FP_UART_COM_SEND_TASK_STK_SIZE                  1024
 extern OS_STK FP_UART_COM_SEND_TASK_STK[FP_UART_COM_SEND_TASK_STK_SIZE];
 
-#define FP_UART_COM_RCV_TASK_PRIO                       10
+
 #define FP_UART_COM_RCV_TASK_STK_SIZE                   1024
 extern OS_STK FP_UART_COM_RCV_TASK_STK[FP_UART_COM_RCV_TASK_STK_SIZE];
 

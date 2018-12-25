@@ -10,6 +10,7 @@
 #include "show_pic.h"
 #include "character_lib.h"
 #include "GT32L32M0180.h"
+#include <string.h>
 
 OS_STK DIS_TEST_TASK_STK[DIS_TEST_STK_SIZE];
 

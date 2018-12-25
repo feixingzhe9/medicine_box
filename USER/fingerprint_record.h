@@ -6,7 +6,7 @@
 
 
 
-#define FP_RECORD_TASK_PRIO                   15
+
 #define FP_RECORD_TASK_STK_SIZE               1024
 
 
