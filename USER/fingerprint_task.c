@@ -330,7 +330,7 @@ int fp_uart_frame_proc(fp_rcv_buf_t *node)
 }
 
 void fp_id_notify_display(uint8_t status, uint32_t id);
-
+#include "display_task.h"
 //------ test code for fingerprint uart protocol ------//
 void fp_uart_com_send_task(void *pdata)
 {
@@ -374,6 +374,7 @@ void fp_uart_com_send_task(void *pdata)
                         delay_ms(700);  //test code: get right ack
                         fp_id_notify_display(1, 0);
                         start_to_unlock();
+                        show_fp_id_result(TRUE);
                     }
                     else if(fp_short_ack->result == FINGERPRINT_ACK_NO_USER)
                     {
@@ -381,6 +382,7 @@ void fp_uart_com_send_task(void *pdata)
                         todo: no such user
                         */
                         fp_id_notify_display(0, 0);
+                        show_fp_id_result(FALSE);
                     }
                     else if(fp_short_ack->result == FINGERPRINT_ACK_TIMEOUT)
                     {
@@ -508,6 +510,7 @@ void fp_uart_com_rcv_task(void *pdata)
 #include "character_lib.h"
 void fp_press_notify_display()
 {
+#if DISPLAY_FUNCTION_1
     show_content_t content = {0};
     content.start_x = 200;
     content.start_y = 200;
@@ -519,11 +522,13 @@ void fp_press_notify_display()
     content.resolution = USER_CH_HIGH_16;
     content.need_rectangle_flag = 0;
     display_add_one_content(content);
+#endif
 }
 
 
 void fp_id_notify_display(uint8_t status, uint32_t id)
 {
+#if DISPLAY_FUNCTION_1
     show_content_t content = {0};
     content.start_x = 200;
     content.start_y = 180;
@@ -544,6 +549,7 @@ void fp_id_notify_display(uint8_t status, uint32_t id)
     content.resolution = USER_CH_HIGH_16;
     content.need_rectangle_flag = 0;
     display_add_one_content(content);
+#endif
 }
 
 #include "common.h"

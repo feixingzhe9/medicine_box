@@ -294,7 +294,9 @@ static int frame_proc(uint8_t *frame, uint16_t len)
                             content.resolution = resulotion;
                             content.str_color = color;
                             content.period_ms = period * 10;
+#if DISPLAY_FUNCTION_1
                             display_add_one_content(content);
+#endif
                         }
                         display_ack_show_content(1, serial_num);
 

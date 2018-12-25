@@ -23,12 +23,12 @@ typedef enum
     FP_UART_COM_SEND_TASK_PRIO,
     UNLOCK_TASK_PRIO,
     FP_RECORD_TASK_PRIO,
+    DISPLAY_TASK_PRIO,
     LOCK_STATUS_TASK_PRIO,
     BATTERY_TASK_PRIO,
     LED1_TASK_PRIO,
     INDICATOR_LED_TASK_PRIO
 }task_prio_e;
-
 
 
 void os_user_config(void);

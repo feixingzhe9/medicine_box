@@ -556,10 +556,10 @@ void lcd_wr_start(void)
 void lcd_block_write(u16 x_start,u16 x_end,u16 y_start, u16 y_end)
 {
     //HX8357-A
-//    lcd_wr_reg(0x80, x_start >> 8); // Set CAC=0x0000
-//    lcd_wr_reg(0x81, x_start & 0xff);
-//    lcd_wr_reg(0x82, y_start >> 8); // Set RAC=0x0000
-//    lcd_wr_reg(0x83, y_start & 0xff);
+    lcd_wr_reg(0x80, x_start >> 8); // Set CAC=0x0000
+    lcd_wr_reg(0x81, x_start & 0xff);
+    lcd_wr_reg(0x82, y_start >> 8); // Set RAC=0x0000
+    lcd_wr_reg(0x83, y_start & 0xff);
 
     lcd_wr_reg(0x02, x_start >> 8);
     lcd_wr_reg(0x03, x_start & 0xff);     //Column Start

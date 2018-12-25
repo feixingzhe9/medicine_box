@@ -6,6 +6,7 @@
 #include "lock_task.h"
 #include "delay.h"
 #include "lock.h"
+#include "display_task.h"
 
 OS_STK UNLOCK_TASK_STK[UNLOCK_TASK_STK_SIZE];
 
