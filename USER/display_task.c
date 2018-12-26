@@ -11,6 +11,9 @@
 #include "character_lib.h"
 #include "GT32L32M0180.h"
 #include <string.h>
+#include "fingerprint_task.h"
+#include "battery_task.h"
+#include "platform.h"
 
 OS_STK DIS_TEST_TASK_STK[DIS_TEST_STK_SIZE];
 
@@ -319,14 +322,14 @@ void dis_str_info_init(void)
 //    display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].str_len = sizeof("已打开");
 //    memcpy(display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].str, "已打开", display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].str_len);
 
-    display_str_info->content[DISPLAY_ID_LOCK_STATUS].id = DISPLAY_ID_LOCK_STATUS;
-    display_str_info->content[DISPLAY_ID_LOCK_STATUS].need_update_flag = TRUE;
-    display_str_info->content[DISPLAY_ID_LOCK_STATUS].start_x = 10;
-    display_str_info->content[DISPLAY_ID_LOCK_STATUS].start_y = 50;
-    display_str_info->content[DISPLAY_ID_LOCK_STATUS].resolution = USER_CH_HIGH_24;
-    display_str_info->content[DISPLAY_ID_LOCK_STATUS].str_color = Blue;
-    display_str_info->content[DISPLAY_ID_LOCK_STATUS].str_len = sizeof("lock status: 锁已开，请尝试打开药盒");
-    memcpy(display_str_info->content[DISPLAY_ID_LOCK_STATUS].str, "lock status: 锁已开，请尝试打开药盒", display_str_info->content[DISPLAY_ID_LOCK_STATUS].str_len);
+//    display_str_info->content[DISPLAY_ID_LOCK_STATUS].id = DISPLAY_ID_LOCK_STATUS;
+//    display_str_info->content[DISPLAY_ID_LOCK_STATUS].need_update_flag = TRUE;
+//    display_str_info->content[DISPLAY_ID_LOCK_STATUS].start_x = 10;
+//    display_str_info->content[DISPLAY_ID_LOCK_STATUS].start_y = 50;
+//    display_str_info->content[DISPLAY_ID_LOCK_STATUS].resolution = USER_CH_HIGH_24;
+//    display_str_info->content[DISPLAY_ID_LOCK_STATUS].str_color = Blue;
+//    display_str_info->content[DISPLAY_ID_LOCK_STATUS].str_len = sizeof("lock status: 锁已开，请尝试打开药盒");
+//    memcpy(display_str_info->content[DISPLAY_ID_LOCK_STATUS].str, "lock status: 锁已开，请尝试打开药盒", display_str_info->content[DISPLAY_ID_LOCK_STATUS].str_len);
 
 
 //    display_str_info->content[DISPLAY_ID_TO_DESTINATION].id = DISPLAY_ID_TO_DESTINATION;
@@ -340,34 +343,81 @@ void dis_str_info_init(void)
 }
 
 
-void show_fp_id_result(uint8_t result)
-{
-    display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].need_update_flag = TRUE;
 
-    display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].id = DISPLAY_ID_FP_ID_SUCCESS;
-    display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].start_x = 0;
-    display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].start_y = 10;
-    display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].str_color = Blue;
-    display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].resolution = USER_CH_HIGH_32;
+void show_fp_id_result(uint8_t result, uint16_t fp_id)
+{
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].need_update_flag = TRUE;
+
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].id = DISPLAY_ID_FP_ID_STATUS;
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].start_x = 0;
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].start_y = 10;
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].str_color = Blue;
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].resolution = USER_CH_HIGH_32;
 
     if(result == TRUE)
     {
-        display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].str_len = sizeof("已打开");
-        memcpy(display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].str, "已打开", display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].str_len);
+        display_str_info->content[DISPLAY_ID_FP_ID_STATUS].str_len = sizeof("已打开");
+        memcpy(display_str_info->content[DISPLAY_ID_FP_ID_STATUS].str, "已打开", display_str_info->content[DISPLAY_ID_FP_ID_STATUS].str_len);
     }
     else
     {
-        display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].str_color = Red;
-        display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].str_len = sizeof("指纹不匹配,仅授权王医生可以打开");
-        memcpy(display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].str, "指纹不匹配,仅授权王医生可以打开", display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].str_len);
+        display_str_info->content[DISPLAY_ID_FP_ID_STATUS].str_color = Red;
+        display_str_info->content[DISPLAY_ID_FP_ID_STATUS].str_len = sizeof("指纹不匹配,仅授权王医生可以打开");
+        memcpy(display_str_info->content[DISPLAY_ID_FP_ID_STATUS].str, "指纹不匹配,仅授权王医生可以打开", display_str_info->content[DISPLAY_ID_FP_ID_STATUS].str_len);
     }
 
-    display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].occupied_zone.start_x = display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].start_x;
-    display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].occupied_zone.start_y = display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].start_y;
-    display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].occupied_zone.end_x = LCD_X_MAX;
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].occupied_zone.start_x = display_str_info->content[DISPLAY_ID_FP_ID_STATUS].start_x;
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].occupied_zone.start_y = display_str_info->content[DISPLAY_ID_FP_ID_STATUS].start_y;
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].occupied_zone.end_x = LCD_X_MAX;
 //    display_str_info->content[DISPLAY_ID_TO_DESTINATION].occupied_zone.end_x = display_str_info->content[DISPLAY_ID_TO_DESTINATION].start_x + \
     display_str_info->content[DISPLAY_ID_TO_DESTINATION].str_len * 16;
-    display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].occupied_zone.end_y = display_str_info->content[DISPLAY_ID_FP_ID_SUCCESS].start_y + 42;
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].occupied_zone.end_y = display_str_info->content[DISPLAY_ID_FP_ID_STATUS].start_y + 42;
+}
+
+void clear_fp_id_result(void)
+{
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].need_update_flag = TRUE;
+
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].id = DISPLAY_ID_FP_ID_STATUS;
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].start_x = 0;
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].start_y = 10;
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].str_color = Blue;
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].resolution = USER_CH_HIGH_32;
+
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].str_color = Red;
+    memset(display_str_info->content[DISPLAY_ID_FP_ID_STATUS].str, 0, display_str_info->content[DISPLAY_ID_FP_ID_STATUS].str_len);
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].str_len =0;
+
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].occupied_zone.start_x = display_str_info->content[DISPLAY_ID_FP_ID_STATUS].start_x;
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].occupied_zone.start_y = display_str_info->content[DISPLAY_ID_FP_ID_STATUS].start_y;
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].occupied_zone.end_x = LCD_X_MAX;
+//    display_str_info->content[DISPLAY_ID_TO_DESTINATION].occupied_zone.end_x = display_str_info->content[DISPLAY_ID_TO_DESTINATION].start_x + \
+    display_str_info->content[DISPLAY_ID_TO_DESTINATION].str_len * 16;
+    display_str_info->content[DISPLAY_ID_FP_ID_STATUS].occupied_zone.end_y = display_str_info->content[DISPLAY_ID_FP_ID_STATUS].start_y + 42;
+}
+
+
+void show_power_status(uint16_t power)
+{
+    display_str_info->content[DISPLAY_ID_POWER_STATUS].need_update_flag = TRUE;
+
+    display_str_info->content[DISPLAY_ID_POWER_STATUS].id = DISPLAY_ID_POWER_STATUS;
+    display_str_info->content[DISPLAY_ID_POWER_STATUS].start_x = 10;
+    display_str_info->content[DISPLAY_ID_POWER_STATUS].start_y = 300;
+    display_str_info->content[DISPLAY_ID_POWER_STATUS].str_color = Blue;
+    display_str_info->content[DISPLAY_ID_POWER_STATUS].resolution = USER_CH_HIGH_16;
+
+    display_str_info->content[DISPLAY_ID_POWER_STATUS].str_len = 7;
+    sprintf((char *)display_str_info->content[DISPLAY_ID_POWER_STATUS].str, "%dmv", power);
+
+    display_str_info->content[DISPLAY_ID_POWER_STATUS].occupied_zone.start_x = display_str_info->content[DISPLAY_ID_POWER_STATUS].start_x;
+    display_str_info->content[DISPLAY_ID_POWER_STATUS].occupied_zone.start_y = display_str_info->content[DISPLAY_ID_POWER_STATUS].start_y;
+    display_str_info->content[DISPLAY_ID_POWER_STATUS].occupied_zone.end_x = display_str_info->content[DISPLAY_ID_POWER_STATUS].start_x + 56;
+//    display_str_info->content[DISPLAY_ID_TO_DESTINATION].occupied_zone.end_x = display_str_info->content[DISPLAY_ID_TO_DESTINATION].start_x + \
+    display_str_info->content[DISPLAY_ID_TO_DESTINATION].str_len * 16;
+    display_str_info->content[DISPLAY_ID_POWER_STATUS].occupied_zone.end_y = display_str_info->content[DISPLAY_ID_POWER_STATUS].start_y + 525;
+
+    //        lcd_color_box(10, 300, 56, 525, color);
 }
 
 void clear_zone(uint16_t start_x, uint16_t start_y, uint16_t end_x, uint16_t end_y, uint16_t color)
@@ -375,7 +425,9 @@ void clear_zone(uint16_t start_x, uint16_t start_y, uint16_t end_x, uint16_t end
     if((end_x > start_x) && (end_y > start_y))
     {
         lcd_color_box(start_x, start_y,end_x - start_x , end_y - start_y, color);
-//        lcd_color_box(10, 90, 470, 115, color);
+//        lcd_color_box(10, 202, 60, 310, color);
+//        lcd_color_box(10, 300, 56, 525, color);
+//        lcd_color_box(10, 512, 40, 310, color);
     }
 
 }
@@ -414,10 +466,40 @@ void dis_main_str_func(void)
                     display_str_info->content[i].occupied_zone.end_x, display_str_info->content[i].occupied_zone.end_y, Green);
             display_string(display_str_info->content[i].start_x, display_str_info->content[i].start_y, display_str_info->content[i].str, \
                 display_str_info->content[i].str_len, display_str_info->content[i].resolution, display_str_info->content[i].str_color);
+            display_str_info->content[i].need_update_flag = FALSE;
         }
     }
 }
 
+#define FP_ID_EXIST_TIME    5 * OS_TICKS_PER_SEC
+void display_main_prepare(void)
+{
+    /* fingerprint id result */
+    if(fp_id_result.trigger == TRUE)
+    {
+        if(get_tick() - fp_id_result.start_tick <= FP_ID_EXIST_TIME)
+        {
+            if(get_tick() - fp_id_result.start_tick <= OS_TICKS_PER_SEC / 3)
+            {
+                show_fp_id_result(fp_id_result.result, fp_id_result.fp_id);
+            }
+        }
+        else
+        {
+            fp_id_result.trigger = FALSE;
+        }
+    }
+    else
+    {
+        clear_fp_id_result();
+    }
+
+
+
+    /* DISPLAY_ID_LOW_POWER: low power */
+    show_power_status(battery_voltage);
+
+}
 
 
 extern uint8_t flash_read_test_buf[100];
@@ -519,10 +601,9 @@ void display_task(void *pdata)
 #if DISPLAY_FUNCTION_1
         display_main_func();
 #endif
+        display_main_prepare();
         dis_main_str_func();
-//        clear_destination_info();
-        delay_ms(20);
-        delay_ms(2000);
+        delay_ms(100);
     }
 }
 

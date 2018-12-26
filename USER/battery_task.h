@@ -9,4 +9,5 @@
 extern OS_STK BATTERY_TASK_STK[BATTERY_TASK_STK_SIZE];
 
 void battery_task(void *pdata);
+extern uint16_t battery_voltage;
 #endif

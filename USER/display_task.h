@@ -9,11 +9,10 @@
 typedef enum
 {
     DISPLAY_ID_NONE = 0,
-    DISPLAY_ID_FP_ID_SUCCESS = 0,
-    DISPLAY_ID_FP_ID_ERROR,
+    DISPLAY_ID_FP_ID_STATUS = 0,
     DISPLAY_ID_TO_DESTINATION,
     DISPLAY_ID_CONNECT_STATUS,
-    DISPLAY_ID_LOW_POWER,
+    DISPLAY_ID_POWER_STATUS,
     DISPLAY_ID_LOCK_STATUS,
     DISPLAY_ID_MAX
 }display_id_e;
@@ -67,5 +66,5 @@ void dis_test_task(void *pdata);
 void display_string(uint16_t start_x, uint16_t start_y, uint8_t* str, uint16_t len, char_resolution_high_e resolution, uint16_t color);
 void display_add_one_content(show_content_t content);
 
-void show_fp_id_result(uint8_t result);
+void show_fp_id_result(uint8_t result, uint16_t fp_id);
 #endif

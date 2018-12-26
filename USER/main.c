@@ -28,7 +28,7 @@ int main(void)
     NVIC_Configuration();
     __disable_irq();
     init_lock();
-    delay_us_ex(3000 * 1000);
+//    delay_us_ex(3000 * 1000);
     id_key_init();
     test_id = get_my_id();
     lcd_init();
@@ -36,7 +36,7 @@ int main(void)
 //    lcd_init();
     fp_en();
     fp_com_init();
-    delay_us_ex(1000 * 1000);
+//    delay_us_ex(1000 * 1000);
     lc12s_init();
     spi2_flash_init();
     battery_adc_init();

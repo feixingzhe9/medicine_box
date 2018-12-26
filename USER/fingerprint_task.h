@@ -40,6 +40,15 @@ extern fp_long_ack_t fp_long_ack_mem[FP_LONG_ACK_NUM][1];
 void fp_uart_com_send_task(void *pdata);
 void fp_uart_com_rcv_task(void *pdata);
 
+
+typedef struct
+{
+    uint32_t start_tick;
+    uint16_t fp_id;
+    uint8_t result;
+    uint8_t trigger;
+}fp_id_result_t;
+
 int put_fp_rcv_buf(uint8_t *buf, uint16_t len);
 int free_one_fp_rcv_buf(fp_rcv_buf_t *buf);
 int fp_rcv_buf_head_init(void);
@@ -47,5 +56,10 @@ int fp_rcv_buf_head_init(void);
 
 uint8_t add_fp_by_press(uint16_t id, fp_permission_e permission);
 uint8_t fp_del_all_fp(void);
+
+
+
+
+extern fp_id_result_t fp_id_result;
 
 #endif

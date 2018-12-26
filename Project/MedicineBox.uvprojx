@@ -434,6 +434,11 @@
               <FileType>1</FileType>
               <FilePath>..\USER\battery_task.c</FilePath>
             </File>
+            <File>
+              <FileName>platform.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\platform.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -11,6 +11,7 @@
 #include "led.h"
 #include "fingerprint.h"
 #include "lock_task.h"
+#include "platform.h"
 
 OS_STK FP_UART_COM_SEND_TASK_STK[FP_UART_COM_SEND_TASK_STK_SIZE];
 OS_STK FP_UART_COM_RCV_TASK_STK[FP_UART_COM_RCV_TASK_STK_SIZE];
@@ -40,7 +41,7 @@ fp_long_ack_t fp_long_ack_mem[FP_LONG_ACK_NUM][1];
 OS_MEM *fp_short_ack_mem_handle;
 OS_MEM *fp_long_ack_mem_handle;
 
-
+fp_id_result_t fp_id_result = {0};
 //OSMemPut
 //OS_ENTER_CRITICAL
 
@@ -329,8 +330,12 @@ int fp_uart_frame_proc(fp_rcv_buf_t *node)
     return -1;
 }
 
-void fp_id_notify_display(uint8_t status, uint32_t id);
-#include "display_task.h"
+
+uint8_t fp_id_authentication(uint16_t fp_id)
+{
+    return TRUE;
+}
+
 //------ test code for fingerprint uart protocol ------//
 void fp_uart_com_send_task(void *pdata)
 {
@@ -369,20 +374,34 @@ void fp_uart_com_send_task(void *pdata)
                 fp_short_ack = (fp_short_ack_t *)OSQPend(fp_short_ack_queue_handle, 500, &err);
                 if(err == OS_ERR_NONE)
                 {
+                    uint16_t id = 0;
                     if((fp_short_ack->result >= FP_PERMISSION_1) && (fp_short_ack->result <= FP_PERMISSION_3) && (fp_short_ack->cmd == FINGERPRINT_UART_PROTOCOL_CMD_COPARE_1_TO_N))
                     {
-                        delay_ms(700);  //test code: get right ack
-                        fp_id_notify_display(1, 0);
-                        start_to_unlock();
-                        show_fp_id_result(TRUE);
+                        id = fp_short_ack->q1 << 8 | fp_short_ack->q2;
+//                        fp_id_notify_display(1, 0);
+                        fp_id_result.result = fp_id_authentication(id);
+                        if(fp_id_result.result)
+                        {
+                            start_to_unlock();
+                        }
+                        /* need enter critical ?*/
+                        fp_id_result.start_tick = get_tick();
+                        fp_id_result.fp_id = id;
+                        fp_id_result.trigger = TRUE;
+                        /* need exit critical ?*/
+//                        show_fp_id_result(TRUE);
                     }
                     else if(fp_short_ack->result == FINGERPRINT_ACK_NO_USER)
                     {
                         /*
                         todo: no such user
                         */
-                        fp_id_notify_display(0, 0);
-                        show_fp_id_result(FALSE);
+//                        fp_id_notify_display(0, 0);
+//                        show_fp_id_result(FALSE);
+                        fp_id_result.start_tick = get_tick();
+                        fp_id_result.fp_id = 0;
+                        fp_id_result.trigger = TRUE;
+                        fp_id_result.result = FALSE;
                     }
                     else if(fp_short_ack->result == FINGERPRINT_ACK_TIMEOUT)
                     {
